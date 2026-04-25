@@ -1,0 +1,37 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+env:
+  TAG: ${{ github.event.release.tag_name }}
+
+jobs:
+  publish:
+    permissions:
+      id-token: write # Required for OIDC publishing
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Replace version in package.json
+        shell: bash
+        run: |
+          TAG=${{ github.event.release.tag_name }}
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            find . -name "package.json" -exec sed -i '' "s/\"version\": \".*\"/\"version\": \"${TAG}\"/" {} +
+          else
+            find . -name "package.json" -exec sed -i "s/\"version\": \".*\"/\"version\": \"${TAG}\"/" {} +
+          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.14.0"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Publish skills
+        run: npm publish --access public

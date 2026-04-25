@@ -1,0 +1,28 @@
+{
+  "name": "@looker/lookml-skills",
+  "version": "0.0.0",
+  "bin": {
+    "lookml_skills": "bin/index.js"
+  },
+  "files": [
+    "bin",
+    "skills"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/looker-open-source/lookml-skills.git"
+  },
+  "description": "This repository contains a collection of \"skills\" designed to assist AI agents and developers in writing high-quality, standardized LookML code. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development.",
+  "keywords": [],
+  "contributors": [
+    "Bryan Weber (bwebs)",
+    "Mike DeAngelo (drstrangelooker)"
+  ],
+  "publisher": "looker",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "diff": "^8.0.3",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  }
+}
