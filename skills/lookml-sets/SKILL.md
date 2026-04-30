@@ -52,7 +52,7 @@ You can use sets at the Explore level to explicitly define which fields are visi
 explore: orders {
   fields: [ALL_FIELDS*]         # Start with everything (default)
   # OR
-  fields: [orders.order_details*, users.user_info*] # Whitelist specific sets
+  fields: [orders.order_details*, users.user_info*] # Allowlist specific sets
 }
 ```
 
