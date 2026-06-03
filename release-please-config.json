@@ -1,0 +1,11 @@
+{
+  "bump-minor-pre-major": true,
+  "bump-patch-pre-major": true,
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "@looker/looker-skills",
+      "initial-version": "0.1.0"
+    }
+  }
+}
