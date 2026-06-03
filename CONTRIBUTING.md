@@ -1,6 +1,6 @@
-# Contributing to @looker/lookml-skills
+# Contributing to @looker/looker-skills
 
-First off, thank you for considering contributing to LookML Skills! It's people like you that make this repository such a great resource for AI agents and Looker developers.
+First off, thank you for considering contributing to Looker Skills! It's people like you that make this repository such a great resource for AI agents and Looker developers.
 
 
 # How to contribute
@@ -48,15 +48,15 @@ Click the **Fork** button in the top-right corner of this repository's GitHub pa
 Clone the forked repository to your local machine:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/lookml-skills.git
-cd lookml-skills
+git clone https://github.com/YOUR-USERNAME/looker-skills.git
+cd looker-skills
 ```
 
 #### 3. Add the Upstream Remote
 To keep your fork in sync with the original repository, add it as a remote named `upstream`:
 
 ```bash
-git remote add upstream https://github.com/looker-open-source/lookml-skills.git
+git remote add upstream https://github.com/looker-open-source/looker-skills.git
 ```
 
 #### 4. Create a Branch
@@ -79,7 +79,7 @@ git push origin feature/my-new-skill
 ```
 
 #### 7. Create a Pull Request
-Go to the original `looker-open-source/lookml-skills` repository on GitHub. You should see a prompt to create a pull request from your recently pushed branch. Provide a clear description of the changes you've made.
+Go to the original `looker-open-source/looker-skills` repository on GitHub. You should see a prompt to create a pull request from your recently pushed branch. Provide a clear description of the changes you've made.
 
 ### Adding a New Skill
 When proposing a new skill, please ensure you use the existing skills as a template:

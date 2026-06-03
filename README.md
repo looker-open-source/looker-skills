@@ -11,7 +11,7 @@ To use these skills in your own projects—especially to enhance AI assistants l
 The `skills` CLI is a tool used to install and manage specialized instructions (skills) for AI agents in your workspace. To install these LookML skills in your project, use `npx skills add`.
 
 ```bash
-npx skills add looker-open-source/lookml-skills
+npx skills add looker-open-source/looker-skills
 ```
 
 ## Core LookML Skills
