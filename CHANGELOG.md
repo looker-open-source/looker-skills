@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.1...looker-skills-v0.1.2) (2026-06-09)
+
+
+### Bug Fixes
+
+* Fix publish action ([da56a1f](https://github.com/looker-open-source/looker-skills/commit/da56a1ff280642924ddb3eb12e64cb9958702067))
+
 ## [0.1.1](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.0...looker-skills-v0.1.1) (2026-06-09)
 
 
