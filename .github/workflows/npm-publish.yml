@@ -43,6 +43,6 @@ jobs:
           scope: '@looker'
 
       - name: Publish to NPM registry
-        run: npx lerna publish from-package --yes --no-verify-access
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_RELEASE_BACKED }}
