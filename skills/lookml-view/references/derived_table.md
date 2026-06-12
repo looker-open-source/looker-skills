@@ -60,10 +60,11 @@ view: order_items {
   }
 
   # --- Measures Reused by NDT ---
-  measure: order_count {
+  measure: count_orders {
     type: count_distinct
     sql: ${TABLE}.order_id ;;
     description: "Total distinct count of orders placed."
+    drill_fields: [id, user_id, sale_price]
   }
 
   measure: total_sale_price {
@@ -71,6 +72,7 @@ view: order_items {
     value_format_name: usd
     sql: ${sale_price} ;;
     description: "Total commercial revenue generated."
+    drill_fields: [id, user_id, sale_price]
   }
 }
 ```
@@ -106,7 +108,7 @@ view: user_order_facts {
     cluster_keys: ["user_id"]
     explore_source: order_items {
       column: user_id {}
-      column: lifetime_orders { field: order_items.order_count }
+      column: lifetime_orders { field: order_items.count_orders }
       column: lifetime_revenue { field: order_items.total_sale_price }
     }
   }
@@ -164,7 +166,6 @@ view: user_session_ranks {
   }
 
   dimension: session_id {
-    primary_key: yes
     type: string
     sql: ${TABLE}.session_id ;;
   }
