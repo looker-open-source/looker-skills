@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.2...looker-skills-v0.2.0) (2026-06-12)
+
+
+### Features
+
+* evolve derived table skills to evaluate and nudge towards… ([#13](https://github.com/looker-open-source/looker-skills/issues/13)) ([c530d1b](https://github.com/looker-open-source/looker-skills/commit/c530d1b7efee1db49851a04563ce946adfd191a8))
+
+
+### Bug Fixes
+
+* remove monorepo config from release-please-config ([2532ebf](https://github.com/looker-open-source/looker-skills/commit/2532ebfcee8139f48370a4088b6c68a5fe9007fc))
+
 ## [0.1.2](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.1...looker-skills-v0.1.2) (2026-06-09)
 
 
