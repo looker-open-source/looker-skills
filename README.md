@@ -1,6 +1,6 @@
 # Looker Developer Skills Repository
 
-This repository contains a collection of "skills" designed to assist AI agents and developers in writing high-quality, standardized LookML code. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development.
+This repository contains a collection of "skills" designed to assist AI agents and developers in writing high-quality, standardized LookML code and guiding them through Looker onboarding. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development.
 
 ## Installation & Usage
 
@@ -46,3 +46,18 @@ These skills provide specific instructions for creating and modifying LookML obj
 *   **[lookml-liquid](skills/lookml-liquid/SKILL.md)**: Using Liquid variables for dynamic SQL, HTML, and links.
 *   **[lookml-access-grants](skills/lookml-access-grants/SKILL.md)**: Implementing `access_grant` and `required_access_grants` for row-level security.
 *   **[lookml-tests](skills/lookml-tests/SKILL.md)**: Writing LookML tests for Views and Explores.
+
+## Developer Onboarding Skills
+
+These skills guide new Looker developers and agents through database exploration, CLI setup, project configuration, LookML modeling, and dashboard creation.
+
+*   **[looker-developer-onboarding](skills/looker-developer-onboarding/SKILL.md)**: Orchestrator skill coordinating the e2e onboarding journey.
+*   **[exploring-data-for-looker](skills/exploring-data-for-looker/SKILL.md)**: Exploring BigQuery data schemas to define onboarding goals.
+*   **[installing-looker-cli](skills/installing-looker-cli/SKILL.md)**: Verifying the CLI installation.
+*   **[authenticating-looker-cli](skills/authenticating-looker-cli/SKILL.md)**: Authenticating the CLI via OAuth.
+*   **[connecting-looker-to-bigquery](skills/connecting-looker-to-bigquery/SKILL.md)**: Creating a database connection to BigQuery.
+*   **[setting-up-looker-project](skills/setting-up-looker-project/SKILL.md)**: Creating Looker project and Git repo.
+*   **[creating-lookml-model](skills/creating-lookml-model/SKILL.md)**: Defining views, explores, models, and running verification queries.
+*   **[creating-looker-dashboard](skills/creating-looker-dashboard/SKILL.md)**: Creating LookML dashboard, importing UDD, and iterating on feedback.
+*   **[lookml-modeling-guidelines](skills/lookml-modeling-guidelines/SKILL.md)**: Consolidated LookML modeling best practices and CLI commands syntax.
+
