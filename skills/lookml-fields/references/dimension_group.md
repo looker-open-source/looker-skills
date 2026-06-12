@@ -1,6 +1,6 @@
 ---
 name: lookml-fields-dimension-group
-description: Use this skill to create Dimension Groups (Time and Duration).
+description: Use this skill to create Dimension Groups (Time and Duration) and calculate date differences, datediff, or time elapsed between timestamps (e.g. days since signup, months between orders).
 ---
 
 # Instructions
@@ -9,9 +9,10 @@ description: Use this skill to create Dimension Groups (Time and Duration).
     *   Creates a set of time-based dimensions (date, week, month, etc.) from a single timestamp.
     *   Required: `timeframes` (list of frames to generate), `sql` (the timestamp column).
     *   Optional: `datatype` (if not standard timestamp), `convert_tz` (timezone conversion).
-2.  **Type: Duration**:
-    *   Calculates the time between two timestamps.
-    *   Required: `intervals` (day, week, etc.), `sql_start`, `sql_end`.
+2.  **Type: Duration (Date Diffs & Time Elapsed)**:
+    *   **CRITICAL RULE**: Whenever you see or need to create fields calculating time elapsed, date differences (like `DATEDIFF`, `DATE_DIFF`, `timestamp_diff`), or metrics like `month_since_signup` or `days_to_fulfill`, you **MUST** use a `dimension_group` of `type: duration`. **Do NOT** write a standard `dimension` with custom date diff SQL.
+    *   **Required Parameters**: `intervals` (list of intervals like `[day, week, month, year]`), `sql_start`, `sql_end`.
+    *   **Generated Fields**: Looker appends each interval name to the dimension group name (e.g., `duration_since_signup_month`).
 3.  **Datatype Parameter**:
     *   **When to use**: Use `datatype` when your database column is *not* a standard `timestamp` (YYYY-MM-DD HH:MM:SS).
     *   **Common Options**:
@@ -47,6 +48,10 @@ description: Use this skill to create Dimension Groups (Time and Duration).
         *   *Example*: `sql: CAST(${TABLE}.date_string AS DATE) ;;`
         *   *Example (BigQuery)*: `sql: PARSE_DATE('%Y-%m-%d', ${TABLE}.date_string) ;;`
 
+9.  **Replacing Custom Date Diff SQL**:
+    *   **The Issue**: AI assistants or developers often write manual `dimension` fields like `dimension: month_since_signup { sql: DATEDIFF(month, ${signup_date}, ${current_date}) ;; }`.
+    *   **The Fix**: Always refactor manual `DATEDIFF`/`DATE_DIFF` dimensions into a `dimension_group` of `type: duration`. This ensures multi-interval discoverability and avoids dialect-specific SQL functions.
+
 # Examples
 
 ## Basic Time Dimension Group
@@ -67,13 +72,36 @@ dimension_group: created {
 }
 ```
 
-## Duration Dimension Group
+## Duration Dimension Group (Months / Days Since Signup)
 
 ```lookml
-dimension_group: duration_since_signup {
+# Replaces manual date diff dimensions like 'month_since_signup' or 'days_since_signup'
+dimension_group: since_signup {
   type: duration
-  intervals: [day, week, month]
-  sql_start: ${signup_raw} ;;
+  intervals: [day, week, month, quarter, year]
+  sql_start: ${users.signup_raw} ;;
   sql_end: ${orders.created_raw} ;;
+}
+```
+
+## Duration Dimension Group (Days / Hours Between Processing)
+
+```lookml
+dimension_group: processing_time {
+  type: duration
+  intervals: [hour, day, week]
+  sql_start: ${created_raw} ;;
+  sql_end: ${completed_raw} ;;
+}
+```
+
+## Duration Dimension Group (Customer Age)
+
+```lookml
+dimension_group: customer_age {
+  type: duration
+  intervals: [month, year]
+  sql_start: ${birth_date_raw} ;;
+  sql_end: CURRENT_TIMESTAMP() ;;
 }
 ```
