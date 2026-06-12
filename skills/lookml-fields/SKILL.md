@@ -15,7 +15,7 @@ LookML fields are the building blocks of your data model. Each type serves a spe
 | **Measure** | Aggregates data (metrics). Calculates results. | `SELECT` clause (with aggregation). |
 | **Filter** | Restricts data based on conditions. | `WHERE` or `HAVING` clause (via templated filters). |
 | **Parameter** | Captures user input for dynamic logic. | *None directly* (injects values into other fields). |
-| **Dimension Group** | Generates a set of time-based dimensions. | `SELECT` and `GROUP BY` clause (multiple columns). |
+| **Dimension Group** | Generates time-based dimensions (`type: time`) or calculates date diffs/durations (`type: duration`). | `SELECT` and `GROUP BY` clause (multiple columns). |
 
 ## 2. The Role of `sql` Parameter
 
@@ -76,10 +76,10 @@ The `sql` parameter behaves differently strictly based on the field type.
     }
     ```
 
-### Dimension Groups: The "Time Generator"
-*   **Role**: Defines the *source* timestamp or date column. Looker then generates multiple dimension fields based on the `timeframes` list.
-*   **SQL Context**: Casts and truncates the source column for each timeframe.
-*   **Input**: Must be a standardized timestamp or date expression.
+### Dimension Groups: The "Time Generator & Date Diff Calculator"
+*   **Role**: For `type: time`, generates multiple timeframes from a source timestamp. For `type: duration`, calculates time elapsed / date differences (e.g. `month_since_signup`, `datediff`) between two timestamps.
+*   **SQL Context**: Casts, truncates, or calculates date differences across columns.
+*   **Input**: Standardized timestamp/date expressions or start/end timestamp columns.
 *   **Example**:
     ```lookml
     dimension_group: created {
