@@ -61,8 +61,7 @@ project:
     ```
 3.  **Critical Inclusion Step**: You **MUST** include the dashboard files in
     your LookML model file (`{model_name}.model.lkml`) so they can be discovered
-    by the project validator and the CLI import/sync commands: `lkml include:
-    "/dashboards/**/*.dashboard.lookml"`
+    by the project validator and the CLI import/sync commands: `include: "/dashboards/**/*.dashboard.lookml"`
 4.  Inside the dashboard file, write the LookML dashboard definition,
     configuring tiles (elements) that display the dimensions and measures you
     created in Step 7. It is highly recommended to use **`layout: newspaper`**
@@ -216,7 +215,7 @@ chart instead of column," or "add a filter"):
 4.  **Re-run Query Validation**: Run the query verification check again to
     ensure your refinements did not introduce any new SQL or database errors:
 
-    -   Fetch the UDD elements again (to capture any new tile queries): `looker
+    -   Fetch the UDD elements again (to capture any new tile queries): `looker-cli
         dashboard cat {udd_id} --fields "dashboard_elements(query_id)"`
     -   For each returned `query_id`, run the query to verify SQL correctness:
         `looker-cli query runquery {query_id}`

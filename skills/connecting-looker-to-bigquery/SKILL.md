@@ -36,11 +36,12 @@ Identify the following parameters from Step 1 (Discovery):
 To avoid CLI parsing errors with complex arguments, write the connection
 specifications directly to `/tmp/connection_config.json`.
 
-> [!IMPORTANT] For the BigQuery JDBC driver: - **`host`** must be set to your
-> **GCP Project ID** (which supports hyphens). - **`database`** and **`schema`**
-> must both be set to your **Dataset ID** (which is strictly
-> alphanumeric/underscores only). Setting `database` to a project ID with
-> hyphens will cause immediate query execution failures.
+> [!IMPORTANT]
+> For the BigQuery JDBC driver:
+> - **`host`** must be set to your **GCP Project ID** (which supports hyphens).
+> - **`database`** and **`schema`** must both be set to your **Dataset ID** (which is strictly alphanumeric/underscores only).
+> 
+> Setting `database` to a project ID with hyphens will cause immediate query execution failures.
 
 ```json
 {

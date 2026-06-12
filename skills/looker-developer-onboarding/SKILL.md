@@ -14,47 +14,15 @@ verified before moving to the next.
 
 ## Step-by-Step Onboarding Sequence
 
-| Step        | Goal         | Skill to Use                    | Success       |
-:             :              :                                 : Verification  :
-| :---------- | :----------- | :------------------------------ | :------------ |
-| **1.        | Explore      | `exploring-data-for-looker`     | Propose a     |
-: Discovery** : BigQuery     :                                 : dashboard     :
-:             : data &       :                                 : goal to the   :
-:             : define goal  :                                 : user |        :
-| **2. CLI    | Verify       | `installing-looker-cli`         | Run           |
-: Check**     : `looker` CLI :                                 : `looker-cli   :
-:             : is in `PATH` :                                 : --help` |     :
-:             :              :                                 : successfully  :
-:             :              :                                 : |             :
-| **3. Auth** | Authenticate | `authenticating-looker-cli`     | Run           |
-:             : CLI via      :                                 : `looker-cli   :
-:             : OAuth        :                                 : user me` |    :
-:             :              :                                 : successfully  :
-:             :              :                                 : |             :
-| **4.        | Connect      | `connecting-looker-to-bigquery` | Run           |
-: Connect**   : Looker to    :                                 : `looker-cli   :
-:             : BigQuery     :                                 : connection |  :
-:             :              :                                 : cat {name}` | :
-:             :              :                                 : successfully  :
-:             :              :                                 : |             :
-| **5.        | Create       | `setting-up-looker-project`     | Run           |
-: Project**   : project &    :                                 : `looker-cli   :
-:             : configure    :                                 : project cat | :
-:             : bare Git     :                                 : {id}` |       :
-:             :              :                                 : successfully  :
-:             :              :                                 : |             :
-:             :              :                                 : (`uses_git\:  :
-:             :              :                                 : | true`) |    :
-| **6.        | Write LookML | `creating-lookml-model`         | Clean results |
-:             : validate &   :                                 : & |           :
-:             : query        :                                 : successful |  :
-:             :              :                                 : inline query  :
-:             :              :                                 : |             :
-| **7.        | Create       | `creating-looker-dashboard`     | Imported UDD  |
-: Dashboard** : LookML       :                                 : URL & |       :
-:             : dashboard &  :                                 : successful |  :
-:             : import UDD   :                                 : user sync |   :
-:             :              :                                 : loop |        :
+| Step | Goal | Skill to Use | Success Verification |
+| :--- | :--- | :----------- | :------------------- |
+| **1. Discovery** | Explore BigQuery data & define goal | `exploring-data-for-looker` | Propose a dashboard goal to the user |
+| **2. CLI Check** | Verify `looker` CLI is in `PATH` | `installing-looker-cli` | Run `looker-cli --help` successfully |
+| **3. Auth** | Authenticate CLI via OAuth | `authenticating-looker-cli` | Run `looker-cli user me` successfully |
+| **4. Connect** | Connect Looker to BigQuery | `connecting-looker-to-bigquery` | Run `looker-cli connection cat {name}` successfully |
+| **5. Project** | Create project & configure bare Git | `setting-up-looker-project` | Run `looker-cli project cat {id}` successfully (`uses_git: true`) |
+| **6. Model** | Write LookML, validate & query | `creating-lookml-model` | Clean results & successful inline query |
+| **7. Dashboard** | Create LookML dashboard & import UDD | `creating-looker-dashboard` | Imported UDD URL & successful user sync loop |
 
 ## Orchestration Rules
 
