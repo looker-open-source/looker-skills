@@ -12,11 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/looker-open-source/looker-skills.git"
   },
-  "description": "This repository contains a collection of \"skills\" designed to assist AI agents and developers in writing high-quality, standardized LookML code. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development.",
+  "description": "This repository contains a collection of \"skills\" designed to assist AI agents and developers in writing high-quality, standardized LookML code and guiding them through Looker onboarding. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development.",
   "keywords": [],
   "contributors": [
     "Bryan Weber (bwebs)",
-    "Mike DeAngelo (drstrangelooker)"
+    "Mike DeAngelo (drstrangelooker)",
+    "Josh Temple (joshtemple)"
   ],
   "publisher": "looker",
   "license": "Apache-2.0",
