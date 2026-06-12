@@ -43,21 +43,21 @@ If `looker-cli` is not found, determine the operating system of the environment 
     ```bash
     curl -Lo looker-cli https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-darwin-arm64
     chmod +x looker-cli
-    mv looker-cli ~/.local/bin/
+    mkdir -p ~/.local/bin && mv looker-cli ~/.local/bin/
     ```
 
     *For macOS (amd64 Intel):*
     ```bash
     curl -Lo looker-cli https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-darwin-amd64
     chmod +x looker-cli
-    mv looker-cli ~/.local/bin/
+    mkdir -p ~/.local/bin && mv looker-cli ~/.local/bin/
     ```
 
     *For Linux (amd64):*
     ```bash
     curl -Lo looker-cli https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-linux-amd64
     chmod +x looker-cli
-    mv looker-cli ~/.local/bin/
+    mkdir -p ~/.local/bin && mv looker-cli ~/.local/bin/
     ```
 
     *Note: If `~/.local/bin` is not in your `PATH` or you have root permissions, you can choose to move it to `/usr/local/bin/` instead.*

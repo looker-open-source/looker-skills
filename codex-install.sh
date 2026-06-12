@@ -26,11 +26,14 @@ echo "--- $PLUGIN_NAME Installer for Codex ---"
 mkdir -p "$HOME/.agents/plugins"
 if [ -d "$INSTALL_DIR" ]; then
     echo "Updating existing installation in $INSTALL_DIR..."
+    TEMP_DIR=$(mktemp -d)
+    git clone --depth 1 "$REPO_URL" "$TEMP_DIR"
     rm -rf "$INSTALL_DIR"
+    mv "$TEMP_DIR" "$INSTALL_DIR"
+else
+    echo "Cloning plugin default branch to $INSTALL_DIR..."
+    git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
 fi
-
-echo "Cloning plugin default branch to $INSTALL_DIR..."
-git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
 
 echo "Removing git metadata..."
 rm -rf "$INSTALL_DIR/.git"
@@ -57,7 +60,7 @@ data.plugins = data.plugins.filter(p => p.name !== '${PLUGIN_NAME}');
 data.plugins.push({
     name: '${PLUGIN_NAME}',
     interface: { displayName: 'Looker Developer Skills' },
-    source: { source: 'local', path: './.agents/plugins/${PLUGIN_NAME}' },
+    source: { source: 'local', path: path.resolve(process.env.HOME, '.agents/plugins/${PLUGIN_NAME}') },
     policy: { installation: 'AVAILABLE', authentication: 'NONE' },
     category: 'Productivity'
 });
