@@ -21,6 +21,7 @@ description: Use this skill to create or modify LookML Views. Covers basic view 
     -   Must have `primary_key: yes`.
 3.  **Refinements**: Use `+` before the view name (e.g., `view: +users`) to refine existing views without modifying the original file.
 4.  **Extensions**: Use `extends` to reuse logic from other views.
+5.  **Derived Tables**: **Evaluate and nudge towards Native Derived Tables (NDTs)** (`explore_source`) over SQL Derived Tables (`sql`) where possible. When creating entity rollups or summary facts (e.g., `user_order_facts`), assess whether an existing Explore can source the data. NDTs are recommended because they minimize code drift and automatically inherit underlying LookML descriptions, formatting, and Row-Level Security (RLS). If an NDT is too complex, or if specific SQL features are required, an SDT is fully acceptable.
 
 ## 3. Best Practices
 
