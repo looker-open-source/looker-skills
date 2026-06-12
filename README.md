@@ -46,3 +46,9 @@ These skills provide specific instructions for creating and modifying LookML obj
 *   **[lookml-liquid](skills/lookml-liquid/SKILL.md)**: Using Liquid variables for dynamic SQL, HTML, and links.
 *   **[lookml-access-grants](skills/lookml-access-grants/SKILL.md)**: Implementing `access_grant` and `required_access_grants` for row-level security.
 *   **[lookml-tests](skills/lookml-tests/SKILL.md)**: Writing LookML tests for Views and Explores.
+
+## Tools
+
+### Command Line Interface
+*   **[looker-cli](skills/looker-cli/SKILL.md)**: Guide to installing, configuring, and using `looker-cli` (the Go-based replacement for `gzr`) to manage Looker resources.
+
