@@ -100,3 +100,5 @@ Example proposal:
 >
 > If this sounds good, I will proceed with setting up the Looker CLI and
 > connecting this data!"
+
+**STOP AND WAIT** for the user to confirm the goal before moving to Step 2 (`installing-looker-cli`). Do not call any tools in this turn.

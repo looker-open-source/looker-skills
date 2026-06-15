@@ -8,8 +8,9 @@ description: Use this skill when you need to create or modify a LookML Model fil
 1.  **Define the Model File**: A model file generally corresponds to a single database connection and includes Explores.
 2.  **Required Parameters**:
     - `connection: "connection_name"`: Must match a connection defined in Looker Admin.
-    - `include: "pattern"`: Specifies which view and dashboard files are available to the model.
+    - `include: "pattern"`: Specifies which view, explore, and dashboard files are available to the model.
 3.  **Best Practices**:
+    - **One Explore Per File**: DO NOT define explores directly in the `.model.lkml` file. Define them in separate `.explore.lkml` files and `include` them. This is a strict architectural constraint.
     - **Includes**: Avoid `include: "*.view"` if possible to prevent performance issues and namespace clutter. Use specific paths or wildcards like `include: "/views/users.view"` or `include: "/views/marketing/*.view"`.
     - **Label**: Use `label:` to provide a user-friendly name for the model in the UI.
     - **Week Start Day**: Set `week_start_day:` if the business logic requires a specific start day (e.g., `monday`).
@@ -55,19 +56,13 @@ Use strict patterns to control scope and performance.
 connection: "thelook"
 
 # Include all views in the views/ folder
-include: "/views/*.view"
+include: "/views/**/*.view.lkml"
+
+# Include explore files
+include: "/explores/*.explore.lkml"
 
 # Include all dashboards
 include: "/*.dashboard"
-
-# Define an Explore (usually better to define in separate files for large projects, but acceptable here for small ones)
-explore: orders {
-  join: users {
-    type: left_outer
-    sql_on: ${orders.user_id} = ${users.id} ;;
-    relationship: many_to_one
-  }
-}
 ```
 
 ## Model with Specific Settings
@@ -99,14 +94,6 @@ datagroup: ecommerce_etl {
 # Apply default caching to all Explores in this model
 persist_with: ecommerce_etl
 
-include: "/views/*.view"
-
-explore: orders {
-  # This explore inherits 'persist_with: ecommerce_etl' from the model default
-}
-
-explore: real_time_dashboard {
-  # Override with a different policy if needed
-  persist_for: "5 minutes"
-}
+include: "/views/**/*.view.lkml"
+include: "/explores/*.explore.lkml"
 ```

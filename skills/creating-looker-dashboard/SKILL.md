@@ -25,7 +25,7 @@ dashboard file in the project, import it into Looker as a User-Defined Dashboard
 
 1.  Refer back to the target dashboard goal, tables, dimensions, and measures
     established with the user during the **Step 1 (Discovery)** interview in the
-    conversation history (and subsequently created in **Step 7 (Model)**). You
+    conversation history (and subsequently created in **Step 6 (Model)**). You
     must recall these specifications to ensure the dashboard displays the
     correct data.
 2.  Locate the target Looker **Folder ID** to place the dashboard. Since this is
@@ -64,7 +64,7 @@ project:
     by the project validator and the CLI import/sync commands: `include: "/dashboards/**/*.dashboard.lookml"`
 4.  Inside the dashboard file, write the LookML dashboard definition,
     configuring tiles (elements) that display the dimensions and measures you
-    created in Step 7. It is highly recommended to use **`layout: newspaper`**
+    created in Step 6. It is highly recommended to use **`layout: newspaper`**
     (which supports grid coordinates `row`, `col`, `width`, and `height` out of
     24 columns) to prevent import errors that can happen with older `layout:
     grid` row groupings.
