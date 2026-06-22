@@ -87,3 +87,15 @@ looker-cli user me
 ```
 
 This should return a JSON object containing the authenticated user details.
+
+### 7. Pre-flight Check: Looker User Privileges
+
+Verify that your authenticated user account has the required developer and connection management permissions:
+
+1. Inspect the roles and permissions in the output of `looker-cli user me`.
+2. Confirm the account has roles containing `develop` and `manage_project_connections` permissions (or the `Admin` role as a fallback).
+3. **If privileges are insufficient**: Warn the user and pause to wait for updates:
+   > "I have authenticated successfully, but I noticed your Looker user account lacks the required 'develop' and 'manage_project_connections' permissions (or the 'Admin' role).
+   > 
+   > Without these developer permissions, I will not be able to create the database connection, project, or write LookML. Please grant these permissions to my user account in the Looker console and let me know once done so we can proceed!"
+

@@ -52,6 +52,7 @@ These skills provide specific instructions for creating and modifying LookML obj
 These skills guide new Looker developers and agents through database exploration, CLI setup, project configuration, LookML modeling, and dashboard creation.
 
 *   **[looker-developer-onboarding](skills/looker-developer-onboarding/SKILL.md)**: Orchestrator skill coordinating the e2e onboarding journey.
+*   **[onboarding-preflight-check](skills/onboarding-preflight-check/SKILL.md)**: Verifying local system prerequisites (`gcloud`, `bq`, permissions) and cloud IAM roles.
 *   **[exploring-data-for-looker](skills/exploring-data-for-looker/SKILL.md)**: Exploring BigQuery data schemas to define onboarding goals.
 *   **[installing-looker-cli](skills/installing-looker-cli/SKILL.md)**: Verifying the CLI installation.
 *   **[authenticating-looker-cli](skills/authenticating-looker-cli/SKILL.md)**: Authenticating the CLI via OAuth.
