@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.2...looker-skills-v0.2.0) (2026-07-01)
+
+
+### Features
+
+* evolve derived table skills to evaluate and nudge towards… ([#13](https://github.com/looker-open-source/looker-skills/issues/13)) ([c530d1b](https://github.com/looker-open-source/looker-skills/commit/c530d1b7efee1db49851a04563ce946adfd191a8))
+* **onboarding:** add pre-flight checks to Looker onboarding workflow ([91ea320](https://github.com/looker-open-source/looker-skills/commit/91ea3201d6eb32a80c25c8c5e8b76ee07e4c33d2))
+* **plugins:** add plugin configurations for Antigravity, Claude Code, and Codex ([e972191](https://github.com/looker-open-source/looker-skills/commit/e9721911974264381e5325b49e8a926852aecf7e))
+* **plugins:** configure release-please to sync plugin manifest versions ([6a56eac](https://github.com/looker-open-source/looker-skills/commit/6a56eacc7ed6951e334664ff9d74f8ab6a1aa2a9))
+* **skills:** add looker developer onboarding skills ([3afdeac](https://github.com/looker-open-source/looker-skills/commit/3afdeacef9151123fe2ae9db394c171c1fb70394))
+* **skills:** update installing-looker-cli to download binaries from looker-cli GitHub releases ([8c890a3](https://github.com/looker-open-source/looker-skills/commit/8c890a3175b21f6099303e7d740f6863e6a838d5))
+
+
+### Bug Fixes
+
+* remove monorepo config from release-please-config ([2532ebf](https://github.com/looker-open-source/looker-skills/commit/2532ebfcee8139f48370a4088b6c68a5fe9007fc))
+
 ## [0.1.2](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.1...looker-skills-v0.1.2) (2026-06-09)
 
 
