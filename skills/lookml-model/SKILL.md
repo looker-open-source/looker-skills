@@ -72,7 +72,7 @@ explore: orders {
 
 ## Model with Specific Settings
 
-````lookml
+```lookml
 connection: "snowlooker"
 
 label: "eCommerce Analytics"
@@ -83,6 +83,7 @@ week_start_day: monday
 # Include specific folders
 include: "/views/finance/*.view"
 include: "/views/marketing/*.view"
+```
 
 ## Model with Datagroup (Best Practice)
 

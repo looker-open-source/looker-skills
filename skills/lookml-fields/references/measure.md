@@ -14,7 +14,7 @@ description: Use this skill to create or modify LookML Measures. Covers aggregat
     -   **Ratios**: Use descriptive names (e.g., `orders_per_user`).
 2.  **Required Parameters**:
     -   `type`: `count`, `sum`, `average`, `count_distinct`, `number`, `min`, `max`.
-    -   `drill_fields`: **Required** for all non-extended measures.
+    -   `drill_fields`: **Recommended** for non-extended measures (especially type: `count` and type: `count_distinct`).
         -   Must be a defined set (preferred) or a specific list of fields.
         -   Define the set in the same view file or a dedicated sets file.
     -   `description`: **Required**. Explain the calculation logic.
@@ -23,7 +23,8 @@ description: Use this skill to create or modify LookML Measures. Covers aggregat
 
 ## 2. Common Types
 
--   **count**: Counts rows. Does NOT need a `sql` param (defaults to `COUNT(*)`).
+-   **count**: Counts rows. Does NOT need a `sql` param (uses the table's
+    primary key; cannot be overridden via the sql parameter).
 -   **count_distinct**: Counts unique values. Requires `sql` param.
 -   **sum**: Sums a numeric field. Requires `sql`.
 -   **average**: Averages a numeric field. Requires `sql`.
