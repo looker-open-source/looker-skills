@@ -37,13 +37,13 @@ claude --plugin-dir ./looker-skills
 
 To install the plugin persistently:
 ```bash
-claude plugins install ./looker-skills
+claude plugin install ./looker-skills
 ```
 
 #### Codex
 Run the installer script to clone the repository locally and register it in your personal marketplace:
 ```bash
-curl -sSL https://raw.githubusercontent.com/looker-open-source/looker-skills/main/codex-install.sh | bash
+curl -sSL -o codex-install.sh https://raw.githubusercontent.com/looker-open-source/looker-skills/main/codex-install.sh && bash codex-install.sh
 ```
 Once complete, restart Codex and open the plugin manager (`/plugins`) to verify that the **Looker Developer Skills** plugin is active.
 
