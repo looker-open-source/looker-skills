@@ -14,6 +14,39 @@ The `skills` CLI is a tool used to install and manage specialized instructions (
 npx skills add looker-open-source/looker-skills
 ```
 
+### Installing as an Agent Plugin
+
+You can install this repository as a plugin in your favorite AI coding agent to expose these LookML and onboarding skills:
+
+#### Antigravity CLI
+Install the plugin directly from the Git repository:
+```bash
+agy plugin install https://github.com/looker-open-source/looker-skills
+```
+
+#### Claude Code
+First, clone the repository locally:
+```bash
+git clone https://github.com/looker-open-source/looker-skills.git
+```
+
+To run Claude Code with the plugin loaded temporarily:
+```bash
+claude --plugin-dir ./looker-skills
+```
+
+To install the plugin persistently:
+```bash
+claude plugin install ./looker-skills
+```
+
+#### Codex
+Run the installer script to clone the repository locally and register it in your personal marketplace:
+```bash
+curl -sSL -o codex-install.sh https://raw.githubusercontent.com/looker-open-source/looker-skills/main/codex-install.sh && bash codex-install.sh
+```
+Once complete, restart Codex and open the plugin manager (`/plugins`) to verify that the **Looker Developer Skills** plugin is active.
+
 ## Core LookML Skills
 
 These skills provide specific instructions for creating and modifying LookML objects.
@@ -61,38 +94,5 @@ These skills guide new Looker developers and agents through database exploration
 *   **[creating-lookml-model](skills/creating-lookml-model/SKILL.md)**: Defining views, explores, models, and running verification queries.
 *   **[creating-looker-dashboard](skills/creating-looker-dashboard/SKILL.md)**: Creating LookML dashboard, importing UDD, and iterating on feedback.
 *   **[lookml-modeling-guidelines](skills/lookml-modeling-guidelines/SKILL.md)**: Consolidated LookML modeling best practices and CLI commands syntax.
-
-## Installing as an Agent Plugin
-
-You can install this repository as a plugin in your favorite AI coding agent to expose these LookML and onboarding skills:
-
-### 1. Antigravity CLI
-Install the plugin directly from the Git repository:
-```bash
-agy plugin install https://github.com/looker-open-source/looker-skills
-```
-
-### 2. Claude Code
-First, clone the repository locally:
-```bash
-git clone https://github.com/looker-open-source/looker-skills.git
-```
-
-To run Claude Code with the plugin loaded temporarily:
-```bash
-claude --plugin-dir ./looker-skills
-```
-
-To install the plugin persistently:
-```bash
-claude plugins install ./looker-skills
-```
-
-### 3. Codex
-Run the installer script to clone the repository locally and register it in your personal marketplace:
-```bash
-curl -sSL https://raw.githubusercontent.com/looker-open-source/looker-skills/main/codex-install.sh | bash
-```
-Once complete, restart Codex and open the plugin manager (`/plugins`) to verify that the **Looker Developer Skills** plugin is active.
 
 
