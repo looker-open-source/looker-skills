@@ -101,7 +101,6 @@ The `sql` parameter behaves differently strictly based on the field type.
 | **Measure (Num)** | **Other Measures** | **YES** | Yes (already agg) |
 | **Filter** | (Rarely used) | No | N/A |
 | **Parameter** | (None) | No | N/A |
-| **Value Format** | (None) | No | N/A |
 
 ## Reference Skills
 

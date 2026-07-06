@@ -17,8 +17,8 @@ description: Use this skill to create or modify LookML Views. Covers basic view 
 
 1.  **sql_table_name**: **Required** for standard views. Defaults are fragile; be explicit.
 2.  **Primary Key**:
-    -   Must be the **first dimension** defined in the file.
-    -   Must have `primary_key: yes`.
+    -   **Convention**: place the primary key as the first dimension for readability.
+    -   Must have `primary_key: yes` —   **Why**: essential for [symmetric aggregates](https://cloud.google.com/looker/docs/symmetric-aggregates), which Looker uses to handle JOIN row duplication correctly (prevents fanout in multi-join queries).
 3.  **Refinements**: Use `+` before the view name (e.g., `view: +users`) to refine existing views without modifying the original file.
 4.  **Extensions**: Use `extends` to reuse logic from other views.
 5.  **Derived Tables**: **Evaluate and nudge towards Native Derived Tables (NDTs)** (`explore_source`) over SQL Derived Tables (`sql`) where possible. When creating entity rollups or summary facts (e.g., `user_order_facts`), assess whether an existing Explore can source the data. NDTs are recommended because they minimize code drift and automatically inherit underlying LookML descriptions, formatting, and Row-Level Security (RLS). If an NDT is too complex, or if specific SQL features are required, an SDT is fully acceptable.
