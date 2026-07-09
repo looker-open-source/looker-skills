@@ -11,7 +11,7 @@ Do **NOT** write PDTs for simple, raw tables. Every PDT introduces database stor
 | Metric / Quadrant | Materialize as PDT | Keep as Live Query |
 | :--- | :--- | :--- |
 | **1. Query Complexity** | Query performs CPU-heavy operations (e.g., complex regex, window functions, multi-stage joins) taking **>10 seconds** to run. | Query performs simple filters, aggregates, and clean, indexed joins executing in **<3 seconds**. |
-| **2. Query Frequency** | Explore/dashboard is critical, highly concurrent, and opened hundreds of times daily by business users. | Explore is used esporadically for ad-hoc deep dives and research by data analysts. |
+| **2. Query Frequency** | Explore/dashboard is critical, highly concurrent, and opened hundreds of times daily by business users. | Explore is used sporadically for ad-hoc deep dives and research by data analysts. |
 | **3. Data Freshness** | Business accepts a cache freshness latency of hourly, daily, or batch-aligned refresh. | Business demands absolute, second-level live real-time data freshness. |
 | **4. Table Size** | The underlying raw source tables are massive (>50M rows) and unpartitioned. | The underlying tables are small (<10M rows) and perfectly indexed. |
 
