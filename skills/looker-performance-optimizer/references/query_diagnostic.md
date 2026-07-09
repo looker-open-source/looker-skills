@@ -1,4 +1,4 @@
-# Query Diagnostics & execution Plan Manual
+# Query Diagnostics & Execution Plan Manual
 
 This reference handbook details the standard operating procedures for executing performance diagnostics, analyzing physical SQL, and interpreting database execution plans (**EXPLAIN Plans**) to locate and resolve database bottlenecks.
 
