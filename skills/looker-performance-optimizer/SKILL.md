@@ -23,7 +23,7 @@ Use this mode when adding *new* explores, views, or Persistent Derived Tables (P
 
 ### Mode B: Active Performance Tuning (Reactive Brownfield)
 Use this mode when diagnosing and optimizing an active, slow dashboard or explore in production. The agent **MUST** execute this 5-phase performance pipeline:
-1.  **Aesthetic Audit & Baseline**: Swich to Developer Mode and run a baseline test of the slow dashboard tiles via Looker MCP or CLI. Record query run times, query IDs, and database costs (bytes scanned/slots used).
+1.  **Aesthetic Audit & Baseline**: Switch to Developer Mode and run a baseline test of the slow dashboard tiles via Looker MCP or CLI. Record query run times, query IDs, and database costs (bytes scanned/slots used).
 2.  **Parallel Query Profiling (Subagent-Assisted)**: Spawn specialized subagents to analyze the generated SQL and run `EXPLAIN` plans concurrently, isolating the database bottlenecks (see Section 6 for delegation rules).
 3.  **Surgical Performance Refactoring**: Apply targeted, localized edits to the LookML layer:
     *   Align caching datagroups.
