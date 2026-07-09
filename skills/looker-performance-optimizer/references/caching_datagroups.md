@@ -139,7 +139,7 @@ To prevent the first morning user from experiencing a slow dashboard load while 
     #!/bin/bash
     # 1. Fetch all tile query IDs from the dashboard
     DASHBOARD_ID="124"
-    QUERY_IDS=$(looker-cli api dashboard dashboard_elements $DASHBOARD_ID --fields query_id | grep -o '"query_id": [0-9]*' | awk '{print $2}')
+    QUERY_IDS=$(looker-cli api dashboard dashboard_dashboard_elements $DASHBOARD_ID --fields query_id | grep -o '"query_id": [0-9]*' | awk '{print $2}')
     
     # 2. Run each query in the background to warm the database and Looker cache
     for QID in $QUERY_IDS; do
