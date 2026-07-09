@@ -119,7 +119,7 @@ To allow developers or power users to bypass the cache and query the database in
       sql_always_where: 
         1=1 
         {% if orders.cache_bypass._parameter_value == 'bypass' %}
-          AND '{{ character_generator }}' = '{{ character_generator }}' -- Cache Bypass Active
+          AND '{{ "now" | date: "%Y-%m-%d %H:%M:%S" }}' = '{{ "now" | date: "%Y-%m-%d %H:%M:%S" }}' -- Cache Bypass Active
         {% endif %} ;;
     }
     ```
