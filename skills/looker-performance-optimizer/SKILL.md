@@ -55,7 +55,7 @@ Before turning a view or explore into a PDT, the agent **MUST** evaluate the que
 | Metric / Quadrant | Materialize as PDT | Keep as Live Query |
 | :--- | :--- | :--- |
 | **1. Complexity** | Query performs heavy transformations (e.g., complex regex, string parsing, window functions) or multiple join layers, taking **>10 seconds** to execute. | Query performs simple filters and clean, indexed joins, executing in **<3 seconds**. |
-| **2. Frequency** | The explore/dashboard is critical, highly concurrent, and opened hundreds of times daily by business users. | The explore is used esporadically for ad-hoc deep dives by advanced data analysts. |
+| **2. Frequency** | The explore/dashboard is critical, highly concurrent, and opened hundreds of times daily by business users. | The explore is used sporadically for ad-hoc deep dives by advanced data analysts. |
 | **3. Data Freshness** | The business requires hourly, daily, or near-real-time updates, which fits standard rebuild schedules. | The business requires absolute, second-level real-time data freshness. |
 | **4. Table Size** | The underlying raw tables are massive (>50M rows) and lack partition indexes. | The underlying tables are small (<10M rows) and perfectly indexed. |
 
