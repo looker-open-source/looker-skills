@@ -105,7 +105,7 @@ view: pdt_historical_transactions {
 
 ### Phase 3: Architectural Offloading (ELT Outsourcing)
 If a historical dataset is too massive to be compiled or backfilled even in batches within Looker's PDT layer (exceeding database resources), the agent **MUST** offload the materialization:
-*   **The Standard**: Outsourse the materialization to the database warehouse layer (using **dbt**, scheduled database queries, or database materialized views).
+*   **The Standard**: Outsource the materialization to the database warehouse layer (using **dbt**, scheduled database queries, or database materialized views).
 *   **Looker Mapping**: Define Looker as a standard, read-only view mapping directly to the database-materialized table. This keeps Looker lightweight and protects the BI server.
 
 ---
