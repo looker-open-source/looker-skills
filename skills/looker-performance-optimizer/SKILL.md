@@ -88,7 +88,7 @@ To diagnose query performance and run execution plans, the AI agent **MUST** lev
 | **Fetch Generated SQL** | `looker-cli api query query <id> --fields sql` | `query(query_id)` or `query_sql` |
 | **Run Query (Test)** | `looker-cli api query run_query --query_id <id>` | `query` or `run_dashboard` |
 | **Check Query State** | `looker-cli api query query_task ...` | `health_pulse` or `health_analyze` |
-| **Database Introspection** | *N/A* | `get_connection_table_columns` |
+| **Database Introspection** | `looker-cli api metadata connection_columns <conn> --schema_name <schema>`<br>*(See also: `connection_tables`, `connection_schemas`, `connection_databases`)* | `get_connection_table_columns`<br>*(See also: `get_connection_tables`)* |
 | **LookML Compile Check** | `looker-cli project validate <id>` | `health_analyze` |
 
 ---
