@@ -80,6 +80,13 @@ These skills provide specific instructions for creating and modifying LookML obj
 *   **[lookml-access-grants](skills/lookml-access-grants/SKILL.md)**: Implementing `access_grant` and `required_access_grants` for row-level security.
 *   **[lookml-tests](skills/lookml-tests/SKILL.md)**: Writing LookML tests for Views and Explores.
 
+### Performance & Optimization
+*   **[looker-performance-optimizer](skills/looker-performance-optimizer/SKILL.md)**: Master developer skill for auditing, diagnosing, and optimizing query performance in Looker projects, including caching, PDT strategies, and SQL profiling.
+*   **[lookml-caching-datagroups](skills/looker-performance-optimizer/references/caching_datagroups.md)**: Caching alignment strategies, ETL-triggered datagroups, and persistency tuning.
+*   **[lookml-query-diagnostics](skills/looker-performance-optimizer/references/query_diagnostic.md)**: Guidelines for running diagnostic queries, analyzing SQL explain plans, and identifying bottlenecks.
+*   **[lookml-pdt-optimization](skills/looker-performance-optimizer/references/pdt_optimization.md)**: PDT optimization standards, index/partition configurations, and incremental materializations.
+*   **[lookml-refactoring](skills/looker-performance-optimizer/references/lookml_refactoring.md)**: Field-level optimization, join pruning, and eliminating redundant calculations.
+
 ## Developer Onboarding Skills
 
 These skills guide new Looker developers and agents through database exploration, CLI setup, project configuration, LookML modeling, and dashboard creation.
