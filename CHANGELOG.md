@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.2.0...looker-skills-v0.3.0) (2026-07-15)
+
+
+### Features
+
+* add looker-performance-optimizer skill ([e913e9b](https://github.com/looker-open-source/looker-skills/commit/e913e9b8e90cc858905eccda5233141992959e75))
+* skill to setup Looker MCP server ([422b9de](https://github.com/looker-open-source/looker-skills/commit/422b9de95dfd6418c650ac59d8f0bb3a040863ce))
+
+
+### Bug Fixes
+
+* Fixes for quality issues ([b9d8b51](https://github.com/looker-open-source/looker-skills/commit/b9d8b5176007c7e9041b15c6a47edee260bb9c27))
+
 ## [0.2.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.1.2...looker-skills-v0.2.0) (2026-07-01)
 
 

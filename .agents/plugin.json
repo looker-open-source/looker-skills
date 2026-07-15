@@ -1,5 +1,5 @@
 {
   "name": "looker-skills",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "This repository contains a collection of \"skills\" designed to assist AI agents and developers in writing high-quality, standardized LookML code and guiding them through Looker onboarding. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development."
 }
