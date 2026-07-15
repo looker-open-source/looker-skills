@@ -91,12 +91,29 @@ curl -X POST "https://<YOUR_LOOKER_INSTANCE_URL>/api/4.0/oauth_client_apps/<CLIE
 > **Sample Configuration**: For a step-by-step example of configuring client OAuth credentials and client GUIDs, see [Configuring Claude Desktop with Looker OAuth](https://mcp-toolbox.dev/integrations/looker/samples/looker_claude_oauth/#configuring-claude-desktop).
 
 ### Step 2: Perform OAuth PKCE Flow / Bearer Authentication
-1. Redirect user to authorization URL:
-   `https://<YOUR_LOOKER_INSTANCE_URL>/auth/oauth?client_id=<CLIENT_GUID>&response_type=code&code_challenge=<PKCE_CHALLENGE>`
-2. Exchange authorization code for access and refresh tokens at:
-   `POST https://<YOUR_LOOKER_INSTANCE_URL>/api/4.0/oauth/token`
-3. Pass the access token in HTTP requests to the MCP server:
-   `Authorization: Bearer <ACCESS_TOKEN>`
+1. **Redirect User to Authorization URL**:
+   Generate a PKCE code verifier and SHA-256 challenge, then redirect the user to:
+   ```
+   https://<YOUR_LOOKER_INSTANCE_URL>/auth/oauth?client_id=<CLIENT_GUID>&response_type=code&code_challenge=<PKCE_CHALLENGE>&code_challenge_method=S256&redirect_uri=<REDIRECT_URI>
+   ```
+
+2. **Exchange Authorization Code for Access & Refresh Tokens**:
+   Send a `POST` request to the token endpoint including the `code_verifier` to complete the PKCE handshake:
+   ```bash
+   curl -X POST "https://<YOUR_LOOKER_INSTANCE_URL>/api/4.0/oauth/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=authorization_code" \
+     -d "client_id=<CLIENT_GUID>" \
+     -d "redirect_uri=<REDIRECT_URI>" \
+     -d "code=<AUTHORIZATION_CODE>" \
+     -d "code_verifier=<CODE_VERIFIER>"
+   ```
+
+3. **Authenticate MCP Requests**:
+   Include the acquired `access_token` in the HTTP header for requests sent to the MCP server:
+   ```http
+   Authorization: Bearer <ACCESS_TOKEN>
+   ```
 
 ---
 
@@ -105,6 +122,9 @@ curl -X POST "https://<YOUR_LOOKER_INSTANCE_URL>/api/4.0/oauth_client_apps/<CLIE
 Add the server entry to your client configuration file (e.g., `.mcp.json`, Cursor `mcp.json`, or Gemini CLI config).
 
 ### Remote / Managed MCP Configuration
+
+#### Native OAuth Clients (e.g. Claude Desktop)
+Clients that natively support OAuth flows automatically handle authorization when configured with the server URL:
 ```json
 {
   "mcpServers": {
@@ -114,8 +134,22 @@ Add the server entry to your client configuration file (e.g., `.mcp.json`, Curso
   }
 }
 ```
+> Note: For native OAuth clients, configure the client's OAuth settings using your registered `<CLIENT_GUID>` as the Client ID. See [Configuring Claude Desktop](https://mcp-toolbox.dev/integrations/looker/samples/looker_claude_oauth/#configuring-claude-desktop) for details.
 
-> Note: For MCP clients that trigger OAuth login flows natively (such as Claude Desktop or custom agents), configure the client's OAuth settings with your registered `<CLIENT_GUID>` as the Client ID. See [Configuring Claude Desktop](https://mcp-toolbox.dev/integrations/looker/samples/looker_claude_oauth/#configuring-claude-desktop) for details.
+#### Standard HTTP Clients / Custom Scripts (Bearer Token via Headers)
+For standard HTTP MCP clients or custom scripts that do not natively trigger OAuth login flows, pass the pre-acquired authentication token in the `headers` field:
+```json
+{
+  "mcpServers": {
+    "Looker": {
+      "httpUrl": "https://<YOUR_LOOKER_INSTANCE_URL>/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_OAUTH_ACCESS_TOKEN>"
+      }
+    }
+  }
+}
+```
 
 ### Local / Standalone MCP Configuration
 
@@ -228,9 +262,9 @@ The Looker MCP Server exposes **45 tools** categorized into 6 functional areas:
 
 ## 5. Security & Authorization Guidelines
 
-1. **User Scope Enforcement**: Every MCP tool execution operates within the security context of the authenticated Looker user.
-2. **Access Control**: Row-level security (Access Grants), Model Sets, and User Roles defined in Looker automatically restrict data access via MCP.
-3. **Dev Mode Isolation**: Always toggle `dev_mode` to `true` when editing project files to isolate edits to personal developer branches before staging and committing.
+1. **User Scope Enforcement & OAuth Context**: User-level scope enforcement and access controls (e.g., Access Grants, Model Sets, and User Roles) apply when using the **Looker-Managed MCP Server** (which authenticates users via OAuth) or when a standalone server is configured with user-specific OAuth tokens.
+2. **Static API Credential Warning**: If the standalone/local MCP server is deployed with static environment credentials (`LOOKER_CLIENT_ID` and `LOOKER_CLIENT_SECRET`, e.g., as a shared Cloud Run service), all tool executions run under the security context of that single API credential pair. This may bypass individual user-level access controls and row-level security rules.
+3. **Dev Mode Isolation**: Always toggle `dev_mode` to `true` when editing project files to isolate edits to personal developer workspace branches before staging and committing.
 
 ---
 
