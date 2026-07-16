@@ -316,7 +316,8 @@ Combine `--template` with piping or file redirection to construct and submit POS
 2. **Populate required fields** in `new_project.json`:
    ```json
    {
-     "name": "my_new_project"
+     "name": "my_new_project",
+     "pull_request_mode": "recommended"
    }
    ```
 
