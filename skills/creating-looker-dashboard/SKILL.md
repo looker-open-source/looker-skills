@@ -51,19 +51,26 @@ project:
     ```
 
 2.  **Generate Dashboard LookML**: Write the LookML dashboard definition locally
-    (e.g. to `/tmp/{dashboard_name}.dashboard.lookml`).
+    (e.g. to `/tmp/{dashboard_name}.dashboard.lookml`). Ensure the file uses the
+    `.dashboard.lookml` extension.
 
 3.  **Upload the Dashboard File**: Upload the file to your Looker project
-    dashboards folder:
+    dashboards folder (path convention
+    `dashboards/{dashboard_name}.dashboard.lookml`):
 
     ```bash
     looker-cli project file create {project_id} dashboards/{dashboard_name}.dashboard.lookml /tmp/{dashboard_name}.dashboard.lookml
     ```
-3.  **Critical Inclusion Step**: You **MUST** include the dashboard files in
+
+4.  **Critical Inclusion Step**: You **MUST** include the dashboard files in
     your LookML model file (`{model_name}.model.lkml`) so they can be discovered
-    by the project validator and the CLI import/sync commands: `lkml include:
-    "/dashboards/**/*.dashboard.lookml"`
-4.  Inside the dashboard file, write the LookML dashboard definition,
+    by the project validator and the CLI import/sync commands:
+
+    ```lkml
+    include: "/dashboards/**/*.dashboard.lookml"
+    ```
+
+5.  Inside the dashboard file, write the LookML dashboard definition,
     configuring tiles (elements) that display the dimensions and measures you
     created in Step 7. It is highly recommended to use **`layout: newspaper`**
     (which supports grid coordinates `row`, `col`, `width`, and `height` out of

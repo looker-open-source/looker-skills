@@ -17,11 +17,11 @@ mkdir -p "${SANDBOX_DIR}"
 
 # Symlink all commands from /usr/bin and /bin, excluding gcloud and bq
 for dir in /usr/bin /bin; do
-  if [ -d "$dir" ]; then
+  if [[ -d "$dir" ]]; then
     for file in "$dir"/*; do
-      if [ -f "$file" ] && [ -x "$file" ]; then
+      if [[ -f "$file" ]] && [[ -x "$file" ]]; then
         name=$(basename "$file")
-        if [ "$name" != "gcloud" ] && [ "$name" != "bq" ]; then
+        if [[ "$name" != "gcloud" ]] && [[ "$name" != "bq" ]]; then
           ln -sf "$file" "${SANDBOX_DIR}/${name}"
         fi
       fi
@@ -47,7 +47,7 @@ mock_cmd() {
   cat <<EOF > "${MOCK_BIN_DIR}/${cmd_name}"
 #!/bin/bash
 exit_code=${exit_code}
-if [ \$exit_code -ne 0 ]; then
+if [[ \$exit_code -ne 0 ]]; then
   exit \$exit_code
 fi
 cat <<'INNER_EOF'
@@ -75,7 +75,7 @@ echo "=== Running Pre-flight Check Tests ==="
   "${PREFLIGHT_SH}" --mode system --install-dir "${TEST_TMP_DIR}" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when gcloud is missing"
     exit 1
   fi
@@ -103,7 +103,7 @@ EOF
   "${PREFLIGHT_SH}" --mode system --install-dir "${TEST_TMP_DIR}" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when gcloud is not authenticated"
     exit 1
   fi
@@ -129,7 +129,7 @@ EOF
   "${PREFLIGHT_SH}" --mode system --install-dir "${TEST_TMP_DIR}" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when bq is missing"
     exit 1
   fi
@@ -140,7 +140,7 @@ EOF
 # Test 4: install-dir not writable
 (
   echo "Test 4: install-dir not writable..."
-  if [ "$(id -u)" -eq 0 ]; then
+  if [[ "$(id -u)" -eq 0 ]]; then
     echo "SKIP (running as root)"
     exit 0
   fi
@@ -153,7 +153,7 @@ EOF
   rc=$?
   chmod 700 "${NON_WRITABLE_DIR}" # cleanup permission
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when install-dir is not writable"
     exit 1
   fi
@@ -169,7 +169,7 @@ EOF
   "${PREFLIGHT_SH}" --mode system --install-dir "${TEST_TMP_DIR}" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -ne 0 ]; then
+  if [[ $rc -ne 0 ]]; then
     echo "FAIL: Expected exit code 0 when all system checks pass"
     cat "${TEST_TMP_DIR}/out.log"
     exit 1
@@ -194,7 +194,7 @@ EOF
   "${PREFLIGHT_SH}" --mode iam --looker-project "my-looker-proj" --bq-project "my-bq-proj" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when Looker service account has no IAM roles"
     exit 1
   fi
@@ -221,7 +221,7 @@ EOF
   "${PREFLIGHT_SH}" --mode iam --looker-project "my-looker-proj" --bq-project "my-bq-proj" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when Looker service account has partial roles"
     exit 1
   fi
@@ -249,7 +249,7 @@ EOF
   "${PREFLIGHT_SH}" --mode iam --looker-project "my-looker-proj" --bq-project "my-bq-proj" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -ne 0 ]; then
+  if [[ $rc -ne 0 ]]; then
     echo "FAIL: Expected exit code 0 when Looker service account has all roles"
     cat "${TEST_TMP_DIR}/out.log"
     exit 1
@@ -275,7 +275,7 @@ EOF
   "${PREFLIGHT_SH}" --mode iam --looker-project "my-looker-proj" --bq-project "my-bq-proj" > "${TEST_TMP_DIR}/out.log" 2>&1
   rc=$?
   set -e
-  if [ $rc -eq 0 ]; then
+  if [[ $rc -eq 0 ]]; then
     echo "FAIL: Expected non-zero exit code when missing serviceUsageConsumer role"
     exit 1
   fi

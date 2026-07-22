@@ -20,7 +20,8 @@ Creates a new Looker project and configures it with a local bare Git repository.
 ### 1. Switch to the Development Workspace
 
 Switch to the 'dev' workspace (required for creating or modifying project
-configurations):
+configurations). It is recommended to chain this with project operations to
+guarantee dev workspace persistence:
 
 ```bash
 looker-cli session update dev
@@ -36,10 +37,11 @@ Write the project name payload to `/tmp/project_create.json`:
 }
 ```
 
-Create the Looker project using the project import command:
+Create the Looker project using the project import command (chained with
+`session update dev`):
 
 ```bash
-looker-cli project import /tmp/project_create.json
+looker-cli session update dev && looker-cli project import /tmp/project_create.json
 ```
 
 > [!NOTE] Use a unique, URL-safe name for `{project_id}` (e.g.,
@@ -58,7 +60,7 @@ Write the Git configuration payload to `/tmp/project_git.json`:
 Configure the project to use a local bare Git repository:
 
 ```bash
-looker-cli project update {project_id} /tmp/project_git.json
+looker-cli session update dev && looker-cli project update {project_id} /tmp/project_git.json
 ```
 
 > [!NOTE] This sets up a local Git repository on the Looker server, which is
