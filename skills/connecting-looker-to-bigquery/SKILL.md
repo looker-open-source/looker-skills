@@ -33,36 +33,51 @@ Identify the following parameters from Step 1 (Discovery):
 
 ### 2. Pre-flight Check: Looker Service Account IAM Roles
 
-Verify that the Looker Core service account has the necessary IAM roles on the target GCP project (`BigQuery Data Viewer`, `BigQuery Job User`, and `Service Usage Consumer`):
+Verify that the Looker Core service account has the necessary IAM roles on the
+target GCP project (`BigQuery Data Viewer`, `BigQuery Job User`, and `Service
+Usage Consumer`):
 
-> [!IMPORTANT]
-> When running queries through the BigQuery connection from the Looker instance, Google Cloud requires the Looker service account to have permission to compute/use resources within the project where BigQuery is billed. Without the `roles/serviceusage.serviceUsageConsumer` role (which contains `serviceusage.services.use`), Looker cannot authenticate or dispatch query jobs to BigQuery, resulting in a `400 Bad Request` error.
+> [!IMPORTANT] When running queries through the BigQuery connection from the
+> Looker instance, Google Cloud requires the Looker service account to have
+> permission to compute/use resources within the project where BigQuery is
+> billed. Without the `roles/serviceusage.serviceUsageConsumer` role (which
+> contains `serviceusage.services.use`), Looker cannot authenticate or dispatch
+> query jobs to BigQuery, resulting in a `400 Bad Request` error.
 
-1. Run the IAM pre-flight check script, passing the Looker GCP project ID (where the Looker Core instance resides) and the BigQuery GCP project ID:
-   ```bash
-   ./skills/onboarding-preflight-check/scripts/preflight_check.sh \
-     --mode iam \
-     --looker-project {looker_gcp_project_id} \
-     --bq-project {bigquery_gcp_project_id}
-   ```
-2. If the check fails because roles are missing, first obtain the Looker GCP project number (or copy the exact service account email from the preflight check error output):
-   ```bash
-   project_number=$(gcloud projects describe {looker_gcp_project_id} --format="value(projectNumber)")
-   ```
-   Then run the following commands to grant the required roles to the Looker service account:
-   ```bash
-   gcloud projects add-iam-policy-binding {bigquery_gcp_project_id} \
-     --member="serviceAccount:service-${project_number}@gcp-sa-looker.iam.gserviceaccount.com" \
-     --role="roles/bigquery.dataViewer"
-   
-   gcloud projects add-iam-policy-binding {bigquery_gcp_project_id} \
-     --member="serviceAccount:service-${project_number}@gcp-sa-looker.iam.gserviceaccount.com" \
-     --role="roles/bigquery.jobUser"
+1.  Run the IAM pre-flight check script, passing the Looker GCP project ID
+    (where the Looker Core instance resides) and the BigQuery GCP project ID:
 
-   gcloud projects add-iam-policy-binding {bigquery_gcp_project_id} \
-     --member="serviceAccount:service-${project_number}@gcp-sa-looker.iam.gserviceaccount.com" \
-     --role="roles/serviceusage.serviceUsageConsumer"
-   ```
+    ```bash
+    ./skills/onboarding-preflight-check/scripts/preflight_check.sh \
+      --mode iam \
+      --looker-project {looker_gcp_project_id} \
+      --bq-project {bigquery_gcp_project_id}
+    ```
+
+2.  If the check fails because roles are missing, first obtain the Looker GCP
+    project number (or copy the exact service account email from the preflight
+    check error output):
+
+    ```bash
+    project_number=$(gcloud projects describe {looker_gcp_project_id} --format="value(projectNumber)")
+    ```
+
+    Then run the following commands to grant the required roles to the Looker
+    service account:
+
+    ```bash
+    gcloud projects add-iam-policy-binding {bigquery_gcp_project_id} \
+      --member="serviceAccount:service-${project_number}@gcp-sa-looker.iam.gserviceaccount.com" \
+      --role="roles/bigquery.dataViewer"
+
+    gcloud projects add-iam-policy-binding {bigquery_gcp_project_id} \
+      --member="serviceAccount:service-${project_number}@gcp-sa-looker.iam.gserviceaccount.com" \
+      --role="roles/bigquery.jobUser"
+
+    gcloud projects add-iam-policy-binding {bigquery_gcp_project_id} \
+      --member="serviceAccount:service-${project_number}@gcp-sa-looker.iam.gserviceaccount.com" \
+      --role="roles/serviceusage.serviceUsageConsumer"
+    ```
 
 ### 3. Create the Connection Payload File
 

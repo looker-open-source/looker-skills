@@ -96,7 +96,8 @@ Write the LookML model definition and upload it to the project root:
 ### 4. Configure Model Connection in Looker (CLI)
 
 Map your LookML model to the allowed database connection in Looker using the
-Looker CLI.
+Looker CLI. **This step is mandatory** for Looker to register the model
+configuration mapping and enable querying.
 
 1.  Write the model configuration payload directly to `/tmp/model_config.json`:
 
@@ -108,7 +109,7 @@ Looker CLI.
     }
     ```
 
-2.  Register the model configuration mapping:
+2.  **Register the model configuration mapping (Mandatory Step)**:
 
     ```bash
     looker-cli model import /tmp/model_config.json
@@ -166,5 +167,5 @@ Test your connection and LookML model by running a verification query:
     ```
 
 4.  Confirm that the query executes successfully and returns data without
-    database or SQL errors. Refer to **`lookml-modeling-guidelines`** (Section
-    3) for verification guidelines.
+    database or SQL errors. Refer to **`lookml-modeling-guidelines`**
+    (Section 3) for verification guidelines.
