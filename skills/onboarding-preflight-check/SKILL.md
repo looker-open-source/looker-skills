@@ -3,6 +3,10 @@ name: onboarding-preflight-check
 description: >-
   Looker Developer Onboarding: Step 1.
   Verifies system prerequisites (gcloud, bq, write permissions) and resolves issues by installing components or prompting the user to authenticate.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Looker Developer Onboarding: Pre-flight Check

@@ -2,6 +2,10 @@
 name: using-looker-cli
 description: >-
   Comprehensive guide for using `looker-cli`. Covers profile setup and defaults, using the --profile flag, persistent logins (`session login`), command discovery (`meta tree` & `meta search`), and request body inspection (`--describe-body` & `--template`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Using Looker CLI (`looker-cli`)

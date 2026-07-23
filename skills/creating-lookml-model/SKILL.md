@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 6.
   Creates LookML views and models based on the user's goals, maps model connections, validates LookML, and runs verification queries.
   Only execute this after Step 5 (Project Setup using `setting-up-looker-project`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Creating LookML Model, Views & Writing LookML

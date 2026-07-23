@@ -1,6 +1,10 @@
 ---
 name: lookml-fields
 description: Overview of LookML field types (Dimension, Measure, Filter, Parameter) and the role of the `sql` parameter in each. Use this skill to choose the right field type for your data modeling needs.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Instructions

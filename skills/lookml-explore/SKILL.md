@@ -1,6 +1,10 @@
 ---
 name: lookml-explore
 description: Use this skill when you need to create or modify a LookML Explore. This includes defining the Explore, joins, access grants, and basic configuration.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Instructions

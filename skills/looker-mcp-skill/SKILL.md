@@ -2,6 +2,10 @@
 name: looker-mcp-skill
 description: >-
   Guide for connecting to and using the Looker MCP Server. Explains how to access the Looker MCP server, set up Looker-managed vs local/standalone deployment, configure OAuth authentication, and catalog available MCP tools.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Looker MCP Server Skill

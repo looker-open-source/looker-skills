@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 7 (Final Step).
   Creates a LookML dashboard in the project, imports it as a user-defined dashboard (UDD) in Looker, and iteratively refines it based on user feedback by syncing changes.
   Only execute this after Step 6 (Model Setup using `creating-lookml-model`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Creating Looker Dashboard & Feedback Loop

@@ -1,6 +1,10 @@
 ---
 name: lookml-liquid
 description: Use this skill to use Liquid variables in LookML for dynamic SQL, HTML, and Links, including advanced patterns for query optimization.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Instructions

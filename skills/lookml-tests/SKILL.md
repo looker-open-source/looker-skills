@@ -1,6 +1,10 @@
 ---
 name: lookml-tests
 description: Standards and best practices for writing LookML tests to ensure data integrity, accuracy, and logic validation.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # LookML Testing Standards

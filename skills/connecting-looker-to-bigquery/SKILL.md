@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 4.
   Creates a database connection in Looker to Google BigQuery.
   Only execute this after Step 3 (CLI Authentication using `authenticating-looker-cli`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Connecting Looker to BigQuery

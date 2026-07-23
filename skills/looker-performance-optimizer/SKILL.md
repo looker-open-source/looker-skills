@@ -1,6 +1,10 @@
 ---
 name: looker-performance-optimizer
 description: Master developer skill for auditing, diagnosing, and optimizing query performance in Looker projects. Enforces caching alignment, PDT materialization strategies, and parallel subagent SQL profiling.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Looker Performance Optimizer
