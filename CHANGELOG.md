@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.3.0...looker-skills-v0.4.0) (2026-07-23)
+
+
+### Features
+
+* using-looker-cli skill ([47d6742](https://github.com/looker-open-source/looker-skills/commit/47d6742717429d9b60d4dd8c2d41798e908b7bc4))
+
+
+### Bug Fixes
+
+* add license and metadata to frontmatter ([2634ff3](https://github.com/looker-open-source/looker-skills/commit/2634ff33f08b70ac7e98e3d0df2b4a1ee4e68db4))
+
 ## [0.3.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.2.0...looker-skills-v0.3.0) (2026-07-15)
 
 
