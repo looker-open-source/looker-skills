@@ -1,6 +1,10 @@
 ---
 name: lookml-refinements
 description: Deep dive into LookML includes, refinements (layering), and project structure best practices. Essential for mastering Looker's object-oriented capabilities.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Instructions

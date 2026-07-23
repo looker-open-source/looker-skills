@@ -1,6 +1,10 @@
 ---
 name: lookml-access-grants
 description: Use this skill to create Access Grants for row-level or object-level security.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Instructions

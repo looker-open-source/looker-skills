@@ -1,6 +1,10 @@
 ---
 name: lookml-sets
 description: Guide to using LookML sets for grouping fields, controlling visibility, and managing drill paths.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # LookML Sets

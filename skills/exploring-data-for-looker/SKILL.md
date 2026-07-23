@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 1.
   Guides the agent to explore BigQuery data and define the onboarding goal.
   This is the first active step, to be executed immediately after reading the parent orchestrator `looker-developer-onboarding`.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Onboarding Interview & Data Exploration

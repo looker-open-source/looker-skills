@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 3.
   Authenticates the Looker CLI using OAuth.
   Only execute this after Step 2 (CLI Verification using `installing-looker-cli`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Authenticating Looker CLI

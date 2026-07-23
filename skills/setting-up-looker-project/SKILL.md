@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 5.
   Creates a new Looker project and configures Git.
   Only execute this after Step 4 (BigQuery Connection using `connecting-looker-to-bigquery`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Setting Up Looker Project

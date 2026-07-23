@@ -4,6 +4,10 @@ description: >-
   Looker Developer Onboarding: Step 2.
   Verifies that the Looker CLI is available in the PATH, or installs it from GitHub Releases if missing.
   Only execute this after Step 1 (Data Discovery using `exploring-data-for-looker`).
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Installing Looker CLI

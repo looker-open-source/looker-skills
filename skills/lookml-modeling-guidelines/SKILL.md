@@ -1,6 +1,10 @@
 ---
 name: lookml-modeling-guidelines
 description: Guidelines for LookML modeling and command execution.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # LookML Modeling Guidelines

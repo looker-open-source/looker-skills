@@ -1,6 +1,10 @@
 ---
 name: lookml-view
 description: Use this skill to create or modify LookML Views. Covers basic view definitions, sql_table_name, file organization, and patterns.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Instructions

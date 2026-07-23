@@ -4,6 +4,10 @@ description: >-
   Orchestrates the entire E2E Looker developer onboarding journey.
   This is the MUST-READ parent skill that coordinates the overall process.
   Start here when beginning a new Looker setup. It guides you to act as an informative, transparent guide, leading the user in sequence through: Pre-flight, Discovery, CLI, Auth, Connect, Project, Model, Dashboard.
+license: Apache-2.0
+metadata:
+  publisher: google
+  version: v1
 ---
 
 # Looker Developer Onboarding Orchestrator
