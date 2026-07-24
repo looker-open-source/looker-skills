@@ -1,0 +1,76 @@
+name: LookML Style Linter
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: Lint LookML Code Style
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install lkml
+
+    - name: Run LookML Parser Validation
+      run: |
+        echo "=================================================================="
+        echo "Running lkml parser checks on all .lkml and .view files..."
+        echo "=================================================================="
+        # This parses all LookML files in the repository.
+        # If any file contains syntax errors or invalid formatting that lkml cannot parse,
+        # the parser will exit with a non-zero code, failing the build.
+        find . -name "*.lkml" -o -name "*.view" | xargs -I {} sh -c 'echo "Parsing: {}" && lkml {} > /dev/null'
+
+    - name: Enforce Code Style & Conventions
+      run: |
+        echo "=================================================================="
+        echo "Enforcing custom naming conventions and style rules..."
+        echo "=================================================================="
+        
+        # Rule 1: Enforce snake_case naming for all view and explore filenames
+        # (Lowercase letters, numbers, and underscores only)
+        invalid_files=0
+        for file in $(find . -name "*.view.lkml" -o -name "*.explore.lkml"); do
+          filename=$(basename "$file")
+          # Strip extension
+          name="${filename%%.*}"
+          if [[ ! "$name" =~ ^[a-z0-9_]+$ ]]; then
+            echo "❌ Style Error: Filename '$filename' is not in snake_case! Path: $file"
+            invalid_files=$((invalid_files + 1))
+          fi
+        done
+
+        # Rule 2: Verify all files end with a newline character
+        for file in $(find . -name "*.lkml" -o -name "*.view" -o -name "*.explore"); do
+          if [ -f "$file" ]; then
+            if [ "$(tail -c 1 "$file" | wc -l)" -eq 0 ]; then
+              echo "❌ Style Error: File '$file' must end with a newline character!"
+              invalid_files=$((invalid_files + 1))
+            fi
+          fi
+        done
+
+        if [ "$invalid_files" -gt 0 ]; then
+          echo "=================================================================="
+          echo "❌ Linter failed: $invalid_files style errors found. Please fix them."
+          echo "=================================================================="
+          exit 1
+        else
+          echo "=================================================================="
+          echo "✓ Linter passed: All style conventions met successfully!"
+          echo "=================================================================="
+        fi
