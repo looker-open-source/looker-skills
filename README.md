@@ -80,6 +80,9 @@ These skills provide specific instructions for creating and modifying LookML obj
 *   **[lookml-access-grants](skills/lookml-access-grants/SKILL.md)**: Implementing `access_grant` and `required_access_grants` for row-level security.
 *   **[lookml-tests](skills/lookml-tests/SKILL.md)**: Writing LookML tests for Views and Explores.
 
+### Architecture & Project Design
+*   **[looker-architect](skills/looker-architect/SKILL.md)**: Master developer skill for scaffolding, building, refactoring, validating, and auditing enterprise LookML projects. Enforces raw/refined view separation, functional field sequencing, visual drilling, native tabs, and self-healing SQL loops.
+
 ### Performance & Optimization
 *   **[looker-performance-optimizer](skills/looker-performance-optimizer/SKILL.md)**: Master developer skill for auditing, diagnosing, and optimizing query performance in Looker projects, including caching, PDT strategies, and SQL profiling.
 *   **[lookml-caching-datagroups](skills/looker-performance-optimizer/references/caching_datagroups.md)**: Caching alignment strategies, ETL-triggered datagroups, and persistency tuning.
@@ -101,5 +104,3 @@ These skills guide new Looker developers and agents through database exploration
 *   **[creating-lookml-model](skills/creating-lookml-model/SKILL.md)**: Defining views, explores, models, and running verification queries.
 *   **[creating-looker-dashboard](skills/creating-looker-dashboard/SKILL.md)**: Creating LookML dashboard, importing UDD, and iterating on feedback.
 *   **[lookml-modeling-guidelines](skills/lookml-modeling-guidelines/SKILL.md)**: Consolidated LookML modeling best practices and CLI commands syntax.
-
-

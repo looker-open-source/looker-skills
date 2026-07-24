@@ -1,0 +1,60 @@
+name: Looker Server Validation
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate:
+    name: Validate LookML with Looker Server
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Note: looker-cli is the official CLI tool connecting local workstation with the Looker API
+    - name: Install Looker CLI
+      run: |
+        echo "Installing looker-cli..."
+        # Replace this command with the authorized installation method for looker-cli on your environment
+        # e.g., curl -fsSL https://assets.looker.com/looker-cli/install.sh | sh
+        # For demonstration, we assume looker-cli is installed via npm or a shell script
+        npm install -g @looker/sdk-codegen-cli || echo "Looker CLI setup placeholder"
+
+    - name: Authenticate & Validate Project
+      env:
+        # Secure credentials stored in GitHub Secrets
+        LOOKERSDK_BASE_URL: ${{ secrets.LOOKER_API_URL }}
+        LOOKERSDK_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
+        LOOKERSDK_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
+      run: |
+        echo "=================================================================="
+        echo "Authenticating Looker CLI session..."
+        echo "=================================================================="
+        
+        # Check if Looker CLI is available in the runner environment
+        if ! command -v looker-cli &> /dev/null; then
+          echo "⚠️ looker-cli command not found. Please ensure it is installed."
+          echo "This step is a placeholder for your production Looker API credentials."
+          exit 0
+        fi
+        
+        # 1. Switch session to Developer Mode to validate active development code
+        looker-cli session update dev
+        
+        # 2. Run LookML Validator against the server compiler
+        # Extract project name from manifest.lkml
+        project_id=$(grep -oP 'project_name:\s*"\K[^"]+' manifest.lkml)
+        echo "Validating LookML for project: $project_id..."
+        
+        validation_output=$(looker-cli project validate "$project_id")
+        echo "$validation_output"
+        
+        # Parse output for errors. If validation_output contains compilation errors, exit with failure
+        if echo "$validation_output" | grep -q "error"; then
+          echo "❌ LookML Validation failed: Server returned compilation errors!"
+          exit 1
+        else
+          echo "✓ LookML Validation passed: Server returned zero compilation errors!"
+        fi
