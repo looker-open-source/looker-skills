@@ -1,0 +1,4 @@
+fastapi
+uvicorn[standard]
+google-cloud-geminidataanalytics
+google-cloud-bigquery
