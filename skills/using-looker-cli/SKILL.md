@@ -332,7 +332,100 @@ Combine `--template` with piping or file redirection to construct and submit POS
 
 ---
 
-## 5. Quick Reference Cheat Sheet
+## 5. File Synchronization, Validation & Querying
+
+### Automatic File Synchronization (VS Code Looker Extension)
+
+In this development environment, **you do NOT need to manually upload or sync files via the CLI**. 
+
+The **Looker VS Code Extension** is active and automatically synchronizes all local file edits, creations, and deletions directly to your Looker Dev workspace in real time when files are saved.
+
+*   **Simply edit or create files on local disk** in your workspace directory (e.g., `views/`, `models/`).
+*   **Do NOT execute** `looker-cli project file create` or `looker-cli project file update` unless operating in a headless non-VS Code environment where automated syncing is unavailable.
+*   To inspect the remote file content on Looker if needed:
+    ```bash
+    looker-cli project file cat <project_id> <filepath_in_project>
+    ```
+
+### Validating LookML
+
+Validate the project against the Looker LookML compiler:
+
+```bash
+looker-cli project validate <project_id>
+```
+
+Returns `Project is valid.` on success, or lists compilation errors with line numbers and descriptions.
+
+### Verifying Queries via CLI
+
+Verify that queries against your explores run cleanly on the target database (BigQuery):
+
+```bash
+# 1. Inspect generated SQL
+echo '{"model":"<model_name>","view":"<explore_name>","fields":["<explore>.<field>"]}' | looker-cli api query run_inline_query sql -
+
+# 2. Execute query and return JSON rows
+echo '{"model":"<model_name>","view":"<explore_name>","fields":["<explore>.<field>"],"limit":"5"}' | looker-cli api query run_inline_query json -
+```
+
+---
+
+## 6. Resetting the Looker Dev Environment
+
+When switching tasks, abandoning dirty experimental edits, or realigning your personal Looker dev branch with production or remote Git:
+
+### Reset Dev Branch to Match Production
+
+Discards all uncommitted changes on your personal Looker dev branch and resets it to the current deployed production state:
+
+```bash
+looker-cli session update dev && looker-cli api project reset_project_to_production <project_id>
+```
+
+### Reset Dev Branch to Match Remote Git Branch
+
+Discards local Looker uncommitted changes and resets the dev branch to the head of the corresponding remote Git branch:
+
+```bash
+looker-cli session update dev && looker-cli api project reset_project_to_remote <project_id>
+```
+
+---
+
+## 7. Git & Webhook Production Deployment Workflow
+
+Production deployment in this environment is driven by Git and Looker Deploy Webhooks:
+
+1. **Local Development & Validation**:
+   - Modify LookML files locally in VS Code (auto-synced to Looker dev mode).
+   - Validate LookML: `looker-cli project validate <project_id>`
+   - Run test query: `echo '...' | looker-cli api query run_inline_query json -`
+
+2. **Commit & Push to Remote**:
+   - Stage and commit your changes in git:
+     ```bash
+     git add .
+     git commit -m "feat(lookml): describe your changes"
+     git push origin <branch_name>
+     ```
+
+3. **Merge Pull Request on GitHub**:
+   - Open and merge the Pull Request into `master` on GitHub.
+
+4. **Automated Production Deployment via Webhook**:
+   - GitHub notifies Looker via the configured deploy webhook.
+   - Looker automatically pulls the latest commit from `master` into Production mode.
+
+5. **Realign Dev Branch**:
+   - Reset your Looker dev workspace to match production:
+     ```bash
+     looker-cli api project reset_project_to_production <project_id>
+     ```
+
+---
+
+## 8. Quick Reference Cheat Sheet
 
 | Task | Command |
 | :--- | :--- |
@@ -343,8 +436,15 @@ Combine `--template` with piping or file redirection to construct and submit POS
 | **Persistent Login** | `looker-cli session login` |
 | **OAuth PKCE Login** | `looker-cli session login --oauth` |
 | **Inspect Session** | `looker-cli session get` |
+| **Set Dev Workspace** | `looker-cli session update dev` |
+| **Push File to Looker** | `looker-cli project file update <project_id> <path> <local_file>` |
+| **Create File on Looker** | `looker-cli project file create <project_id> <path> <local_file>` |
+| **Validate LookML** | `looker-cli project validate <project_id>` |
+| **Run Inline Query (SQL)** | `echo '{"model":"...","view":"...","fields":["..."]}' \| looker-cli api query run_inline_query sql -` |
+| **Run Inline Query (JSON)** | `echo '{"model":"...","view":"...","fields":["..."]}' \| looker-cli api query run_inline_query json -` |
+| **Reset Dev to Production** | `looker-cli api project reset_project_to_production <project_id>` |
+| **Reset Dev to Remote Git** | `looker-cli api project reset_project_to_remote <project_id>` |
 | **Command Tree** | `looker-cli meta tree` |
-| **Tree by Resource** | `looker-cli meta tree --noun project` |
 | **Search Commands** | `looker-cli meta search <keyword>` |
 | **View Request Schema** | `looker-cli api <group> <endpoint> --describe-body` |
 | **Generate JSON Template** | `looker-cli api <group> <endpoint> --template` |

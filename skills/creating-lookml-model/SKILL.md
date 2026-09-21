@@ -42,60 +42,25 @@ and **Tables** (fact and dimension) agreed upon. 3. The target **Metrics**
 explores, and models must directly map to the schema and tables you discovered
 in Step 1.*
 
-### 2. Create and Edit View Files (CLI)
+### 2. Create and Edit View Files (Local Workspace)
 
-For each BigQuery table required to build the target dashboard, you must write
-the LookML view definition and upload it to the project:
+For each BigQuery table required to build the target dashboard, create and edit the LookML view definitions directly in the project workspace:
 
-1.  **Create the `views` directory**: If the `views/` directory does not yet
-    exist in the project, create it using the Looker CLI:
+1.  **Direct File Creation**: Write the view file directly into the local `views/` directory (e.g. `views/{table_name}.view.lkml`).
+2.  **Automatic Synchronization**: The Looker VS Code Extension automatically synchronizes local file saves with the Looker dev workspace in real time. **You do NOT need to run CLI file upload commands.**
+3.  **Guideline Reference**: You **MUST** consult and strictly follow the view creation best practices in the **`lookml-modeling-guidelines`** skill (Section 4 & 7.C) for all view definitions, primary key rules, and field reference specifications.
 
-    ```bash
-    looker-cli project directory create {project_id} views
-    ```
+### 3. Create/Update the Model File (Local Workspace)
 
-2.  **Generate View Content**: Retrieve the table columns (from Discovery) and
-    write the LookML view file content locally (e.g. to
-    `/tmp/{table_name}.view.lkml`). Follow the primary key and field definitions
-    guidelines.
+Write or edit the LookML model definition directly at the project root (`{model_name}.model.lkml`):
 
-3.  **Upload the View File**: Upload the file to your Looker project views
-    folder:
-
-    ```bash
-    looker-cli project file create {project_id} views/{table_name}.view.lkml /tmp/{table_name}.view.lkml
-    ```
-
-4.  **Guideline Reference**: You **MUST** consult and strictly follow the view
-    creation best practices in the **`lookml-modeling-guidelines`** skill
-    (Section 4 & 6.C) for all view definitions, primary key rules, and field
-    reference specifications.
-
-### 3. Create/Update the Model File (CLI)
-
-Write the LookML model definition and upload it to the project root:
-
-1.  Write the model LookML structure (defining explores, joins, and includes) to
-    a local file (e.g., `/tmp/{model_name}.model.lkml`).
+1.  **Define Model Structure**:
     -   Specify your database connection: `connection: "{connection_name}"`.
-    -   Include the specific view files required (e.g., `include:
-        "/views/orders.view.lkml"`, `include: "/views/users.view.lkml"`). Avoid
-        using broad wildcards like `"/views/**/*.view.lkml"` to prevent
-        performance bloat and compile errors.
-    -   **Critical for Dashboards**: If planning to create LookML dashboards,
-        you **MUST** include them in the model file by adding `include:
-        "/dashboards/**/*.dashboard.lookml"`.
+    -   Include the specific view files required (e.g., `include: "/views/orders.view.lkml"`, `include: "/views/users.view.lkml"`). Avoid using broad wildcards like `"/views/**/*.view.lkml"` to prevent performance bloat and compile errors.
+    -   **Critical for Dashboards**: If planning to create LookML dashboards, you **MUST** include them in the model file by adding `include: "/dashboards/**/*.dashboard.lookml"`.
     -   Define explores and joins.
-2.  Upload the model file to your Looker project root:
-
-    ```bash
-    looker-cli project file create {project_id} {model_name}.model.lkml /tmp/{model_name}.model.lkml
-    ```
-
-3.  **Guideline Reference**: You **MUST** consult and strictly follow the model
-    and explore best practices in the **`lookml-modeling-guidelines`** skill
-    (Section 6.A & 6.B) for all include declarations, explore structures, and
-    explicit join relationship definitions.
+2.  **Automatic Synchronization**: Saving the file locally on disk automatically syncs it to the Looker dev workspace.
+3.  **Guideline Reference**: You **MUST** consult and strictly follow the model and explore best practices in the **`lookml-modeling-guidelines`** skill (Section 7.A & 7.B) for all include declarations, explore structures, and explicit join relationship definitions.
 
 ### 4. Configure Model Connection in Looker (CLI)
 
