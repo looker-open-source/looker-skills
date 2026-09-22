@@ -1,6 +1,4 @@
-# Looker Developer Skills Repository
-
-This repository contains a collection of "skills" designed to assist AI agents and developers in writing high-quality, standardized LookML code and guiding them through Looker onboarding. Each skill encapsulates specific instructions, best practices, and examples for different aspects of Looker development.
+<truncated 3 lines>
 
 ## Installation & Usage
 
@@ -105,8 +103,12 @@ These skills guide new Looker developers and agents through database exploration
 *   **[creating-looker-dashboard](skills/creating-looker-dashboard/SKILL.md)**: Creating LookML dashboard, importing UDD, and iterating on feedback.
 *   **[lookml-modeling-guidelines](skills/lookml-modeling-guidelines/SKILL.md)**: Consolidated LookML modeling best practices and CLI commands syntax.
 
-   ## Migration
+## Migration
 
 These skills guide Looker developers and agents during migration from other BI Tools to Looker or other DB to BQ
 
 *   **[snowflake-to-bigquery-converter](skills/snowflake-to-bigquery-converter/SKILL.md)**: Audits entire Looker projects or targeted LookML files for Snowflake-specific SQL functions, operators, identifier quoting, and semi-structured data syntax, and proposes production-ready BigQuery Standard SQL equivalents.
+
+## Conversational Analytics
+
+*   **[manage-conversational-analytics-app](skills/conversational-analytics-app/SKILL.md)**: Create, deploy, or manage a conversational analytics application featuring a backend on Google Cloud Run and a web frontend.
