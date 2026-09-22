@@ -104,3 +104,4 @@ These skills guide new Looker developers and agents through database exploration
 *   **[creating-lookml-model](skills/creating-lookml-model/SKILL.md)**: Defining views, explores, models, and running verification queries.
 *   **[creating-looker-dashboard](skills/creating-looker-dashboard/SKILL.md)**: Creating LookML dashboard, importing UDD, and iterating on feedback.
 *   **[lookml-modeling-guidelines](skills/lookml-modeling-guidelines/SKILL.md)**: Consolidated LookML modeling best practices and CLI commands syntax.
+*   **[manage-conversational-analytics-app](skills/conversational-analytics-app/SKILL.md)**: Create, deploy, or manage a conversational analytics application featuring a backend on Google Cloud Run and a web frontend.
