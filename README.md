@@ -104,3 +104,9 @@ These skills guide new Looker developers and agents through database exploration
 *   **[creating-lookml-model](skills/creating-lookml-model/SKILL.md)**: Defining views, explores, models, and running verification queries.
 *   **[creating-looker-dashboard](skills/creating-looker-dashboard/SKILL.md)**: Creating LookML dashboard, importing UDD, and iterating on feedback.
 *   **[lookml-modeling-guidelines](skills/lookml-modeling-guidelines/SKILL.md)**: Consolidated LookML modeling best practices and CLI commands syntax.
+
+   ## Migration
+
+These skills guide Looker developers and agents during migration from other BI Tools to Looker or other DB to BQ
+
+*   **[snowflake-to-bigquery-converter](skills/snowflake-to-bigquery-converter/SKILL.md)**: Audits entire Looker projects or targeted LookML files for Snowflake-specific SQL functions, operators, identifier quoting, and semi-structured data syntax, and proposes production-ready BigQuery Standard SQL equivalents.
