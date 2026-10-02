@@ -1,0 +1,18 @@
+{
+  "manifestVersion": "1.0.0",
+  "devMode": true,
+  "name": "{title}",
+  "description": "Looker Custom Visualization: {title}",
+  "components": [
+    {
+      "id": "{name}",
+      "name": "{title}",
+      "description": "Visualizes data in a custom layout.",
+      "resource": {
+        "js": "gs://{bucket}/bundle.js",
+        "config": "gs://{bucket}/{name}.json",
+        "css": "gs://{bucket}/style.css"
+      }{privileges_section}
+    }
+  ]
+}
