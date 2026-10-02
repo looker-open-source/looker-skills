@@ -1,0 +1,398 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    overflow: hidden;
+}
+
+#app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Left Side: Mock Data & Options */
+#left-panel {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #dadce0;
+    background: white;
+    box-sizing: border-box;
+}
+
+/* Tab Headers */
+.tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dadce0;
+    padding: 0 10px;
+}
+
+.tab {
+    padding: 14px 20px;
+    cursor: pointer;
+    color: #5f6368;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab.active {
+    color: #1a73e8;
+    border-bottom: 3px solid #1a73e8;
+}
+
+.tab-content {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    padding: 20px;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+/* Scenarios Pill Bar */
+.scenarios-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.scenario-pill {
+    padding: 6px 14px;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #3c4043;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.scenario-pill:hover {
+    background: #f1f3f4;
+}
+
+.scenario-pill.active {
+    background: #e8f0fe;
+    border-color: #1a73e8;
+    color: #1a73e8;
+}
+
+.import-pill {
+    border-style: dashed;
+    color: #1a73e8;
+    border-color: #1a73e8;
+    background: transparent;
+}
+
+/* Action Bar */
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid #dadce0;
+    background: white;
+    color: #3c4043;
+}
+
+.btn:hover {
+    background: #f8f9fa;
+}
+
+.btn-primary {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.btn-primary:hover {
+    background: #1557b0;
+}
+
+/* Code Editors Side-by-Side */
+.data-editors {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    min-height: 350px;
+}
+
+.editor-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #5f6368;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.editor-container {
+    flex: 1;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    padding: 12px;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 12px;
+    background: #fafafa;
+    color: #202124;
+    box-sizing: border-box;
+    outline: none;
+    line-height: 1.5;
+}
+
+/* Settings Panel Content placed in Tab */
+.settings-group {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f1f3f4;
+    padding-bottom: 15px;
+}
+
+.settings-group:last-child {
+    border-bottom: none;
+}
+
+.settings-group-title {
+    font-weight: bold;
+    font-size: 12px;
+    color: #5f6368;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.settings-control {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settings-control label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #3c4043;
+}
+
+.settings-control select, .settings-control input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #3c4043;
+    outline: none;
+    background: white;
+}
+
+.settings-control select:focus, .settings-control input[type="text"]:focus {
+    border-color: #1a73e8;
+}
+
+.checkbox-control {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-control input {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+/* Right Side: Viz Preview ONLY */
+#right-panel {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    background: #f8f9fa;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.preview-tabs {
+    display: flex;
+    background: #f1f3f4;
+    border-bottom: 1px solid #dadce0;
+    border-radius: 8px 8px 0 0;
+}
+
+.preview-tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #5f6368;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+}
+
+.preview-tab.active {
+    color: #1a73e8;
+    border-bottom: 2px solid #1a73e8;
+    font-weight: bold;
+    background: white;
+    border-radius: 8px 8px 0 0;
+}
+
+#vis-container, #table-container {
+    background: white;
+    border: 1px solid #dadce0;
+    border-top: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+#table-container {
+    display: none;
+    padding: 15px;
+}
+
+/* Error Overlay */
+#error-overlay {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ea4335;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 13px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;
+    z-index: 1000;
+}
+
+/* Global Click Dropdown Mock Styling */
+.looker-drill-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #dadce0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    z-index: 10000;
+    min-width: 160px;
+    padding: 4px 0;
+    font-family: sans-serif;
+    font-size: 13px;
+}
+
+.looker-drill-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    color: #3c4043;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.looker-drill-menu-item:hover {
+    background-color: #f1f3f4;
+    color: #1a73e8;
+}
+
+/* Import Modal Dialog Styling */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    width: 500px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-sizing: border-box;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f3f4;
+    padding-bottom: 12px;
+}
+
+.modal-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #202124;
+}
+
+.modal-close {
+    cursor: pointer;
+    color: #5f6368;
+}
+
+.modal-tabs {
+    display: flex;
+    border-bottom: 1px solid #dadce0;
+    margin-bottom: 8px;
+}
+
+.modal-tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5f6368;
+    border-bottom: 2px solid transparent;
+}
+
+.modal-tab.active {
+    color: #1a73e8;
+    border-bottom: 2px solid #1a73e8;
+}
