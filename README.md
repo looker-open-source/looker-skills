@@ -83,6 +83,12 @@ These skills provide specific instructions for creating and modifying LookML obj
 ### Architecture & Project Design
 *   **[looker-architect](skills/looker-architect/SKILL.md)**: Master developer skill for scaffolding, building, refactoring, validating, and auditing enterprise LookML projects. Enforces raw/refined view separation, functional field sequencing, visual drilling, native tabs, and self-healing SQL loops.
 
+### dbt Integration
+*   **[building-looker-lookml-from-dbt](skills/building-looker-lookml-from-dbt/SKILL.md)**: Generates LookML views and explores from a finished dbt fact or dim model, with metric and join suggestions confirmed by the user before they are written. Read-only on dbt.
+*   **[dbt-type-mapping](skills/building-looker-lookml-from-dbt/references/mapping-dbt-types-to-lookml.md)**: Warehouse column type to LookML field mapping (Redshift, BigQuery, Snowflake) and dimension group rules.
+*   **[dbt-fact-metric-suggestions](skills/building-looker-lookml-from-dbt/references/suggesting-fact-metrics.md)**: Recognizing metric-worthy column shapes on fact tables and presenting them for confirmation.
+*   **[dbt-explores-and-joins](skills/building-looker-lookml-from-dbt/references/generating-explores-and-joins.md)**: Deriving joins and relationships from foreign keys and `relationships` tests.
+
 ### Performance & Optimization
 *   **[looker-performance-optimizer](skills/looker-performance-optimizer/SKILL.md)**: Master developer skill for auditing, diagnosing, and optimizing query performance in Looker projects, including caching, PDT strategies, and SQL profiling.
 *   **[lookml-caching-datagroups](skills/looker-performance-optimizer/references/caching_datagroups.md)**: Caching alignment strategies, ETL-triggered datagroups, and persistency tuning.
