@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.4.0...looker-skills-v0.5.0) (2026-10-15)
+
+
+### Features
+
+* add complete LookML view for users ([680a21e](https://github.com/looker-open-source/looker-skills/commit/680a21e9275df352c524d56c17c7ad2061d8cbf3))
+* **skills:** add looker-architect master developer skill ([17a42f3](https://github.com/looker-open-source/looker-skills/commit/17a42f3bdeab9b232d4ecb02fb40dfa2fe524884))
+* **skills:** add looker-audit skill for instance performance and health checks ([e8a8ede](https://github.com/looker-open-source/looker-skills/commit/e8a8edee50890df87a654f9a92afff5404ed99ca))
+
 ## [0.4.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.3.0...looker-skills-v0.4.0) (2026-07-23)
 
 
