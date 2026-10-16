@@ -114,10 +114,13 @@ Building an enterprise LookML project follows a strict 8-step lifecycle:
         ```bash
         looker-cli project validate <project_name>
         ```
-7.  **Documentation**: Generate the public `README.md` file detailing the installation steps, PDT rebuild frequencies, and KPI definitions.
-8.  **Deployment**: Push the code to GitHub (fully authenticated via the `gh` credential helper), merge to `main`, and trigger a production deploy:
+8.  **Deployment & Webhook Sync**: Stage and push the changes to GitHub, merge the Pull Request into `master` to trigger Looker's automated production deploy webhook, and realign the dev workspace:
     ```bash
-    looker-cli project deploy <project_name>
+    git add .
+    git commit -m "feat(lookml): deploy verified model updates"
+    git push origin <branch_name>
+    # After PR is merged into master on GitHub (webhook automatically triggers Looker production deployment):
+    looker-cli session update dev && looker-cli api project reset_project_to_production <project_name>
     ```
 
 ---
@@ -390,12 +393,23 @@ Import visual dashboards designed by users in the Looker UI into code.
     *   Get list of dashboards: `get_dashboards`
     *   Get dashboard details: `run_dashboard`
 
-### 6. Production Deployment
-Deploy all validated changes to the production environment.
-*   **Looker CLI**:
+### 6. Dev Workspace Resets (Discarding / Realigning)
+When discarding dirty experimental changes or realigning the personal Looker dev branch with production or remote Git:
+*   **Reset Dev to Production**:
     ```bash
-    looker-cli project deploy <project_id>
+    looker-cli session update dev && looker-cli api project reset_project_to_production <project_id>
     ```
+*   **Reset Dev to Remote Git**:
+    ```bash
+    looker-cli session update dev && looker-cli api project reset_project_to_remote <project_id>
+    ```
+
+### 7. Git & Webhook Production Deployment
+Production deployment is driven via GitHub Pull Requests and Looker Deploy Webhooks:
+1. Commit and push feature branch: `git add . && git commit -m "..." && git push origin <branch_name>`
+2. Merge PR into `master` on GitHub.
+3. GitHub automatically triggers the Looker deploy webhook to pull `master` to production.
+4. Realign personal dev branch: `looker-cli session update dev && looker-cli api project reset_project_to_production <project_id>`
 
 ---
 

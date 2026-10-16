@@ -80,56 +80,78 @@ request to determine the necessary LookML elements.
 
 ## 3. Verification & Testing (CLI)
 
-Always verify that your LookML is valid and generates the expected SQL or
-results.
+Always verify that your LookML is valid and generates the expected SQL and query results.
 
-*   **Syntactic Correctness:** All code must be syntactically perfect, with
-    balanced braces and correct parameters. `sql` parameters must match the
-    specific database dialect (e.g., BigQuery, Snowflake).
-*   **Running Queries**: Use `looker-cli query runquery` to verify results.
-*   **Type Safety**: Ensure LookML types match database column types.
-*   **SQL Verification**: Run `looker-cli api query run_inline_query` requesting
-    the query's SQL field to inspect the generated SQL.
-*   **Validation**: Use `looker-cli api project validate_project {project_id}`
-    frequently during development.
-*   **Testing**: Retrieve and run tests using:
+*   **Syntactic Correctness:** All code must be syntactically perfect, with balanced braces and correct parameters. `sql` parameters must match the specific database dialect (e.g., BigQuery standard SQL).
+*   **Validation**: Validate your project frequently during development:
+    ```bash
+    looker-cli project validate {project_id}
+    ```
+*   **SQL Verification**: Run inline queries requesting the SQL to inspect compiler output:
+    ```bash
+    echo '{"model":"{model_name}","view":"{explore_name}","fields":["{view}.{dimension}"]}' | looker-cli api query run_inline_query sql -
+    ```
+*   **Data Verification**: Execute inline queries to verify data returns cleanly from the database:
+    ```bash
+    echo '{"model":"{model_name}","view":"{explore_name}","fields":["{view}.{dimension}","{view}.{measure}"],"limit":"5"}' | looker-cli api query run_inline_query json -
+    ```
+*   **Data Tests**: Retrieve and run automated tests:
     *   Get tests: `looker-cli api project all_lookml_tests {project_id}`
     *   Run tests: `looker-cli api project run_lookml_test {project_id}`
 
-## 4. Creating New Views (CLI)
+## 4. Creating and Editing Files (Local Filesystem & Auto-Sync)
 
-Since we do not have an automated CLI view generation subcommand, you **MUST**
-create views manually. Construct the LookML view definition structure from
-scratch based on the column schemas retrieved in Step 2, save the content to a
-local file (e.g. `/tmp/my_view.view.lkml`), and upload it:
+In this project, write and edit LookML files directly in the local repository workspace directory (e.g., `views/`, `explores/`, `models/`).
 
-```bash
-looker-cli project file create {project_id} views/{view_name}.view.lkml /tmp/my_view.view.lkml
-```
+> [!IMPORTANT]
+> **No CLI File Sync Needed**: The **Looker VS Code Extension** automatically syncs local file edits, creations, and deletions directly to the Looker Dev workspace on save. Agents **do NOT need to execute** `looker-cli project file create` or `looker-cli project file update`.
 
 ### Naming & Uniqueness Requirements
 
-*   **Model:** Instance-wide uniqueness required (prevents URL collisions and
-    instance errors).
+*   **Model:** Instance-wide uniqueness required (prevents URL collisions and instance errors).
 *   **View:** Project-wide uniqueness required (acts as namespace for fields).
 *   **Explore:** Model-wide uniqueness required (query starting point).
-*   **Field:** View-wide uniqueness required (dimension/measure names must be
-    unique within the view).
+*   **Field:** View-wide uniqueness required (dimension/measure names must be unique within the view).
 
-## 5. Feedback Loop (Validation)
+## 5. Feedback Loop & Resetting Dev Workspace
 
+### The Validation Loop
 After making any changes to LookML files:
+1.  Run `looker-cli project validate {project_id}` to check for syntax and reference errors.
+2.  If errors are found, surgically fix them and repeat step 1.
+3.  Execute verification inline queries to confirm SQL runs without runtime errors on BigQuery.
+4.  **DO NOT** consider the task complete until the validator returns zero errors and queries return expected data.
 
-1.  Run `looker-cli api project validate_project {project_id}` to check for
-    syntax and reference errors.
-2.  If errors are found, fix them and repeat step 1.
-3.  If data tests are defined, run `looker-cli api project run_lookml_test
-    {project_id}` to ensure they still pass.
-4.  **DO NOT** consider the task complete until the validator returns no errors.
+### Resetting Dev Workspace
+To abandon dirty local experimental changes or realign the personal Looker dev branch with production or remote Git:
+*   **Reset to Production**:
+    ```bash
+    looker-cli session update dev && looker-cli api project reset_project_to_production {project_id}
+    ```
+*   **Reset to Remote Git**:
+    ```bash
+    looker-cli session update dev && looker-cli api project reset_project_to_remote {project_id}
+    ```
+
+## 6. Git Push & Production Deployment Workflow
+
+Production deployment is managed through Git and Looker Deploy Webhooks:
+1.  **Stage & Commit**:
+    ```bash
+    git add .
+    git commit -m "feat(lookml): describe changes"
+    git push origin <branch_name>
+    ```
+2.  **Merge PR**: Merge the Pull Request into `master` on GitHub.
+3.  **Webhook Trigger**: GitHub webhook automatically notifies Looker to pull production from remote `master`.
+4.  **Realign Dev Workspace**:
+    ```bash
+    looker-cli api project reset_project_to_production {project_id}
+    ```
 
 --------------------------------------------------------------------------------
 
-## 6. Best Practices
+## 7. Best Practices
 
 ### A. Models
 
