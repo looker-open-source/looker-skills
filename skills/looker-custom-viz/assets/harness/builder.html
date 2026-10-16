@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Looker Custom Viz Harness</title>
+    <link rel="stylesheet" href="harness.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Left Panel: Editors & Configuration -->
+        <div id="left-panel">
+            <div class="tabs">
+                <div class="tab active" data-target="mock-data-tab">Mock Data</div>
+                <div class="tab" data-target="options-tab">Options Preview</div>
+            </div>
+
+            <!-- Mock Data Tab Content -->
+            <div id="mock-data-tab" class="tab-content active">
+                <div class="scenarios-bar" id="scenarios-bar">
+                    <!-- Dynamic pills injected by JS -->
+                    <button class="scenario-pill import-pill" id="import-btn">+ Import</button>
+                </div>
+
+                <div style="margin-bottom: 15px; display: flex; gap: 8px; align-items: center; font-size: 13px;">
+                    <label for="viz-file-input" style="font-weight: bold; color: #5f6368; font-size: 11px; letter-spacing: 0.5px;">VIZ SCRIPT:</label>
+                    <input type="text" id="viz-file-input" style="padding: 6px 10px; border: 1px solid #dadce0; border-radius: 4px; flex: 1; font-family: monospace; font-size: 12px;" placeholder="demo_viz.js">
+                    <button class="btn btn-primary" id="load-viz-btn" style="padding: 6px 12px; font-size: 12px;">Load</button>
+                </div>
+
+                <div class="data-editors">
+                    <div class="editor-wrapper">
+                        <span class="editor-label">Schema (Query Response)</span>
+                        <div class="editor-container">
+                            <textarea id="query-area" spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                    <div class="editor-wrapper">
+                        <span class="editor-label">Dataset (Raw Rows)</span>
+                        <div class="editor-container">
+                            <textarea id="data-area" spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Preview Tab Content -->
+            <div id="options-tab" class="tab-content">
+                <div style="font-size: 11px; font-weight: bold; color: #5f6368; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 0.5px;">Visualization Settings</div>
+                <div id="settings-content">
+                    <!-- Dynamic settings inputs injected here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Viz Rendering -->
+        <div id="right-panel">
+            <div class="preview-tabs">
+                <div class="preview-tab active" data-target="vis-container">Visualization Preview</div>
+                <div class="preview-tab" data-target="table-container">Looker Table View</div>
+            </div>
+
+            <div id="vis-container"></div>
+            <div id="table-container"></div>
+        </div>
+    </div>
+
+    <!-- Error Banner Overlay -->
+    <div id="error-overlay"></div>
+
+    <!-- Dynamic Explore Import Modal Dialog -->
+    <div id="import-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Import Data from Looker</span>
+                <span id="modal-close-btn" class="modal-close" onclick="document.getElementById('import-modal').style.display='none'">✕</span>
+            </div>
+            
+            <div class="modal-tabs">
+                <div id="tab-import-url" class="modal-tab active">Explore URL / Query Slug</div>
+                <div id="tab-import-json" class="modal-tab">Raw JSON Query Response</div>
+            </div>
+            
+            <!-- Tab: URL import -->
+            <div id="modal-content-url" style="display: flex; flex-direction: column; gap: 8px; font-family: sans-serif;">
+                <label style="font-size: 12px; font-weight: bold; color: #5f6368;">Enter Explore URL or Query Slug:</label>
+                <input type="text" id="import-input-url" style="padding: 8px 12px; border: 1px solid #dadce0; border-radius: 4px; font-size: 13px;" placeholder="https://<instance>.looker.app/explore/... or qid=...">
+                
+                <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="save-as-scenario" style="width: 16px; height: 16px;">
+                    Save permanently in data_scenarios.js
+                </label>
+                
+                <div id="scenario-key-container" style="display: none; flex-direction: column; gap: 6px; margin-top: 8px;">
+                    <label style="font-size: 11px; font-weight: bold; color: #5f6368;">Scenario Quick-Select Key (camel_case):</label>
+                    <input type="text" id="import-scenario-key" style="padding: 6px 10px; border: 1px solid #dadce0; border-radius: 4px; font-size: 12px;" placeholder="my_new_explore_scenario">
+                </div>
+            </div>
+            
+            <!-- Tab: JSON import -->
+            <div id="modal-content-json" style="display: none; flex-direction: column; gap: 8px; font-family: sans-serif; height: 250px;">
+                <label style="font-size: 12px; font-weight: bold; color: #5f6368;">Paste raw JSON query result:</label>
+                <textarea id="import-input-json" style="flex: 1; border: 1px solid #dadce0; border-radius: 4px; padding: 8px;" placeholder='{ "data": [...], "fields": {...} }'></textarea>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #f1f3f4; padding-top: 16px;">
+                <button id="modal-cancel-btn" class="btn">Cancel</button>
+                <button id="modal-submit-btn" class="btn btn-primary">
+                    <span id="submit-btn-text">Import</span>
+                    <span id="submit-spinner" style="display: none; width: 12px; height: 12px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Harness script dependencies -->
+    <script src="mocks.js"></script>
+    <script src="data_scenarios.js"></script>
+    <script src="harness.js"></script>
+</body>
+</html>
