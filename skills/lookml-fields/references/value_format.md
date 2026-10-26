@@ -68,6 +68,19 @@ Looker uses standard Excel formatting syntax.
 - **Revenue (USD):** `$#,##0.00`
 - **Negative in Parentheses:** `$#,##0.00;($#,##0.00)`
 
+Inside a LookML `value_format` string, escape nested double quotes with `\` (for example, `value_format: "0.00,,\" M\""`).
+
+### Conditional Number Formats
+A format string can switch formats by value with the pattern `[if_condition]format;[if_condition]format;else_format`. Looker supports up to two conditions; any conditions after the first two are ignored.
+
+```lookml
+measure: global_amount {
+  type: sum
+  sql: ${TABLE}.total ;;
+  value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00" # 2523093 -> $2.52M, 2520 -> $2.52K, 25 -> $25.00
+}
+```
+
 ## Localization
 
 Looker localizes number formats (e.g., switching `.` and `,` for decimals/thousands) based on user settings or the admin "Number format" setting.
@@ -92,7 +105,7 @@ dimension: user_code {
 
 ## Fancy Formatting with Liquid
 
-For conditional formatting (colors, icons, logic), `value_format` is insufficient. You must use the `html` parameter with Liquid.
+For conditional styling (colors, icons, layout), `value_format` is insufficient: Looker does not support color formatting in `value_format`. You must use the `html` parameter with Liquid.
 
 **Note:** The `html` parameter primarily affects the **Data Table** in Looker. It may not render in all visualization types (e.g., Single Value charts might strip HTML unless configured).
 
