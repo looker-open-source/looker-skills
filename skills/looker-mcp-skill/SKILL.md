@@ -259,7 +259,7 @@ The Looker MCP Server exposes **45 tools** categorized into 6 functional areas:
 | Tool | Description |
 | :--- | :--- |
 | `health_pulse` | Performs lightweight liveness and health checks on Looker instance. |
-| `health_analyze` | Audits instance query performance and flags slow queries/PDT bottlenecks. |
+| `health_analyze` | Analyzes usage of projects, models, and Explores (for example, unused Explores, joins, and fields). |
 | `health_vacuum` | Identifies un-utilized content, unused Explores, and candidate objects for cleanup. |
 
 ---

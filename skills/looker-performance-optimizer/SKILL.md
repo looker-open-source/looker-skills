@@ -33,7 +33,7 @@ Use this mode when diagnosing and optimizing an active, slow dashboard or explor
     *   Align caching datagroups.
     *   Materialize heavy transformations into PDTs (following the PDT Decision Matrix).
     *   Correct join relationships and implement join pruning.
-4.  **Verification & Delta Measurement**: Re-run the compiler (`health_analyze`) to ensure zero syntax errors, re-execute the queries, and document the performance improvement matrix.
+4.  **Verification & Delta Measurement**: Re-run the LookML validator (`validate_project`) to ensure zero syntax errors, re-execute the queries, and document the performance improvement matrix.
 5.  **Safe Production Deploy**: Deploy the optimized, validated LookML branch to production.
 
 ---
@@ -91,9 +91,9 @@ To diagnose query performance and run execution plans, the AI agent **MUST** lev
 | :--- | :--- | :--- |
 | **Fetch Generated SQL** | `looker-cli api query query <id> --fields sql` | `query(query_id)` or `query_sql` |
 | **Run Query (Test)** | `looker-cli api query run_query --query_id <id>` | `query` or `run_dashboard` |
-| **Check Query State** | `looker-cli api query query_task ...` | `health_pulse` or `health_analyze` |
+| **Check Query State** | `looker-cli api query query_task ...` | *N/A* |
 | **Database Introspection** | `looker-cli api metadata connection_columns <conn> --schema_name <schema>`<br>*(See also: `connection_tables`, `connection_schemas`, `connection_databases`)* | `get_connection_table_columns`<br>*(See also: `get_connection_tables`)* |
-| **LookML Compile Check** | `looker-cli project validate <id>` | `health_analyze` |
+| **LookML Compile Check** | `looker-cli project validate <id>` | `validate_project` |
 
 ---
 

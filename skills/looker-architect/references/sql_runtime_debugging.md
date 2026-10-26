@@ -2,7 +2,7 @@
 
 This reference handbook details the **Generalized Self-Healing SQL Loop Protocol** using the Looker MCP server. 
 
-Server-side LookML compilation (via `project validate` or `health_analyze`) only checks syntax and semantic integrity. It **does not** guarantee that the generated SQL queries will execute successfully on the target database. To ensure 100% functional dashboards, the AI agent must run execution-time query audits, capture database-specific errors, and surgically repair the LookML in place using an iterative, tile-by-tile self-healing loop.
+Server-side LookML compilation (via `project validate` or `validate_project`) only checks syntax and semantic integrity. It **does not** guarantee that the generated SQL queries will execute successfully on the target database. To ensure 100% functional dashboards, the AI agent must run execution-time query audits, capture database-specific errors, and surgically repair the LookML in place using an iterative, tile-by-tile self-healing loop.
 
 ---
 
@@ -26,7 +26,7 @@ graph TD
     I --> J[Analyze SQL & Log Database Error]
     J --> K[Reconcile Schema: MCP get_connection_table_columns]
     K --> L[Surgically Repair LookML View/Explore]
-    L --> M[LookML Compile Check: MCP health_analyze]
+    L --> M[LookML Compile Check: MCP validate_project]
     M -->|Compiles| N[MCP: Re-run Tile Query]
     M -->|Fails| L
     N --> O{Healed?}
@@ -74,7 +74,7 @@ For every tile that fails to execute on the database (throwing a SQL or gRPC err
             1.  **For Timestamps**: If the physical database column is a `TIMESTAMP` (or a timestamp-compatible expression) and you want a `date` dimension, **do not** cast the column in your `sql:` parameter. Write `sql: ${TABLE}.column_name ;;` and let Looker apply its native wrapping function automatically.
             2.  **For Already-Date Columns (Coercion Hack)**: If the database column is already a `DATE` type and the database engine crashes due to double wrapping, you must coerce the SQL parameter inside `sql:` to a type that the dialect's automatic wrapper function natively accepts (e.g., casting a `DATE` column to a `TIMESTAMP` in the `sql:` parameter so that Looker's automatic `DATE()` wrap converts it back to a `DATE` safely: `sql: CAST(${TABLE}.date_col AS TIMESTAMP) ;;`).
 8.  **Verify the Repair**:
-    *   Run the Looker compiler (`health_analyze`) to ensure no LookML syntax errors were introduced.
+    *   Run the LookML validator (`validate_project`) to ensure no LookML syntax errors were introduced.
     *   Re-execute the tile's query via Looker MCP.
     *   **Success Condition**: If the query returns a successful `HTTP 200` response with valid rows of data, mark the tile as **Healed & Verified** and proceed to the next tile.
     *   **Failure Condition**: If it still fails, increment the loop counter and repeat Phase 3.

@@ -97,7 +97,7 @@ The agent seamlessly integrates with both the **Looker CLI** and the **Looker MC
 | **List Files** | *N/A* | `get_project_files` |
 | **Read File** | *N/A* | `get_project_file` |
 | **Write/Update File**| *N/A* | `create_project_file`, `update_project_file` |
-| **Validate LookML** | `looker-cli project validate <id>`| `health_analyze`, `health_pulse` |
+| **Validate LookML** | `looker-cli project validate <id>`| `validate_project` |
 | **Import Dashboard**| `looker-cli api dashboard ...` | `get_dashboards`, `run_dashboard` |
 | **Production Deploy**| `looker-cli project deploy <id>` | *N/A* |
 
