@@ -70,12 +70,12 @@ dimension_group: pop_filter_start {
   sql: CASE WHEN {% date_start pop_date_filter %} IS NULL THEN '1970-01-01' ELSE CAST({% date_start pop_date_filter %} AS DATE) END ;;
 }
 
-# Helper: Capture the end date of the user's filter
+# Helper: Capture the end date of the user's filter (exclusive: the first day after the range)
 dimension_group: pop_filter_end {
   hidden: yes
   type: time
   timeframes: [raw, date]
-  sql: CASE WHEN {% date_end pop_date_filter %} IS NULL THEN CURRENT_DATE ELSE CAST({% date_end pop_date_filter %} AS DATE) END ;;
+  sql: CASE WHEN {% date_end pop_date_filter %} IS NULL THEN CURRENT_DATE + 1 ELSE CAST({% date_end pop_date_filter %} AS DATE) END ;;
 }
 ```
 
@@ -180,11 +180,11 @@ dimension: pop_period_group {
   type: string
   case: {
     when: {
-      sql: ${pop_data_date} > ${pop_filter_start_date} AND ${pop_data_date} <= ${pop_filter_end_date} ;;
+      sql: ${pop_data_date} >= ${pop_filter_start_date} AND ${pop_data_date} < ${pop_filter_end_date} ;;
       label: "Selected Period"
     }
     when: {
-      sql: ${pop_data_date} > ${pop_previous_start_date} AND ${pop_data_date} <= ${pop_filter_start_date} ;;
+      sql: ${pop_data_date} >= ${pop_previous_start_date} AND ${pop_data_date} < ${pop_filter_start_date} ;;
       label: "Previous Period"
     }
     else: "Not in time period"
