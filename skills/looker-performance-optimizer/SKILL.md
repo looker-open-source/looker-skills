@@ -107,7 +107,7 @@ Diagnosing multiple slow dashboard queries generates massive SQL statements, dat
 2.  **Spawn SQL Profiler Subagents**: For each slow explore or tile identified, spawn a specialized "SQL Profiler Subagent" to run concurrently.
 3.  **Subagent Diagnostics Task**:
     *   Retrieve the generated SQL via Looker MCP.
-    *   Execute an `EXPLAIN` or `EXPLAIN ANALYZE` query directly against the target connection.
+    *   Execute an `EXPLAIN` or `EXPLAIN ANALYZE` query directly against the target connection (on BigQuery, read the query plan of the job that already ran the query, and run it again only when that job cannot be found; see [references/query_diagnostic.md](references/query_diagnostic.md)).
     *   Parse the execution plan to identify the exact bottleneck (e.g., full table scan, missing index, Symmetric Aggregations).
     *   Compile a **Pruned Performance Report** consisting of exactly:
         *   The offending SQL fragment.
