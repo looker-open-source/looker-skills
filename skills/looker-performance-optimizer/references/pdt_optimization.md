@@ -24,9 +24,9 @@ Materialized tables **MUST** be physically optimized to ensure fast scanning dur
 ### A. Google Cloud BigQuery (Partition & Cluster)
 *   **Standard**: Always partition by a date or timestamp column, and cluster by high-frequency filter fields (e.g., IDs, categories).
     ```lookml
-    # BigQuery PDT Configuration
-    partition_by: "order_date"
-    cluster_by: ["user_id", "status"] # Max 4 fields, order from highest to lowest cardinality
+    # BigQuery PDT Configuration (inside derived_table)
+    partition_keys: ["order_date"]     # BigQuery: only one date/time column
+    cluster_keys: ["user_id", "status"] # Max 4 columns; column order affects which filters benefit
     ```
 
 ### B. Google Cloud Spanner (Secondary Indexes & Interleaving)
@@ -58,59 +58,61 @@ Materialized tables **MUST** be physically optimized to ensure fast scanning dur
 
 ---
 
-## 3. The "Cold Start" PDT Load Protocol (Preventing Initial Build Crashes)
+## 3. The "Cold Start" PDT Load Protocol (Initial Build of Incremental PDTs)
 
-Incremental PDTs are highly efficient because daily builds only process the last 24 hours of data. However, the **first run (initial load)** must compile and write the entire historical dataset. On massive tables, this cold start query will take hours or days, exceeding database timeout limits and crashing.
+Incremental PDTs are highly efficient because later builds only append new increments. However, the first time a query runs on an incremental PDT, Looker builds the **entire** PDT to get the initial data. On massive tables, this initial build may take a significant amount of time, as would building any large table.
 
-To prevent initial load crashes, the agent and developers **MUST** execute the **PDT Initial Load Mitigation Protocol**:
+Do **not** try to cap the initial build with a temporary filter that is removed later. Changing the derived table's `sql` is a change to the table's definition: after deploy, the previous production table is marked as expired and dropped, and the new definition is built from scratch, so a manually backfilled table is not carried over.
 
 ```
-[Initial Build] ➔ [Phase 1: Apply Date Cap (30 Days)] ➔ [Build Succeeds in Seconds] ➔ [Phase 2: Remove Cap / Deploy Incrementals] ➔ [Daily Batches Backfill History Safely]
+[Phase 1: Define the Incremental PDT] ➔ [Phase 2: Pre-build in Development Mode] ➔ [Deploy within 24h, unchanged] ➔ [Phase 3 if the full build exceeds database limits]
 ```
 
-### Phase 1: Historical Capping (LookML Phase-In)
-Configure your LookML PDT query to dynamically cap the historical scan on the first run. Leverage the `{% if incremented %}` Liquid variable to detect if Looker is running a full rebuild or a daily increment:
+### Phase 1: Define the Incremental PDT Correctly
+For SQL-based PDTs, connect the increment key to the database time column with the `{% incrementcondition %}` Liquid filter. The `increment_key` must name a time-based dimension defined in the PDT's view file, and `{% incrementcondition %}` must reference a TIMESTAMP column (or an expression that evaluates to one) from the `FROM` clause, not a SQL alias or a dimension name:
 
 ```lookml
 view: pdt_historical_transactions {
   derived_table: {
-    sql:
-      SELECT
-        transaction_id,
-        transaction_date,
-        user_id,
-        amount
-      FROM raw_transactions
-      WHERE
-        {% if incremented %}
-          # Daily incremental runs: Look back 3 days to capture late data
-          transaction_date >= DATE_SUB({% increment_value %}, INTERVAL 3 DAY)
-        {% else %}
-          # COLD START HACK: Cap the initial load to 30 days to prevent timeout
-          transaction_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-        {% endif %}
-    ;;
-    
     datagroup_trigger: daily_etl_datagroup
     increment_key: "transaction_date"
     increment_offset: 3
+    sql:
+      SELECT
+        transaction_id,
+        DATE(raw_transactions.transaction_ts) AS transaction_date,
+        user_id,
+        amount
+      FROM raw_transactions
+      WHERE {% incrementcondition %} raw_transactions.transaction_ts {% endincrementcondition %}
+    ;;
   }
+
+  dimension_group: transaction {
+    type: time
+    timeframes: [date, week, month, year]
+    datatype: date
+    sql: ${TABLE}.transaction_date ;;
+  }
+
+  # Define the remaining dimensions (transaction_id, user_id, amount) as usual.
 }
 ```
 
-### Phase 2: Historical Backfilling (Bootstrap & Expand)
-1.  **Deploy capped PDT**: Run the initial build. Since it is capped to 30 days, the query will execute in seconds, successfully materializing the physical table in your database.
-2.  **Historical Backfill**: Once the table exists, write a temporary SQL script or use database features to backfill historical data backwards (in monthly or weekly batches) directly in the database warehouse.
-3.  **Deploy Incremental Code**: Remove the temporary cap from the LookML code. Since the historical data now exists physically in the database, daily incremental runs will execute smoothly on top of it.
+### Phase 2: Pre-build the Initial Table in Development Mode
+If a development version of the PDT is persisted when you deploy, Looker can often use it as the production table, so users do not wait for the initial build:
+1.  **Build in Development Mode**: Query the PDT in Development Mode (or use **Rebuild Derived Tables & Run** from an Explore) to trigger the full initial build.
+2.  **Deploy promptly and unchanged**: Development tables are treated as `persist_for: "24 hours"`. Deploy within 24 hours of querying the development table, without further changes to the PDT definition.
+3.  **Avoid abbreviated development tables**: A PDT that uses `dev_filters` or an `if prod` / `if dev` conditional `WHERE` clause cannot reuse its development table in production, since that table holds an abbreviated dataset.
 
 ### Phase 3: Architectural Offloading (ELT Outsourcing)
-If a historical dataset is too massive to be compiled or backfilled even in batches within Looker's PDT layer (exceeding database resources), the agent **MUST** offload the materialization:
+If a historical dataset is too massive to be built within Looker's PDT layer (exceeding database resources), the agent **MUST** offload the materialization:
 *   **The Standard**: Outsource the materialization to the database warehouse layer (using **dbt**, scheduled database queries, or database materialized views).
 *   **Looker Mapping**: Define Looker as a standard, read-only view mapping directly to the database-materialized table. This keeps Looker lightweight and protects the BI server.
 
 ---
 
 ## 4. Incremental PDT Standards
-*   **`increment_key` (Mandatory)**: Must always be a time-based column (date, hour, month).
+*   **`increment_key` (Mandatory)**: Must name a time-based LookML dimension at a truncated absolute timeframe (for example, a `date` or `month` timeframe; timeframes such as day of week are not supported).
 *   **`increment_offset` (Mandatory)**: Always set a sensible look-back offset (e.g., `3` days) to capture late-arriving data and prevent data discrepancies.
-*   **Incremental Filter**: Always wrap your derived table SQL query in `{% if incremented %} ... {% else %} ... {% endif %}` to ensure Looker compiles a lightweight `WHERE` clause during incremental runs.
+*   **Incremental Filter**: For SQL-based PDTs, always add `WHERE {% incrementcondition %} table.timestamp_column {% endincrementcondition %}` so Looker can generate the increment's filter. LookML-based (native) PDTs do not need it.
