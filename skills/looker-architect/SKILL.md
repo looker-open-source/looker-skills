@@ -75,7 +75,7 @@ Use this mode when reviewing or improving an existing LookML project. The agent 
    * Inject advanced visual drill links (e.g., trend charts, donut charts, grid detail tables) on all core measures, using manifest constants and empty drill fields.
    * Convert HTML dashboard navigation menus into native Looker tabbed layouts (`tabs:` and `tab_name:`), resetting grid coordinates to `row: 0, col: 0` for each tab.
    * Convert single_value dashboard tiles to the two-measure PoP comparison pattern, querying both `pop_*_current` and `pop_*_change` measures and mapping filters to the explore's `pop_date_filter`.
-4. **Validation**: Run server-side validation (`looker-cli project validate` or MCP `health_analyze`) to ensure the refactored project compiles perfectly and has zero syntax errors.
+4. **Validation**: Run server-side validation (`looker-cli project validate` or MCP `validate_project`) to ensure the refactored project compiles perfectly and has zero syntax errors.
 5. **Runtime SQL Execution Auditing & Schema Reconciliation**: Server-side compilation only checks LookML syntax, not database compatibility. The agent **MUST** initiate the **Self-Healing SQL Loop** to audit and repair execution-time query crashes. Refer to the complete debugging procedures, loop protocols, and dialect-specific fixes defined in the specialized manual [references/sql_runtime_debugging.md](references/sql_runtime_debugging.md).
    * **Extract & Run Queries**: For every tile in your LookML dashboards, use Looker MCP's `run_dashboard` or `query` tool to generate and execute the underlying SQL query against the target database.
    * **Intercept Execution Crashes**: Capture any runtime database errors (such as gRPC `Name query_text not found` or SQL syntax/type-coercion errors).
@@ -376,9 +376,8 @@ Validate that the LookML compiles perfectly on the Looker server before deployme
     ```bash
     looker-cli project validate <project_id>
     ```
-*   **Looker MCP**: Call the health and validation tools:
-    *   Analyze project health: `health_analyze` (e.g., `{"project_id": "my_project"}`)
-    *   Pulse check: `health_pulse`
+*   **Looker MCP**: Call the LookML validator (requires Development Mode):
+    *   Validate the project: `validate_project` (e.g., `{"project_id": "my_project"}`)
 
 ### 5. Visual Dashboard to LookML Translation
 Import visual dashboards designed by users in the Looker UI into code.
