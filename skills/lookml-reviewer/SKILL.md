@@ -95,9 +95,9 @@ When invoked, execute the following steps precisely:
        ```
 
 4. **Analyze Codebase / Target File**:
-   - Perform a comprehensive analysis of the retrieved LookML file(s) against Looker best practices (refer to the guides in `references/`: `conversational-analytics-best-practices.md`, `lams-style-guide.md`, `lookml-dos-and-donts.md`, and `sustainable-maintainable-lookml.md`).
+   - Perform a comprehensive analysis of the retrieved LookML file(s) against Looker best practices (refer to the guides in `references/`: [conversational-analytics-best-practices.md](references/conversational-analytics-best-practices.md), [lams-style-guide.md](references/lams-style-guide.md), [lookml-dos-and-donts.md](references/lookml-dos-and-donts.md), [sustainable-maintainable-lookml.md](references/sustainable-maintainable-lookml.md), [playbook_lookml_quality.md](references/playbook_lookml_quality.md), and the 0–4 Transcriber Maturity Rubric in [playbook_transcriber_scoring.md](references/playbook_transcriber_scoring.md)).
    - If reviewing a single file, audit the file thoroughly (checking field definitions, primary keys, foreign keys, naming conventions, descriptions, count measure filters, and conversational analytics readiness).
-   - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking model-explore relationships, view joins, primary keys, datagroups, naming conventions, and conversational analytics readiness).
+   - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking model-explore relationships, view joins, primary keys, symmetric aggregate `SUM(DISTINCT)` fanout prevention, datagroups, naming conventions, conversational analytics readiness, and optional 0–4 Transcriber scoring).
 
 5. **Compile Report**: Draft a highly verbose and comprehensive review report based on your analysis. The report must contain the following sections:
    - **Summary**: A high-level summary of the health of the target file or full codebase, naming the project, branch, and target file (if single-file mode) reviewed, along with key findings.
