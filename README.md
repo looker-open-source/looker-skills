@@ -90,6 +90,10 @@ These skills provide specific instructions for creating and modifying LookML obj
 *   **[lookml-pdt-optimization](skills/looker-performance-optimizer/references/pdt_optimization.md)**: PDT optimization standards, index/partition configurations, and incremental materializations.
 *   **[lookml-refactoring](skills/looker-performance-optimizer/references/lookml_refactoring.md)**: Field-level optimization, join pruning, and eliminating redundant calculations.
 
+### Conversational Analytics Agents
+*   **[looker-ca-agent-create](skills/looker-ca-agent-create/SKILL.md)**: Builds and configures Looker Conversational Analytics (CA) Standalone Agents and Dashboard Agents from scratch, including 4-part XML/YAML system instructions, verified seed golden queries, and safe `dev_mode` LookML metadata enrichments.
+*   **[looker-ca-agent-optimize](skills/looker-ca-agent-optimize/SKILL.md)**: Audits and optimizes existing Looker Conversational Analytics (CA) Standalone and Dashboard Agents for accuracy and latency through static best-practice checks, reasoning-trace loop diagnostics, and Side-by-Side (SxS) agent evaluations.
+
 ## Developer Onboarding Skills
 
 These skills guide new Looker developers and agents through database exploration, CLI setup, project configuration, LookML modeling, and dashboard creation.
