@@ -83,7 +83,10 @@ These skills provide specific instructions for creating and modifying LookML obj
 ### Architecture & Project Design
 *   **[looker-architect](skills/looker-architect/SKILL.md)**: Master developer skill for scaffolding, building, refactoring, validating, and auditing enterprise LookML projects. Enforces raw/refined view separation, functional field sequencing, visual drilling, native tabs, and self-healing SQL loops.
 
-### Performance & Optimization
+### Performance, Healthcheck & Optimization
+*   **[looker-bq-healthcheck](skills/looker-bq-healthcheck/SKILL.md)**: Master 3-pillar healthcheck orchestrator that correlates Looker System Activity latency phases, LookML 0–4 Transcriber quality, and BigQuery `INFORMATION_SCHEMA` slot saturation/spills into an executive Technical Design Document (TDD).
+*   **[looker-performance-auditor](skills/looker-performance-auditor/SKILL.md)**: Audits Looker query lifecycle latency (Looker JVM overhead % vs. DB runtime vs. connection wait), dashboard tile bloat (over 25 tiles), auto-refresh, dynamic fields, and schedule staggering.
+*   **[bq-jobs-diagnostics](skills/bq-jobs-diagnostics/SKILL.md)**: Audits BigQuery warehouse performance, slot contention timelines (`JOBS_TIMELINE`), stage shuffle spills, table partitioning/clustering DDL, and Aggregate Awareness rollups.
 *   **[looker-performance-optimizer](skills/looker-performance-optimizer/SKILL.md)**: Master developer skill for auditing, diagnosing, and optimizing query performance in Looker projects, including caching, PDT strategies, and SQL profiling.
 *   **[lookml-caching-datagroups](skills/looker-performance-optimizer/references/caching_datagroups.md)**: Caching alignment strategies, ETL-triggered datagroups, and persistency tuning.
 *   **[lookml-query-diagnostics](skills/looker-performance-optimizer/references/query_diagnostic.md)**: Guidelines for running diagnostic queries, analyzing SQL explain plans, and identifying bottlenecks.
