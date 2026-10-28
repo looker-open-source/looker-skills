@@ -35,7 +35,7 @@ Verify tool availability passively from declared tools: if Looker MCP is unavail
 
 | Dimension | Standalone Agent | Dashboard Agent |
 | :--- | :--- | :--- |
-| **Grounding Target** | 1 to 5 curated Explores (`sources: [{"model", "explore"}]`) | `"category": "dashboard"` + `"name": "<instance_origin>-<dashboard_id>"` (live native panel) + `sources` from tile Explores |
+| **Grounding Target** | 1 to 5 curated Explores (`sources: [{"model": "...", "explore": "..."}]`) | `"category": "dashboard"` + `"name": "<instance_origin>-<dashboard_id>"` (live native panel) + `sources` from tile Explores |
 | **Primary Use Case** | Multi-Explore ad-hoc Q&A and deep domain exploration | Guided Q&A in Looker's native Dashboard CA panel (hidden from `/conversations`) |
 | **Golden Queries** | Recommended (`3-5` seed archetypes, `< 20` cap, `golden_query_ids`) | Omitted (Dashboard tiles natively act as grounded query exemplars) |
 | **Discovery Path** | `get_models` + `get_explores` if target Explores omitted | `get_dashboard` (`dashboard_id`) or `get_dashboards` title search + `search_agents --category "dashboard"` |
