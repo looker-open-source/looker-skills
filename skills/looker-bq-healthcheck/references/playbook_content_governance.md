@@ -1,20 +1,3 @@
----
-type: Playbook
-title: Unused Content, Dead LookML & Schedule Cleanup Playbook
-description: Operational procedures, diagnostic detection queries, and safe deprecation funnels for stale dashboards, inactive explores, and zombie schedules.
-tags: [looker, content-governance, cleanup, deprecation, henry, schedules]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: system-activity
-    resource: /skills/custom/healthcheck/references/system_activity_queries.md
-    title: System Activity Query Bank
-  - id: henry-guide
-    resource: /skills/custom/refactoring/references/henry_command_guide.md
-    title: Henry CLI Guide
----
-
 # Unused Content, Dead LookML & Schedule Cleanup Playbook
 
 This reference document defines the operational procedures, diagnostic detection queries, and safe deprecation funnels for eliminating stale dashboards, inactive explores, dead LookML fields, and zombie schedules.

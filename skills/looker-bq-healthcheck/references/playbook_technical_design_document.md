@@ -1,24 +1,3 @@
----
-type: Playbook
-title: Enterprise Technical Design Document (TDD) Authoring Playbook
-description: Standards and 7-section architecture for generating an authoritative, publication-grade Technical Design Document adhering to OKF v0.2.
-tags: [tdd, technical-design, architecture, okf, remediation-roadmap]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: okf-spec
-    resource: "https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md"
-    title: Open Knowledge Format (OKF) Specification v0.2
-    author: "team:google-cloud-knowledge-catalog"
-  - id: pipeline-architecture
-    resource: /skills/custom/healthcheck/references/looker_bigquery_pipeline_architecture.md
-    title: Looker BigQuery Pipeline Architecture
-  - id: warehouse-optimization
-    resource: /skills/custom/healthcheck/references/warehouse_optimization.md
-    title: Warehouse Compute Optimization
----
-
 # Enterprise Technical Design Document (TDD) Authoring Playbook
 
 This playbook establishes the standard for generating an **Authoritative, Publication-Grade Technical Design Document (TDD)** for Looker & BigQuery modernization engagements.

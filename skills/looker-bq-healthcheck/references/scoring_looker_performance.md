@@ -1,20 +1,3 @@
----
-type: Playbook
-title: Pillar 1 Looker Performance & Query Lifecycle Scoring Rubric
-description: Authoritative 0–100 scoring criteria, latency thresholds, and point deduction standards for Pillar 1 (Checks P1-01 to P1-10).
-tags: [scoring, pillar-1, looker-performance, latency, benchmarks, pso]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-31T10:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-31T10:00:00Z" }
-sources:
-  - id: benchmarks
-    resource: /skills/looker_performance/references/benchmarks.md
-    title: Google Cloud PSO Latency Benchmarks
-  - id: master-scoring
-    resource: /skills/shared/playbooks/scoring_master_rubric.md
-    title: Master Healthcheck Scoring Standard
----
-
 # 🏛️ Pillar 1: Looker Performance & Query Lifecycle Scoring Rubric
 
 This playbook establishes the exact scoring criteria and point deduction thresholds for **Pillar 1** (Checks `P1-01` through `P1-10`).

@@ -1,18 +1,3 @@
----
-type: Reference
-title: Henry Command & Dead Code Vacuuming Guide
-description: Standard Henry CLI operations, parameters, and LookML code-pruning workflows for auditing model bloat.
-tags: [henry, dead-code, vacuum, pulse, lookml-hygiene]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: henry-repo
-    resource: "https://github.com/looker-open-source/henry"
-    title: Henry Open Source Tool
-    author: "team:looker-open-source"
----
-
 # Henry Command & Dead Code Vacuuming Guide
 
 This reference guide documents standard **Henry CLI** operations, diagnostic parameters, and LookML code-pruning workflows for auditing model bloat, unqueried explores, and dead dimensions across any Looker project.

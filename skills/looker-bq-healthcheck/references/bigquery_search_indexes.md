@@ -1,17 +1,3 @@
----
-type: Reference
-title: BigQuery Search Indexes for Looker Explores Guide
-description: Accelerating text-based filtering and string queries in Looker using BigQuery SEARCH indexes.
-tags: [looker, bigquery, search-index, text-search, optimization]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-24T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-24T14:00:00Z" }
-sources:
-  - id: warehouse-optimization
-    resource: skills/custom/healthcheck/references/warehouse_optimization.md
-    title: BigQuery & Warehouse Compute Optimization Guide
----
-
 # BigQuery Search Indexes for Looker Explores Guide
 
 When business users perform ad-hoc text search in Looker Explores (e.g. searching for error codes, freeform transaction notes, URLs, or support logs), standard SQL `LIKE '%keyword%'` or `REGEXP_CONTAINS()` forces BigQuery to read and evaluate every single row across all warehouse partitions.

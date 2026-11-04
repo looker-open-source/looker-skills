@@ -1,17 +1,3 @@
----
-type: Reference
-title: "Recipe: Legacy Runtime Migration & Symmetric Aggregates"
-description: Automated migration recipe from legacy LookML syntax to modern runtime standards.
-tags: [lookml, runtime-migration, symmetric-aggregates]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: legacy-checklist
-    resource: /skills/custom/refactoring/references/legacy_runtime_checklist.md
-    title: Legacy Runtime Checklist
----
-
 # Recipe: Legacy Runtime Migration & Symmetric Aggregates
 
 This playbook guides the automated migration of legacy LookML syntax to modern runtime standards.

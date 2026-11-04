@@ -1,17 +1,3 @@
----
-type: Reference
-title: Large Dashboards & Auto-Refresh Optimization Guide
-description: Large dashboard decomposition rules, auto-refresh rate limits, and queries-per-run optimization.
-tags: [looker, dashboards, tile-bloat, auto-refresh, rendering]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: dashboard-standards
-    resource: /skills/vendor/looker-skills/skills/looker-architect/references/dashboard_standards.md
-    title: Looker Dashboard Standards
----
-
 # Large Dashboards & Auto-Refresh Optimization Playbook
 
 This reference document defines the **Large Dashboard Decomposition Rules**, **Auto-Refresh Audit Standards**, and **Queries-Per-Run Ratios** for eliminating frontend rendering lag and worker queue contention.

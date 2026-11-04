@@ -1,17 +1,3 @@
----
-type: Reference
-title: Query Outliers Diagnostic & Multi-Vector Forensic Guide
-description: 5-Vector root cause forensic framework, 3-way outlier decomposition, and latency classification scorecard.
-tags: [looker, query-outliers, forensics, latency-decomposition]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: benchmarks
-    resource: /skills/custom/healthcheck/references/benchmarks.md
-    title: Google Cloud PSO Latency Benchmarks
----
-
 # Query Outliers Diagnostic & Multi-Vector Forensic Playbook
 
 This reference document defines the **5-Vector Root Cause Forensic Framework**, 3-Way Outlier Decomposition, per-phase maximum outlier isolation methodology, query inspection recipes, and standardized reporting scorecards for diagnosing and presenting anomalous query runtimes.

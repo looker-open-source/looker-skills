@@ -1,18 +1,3 @@
----
-type: Reference
-title: Spectacles & Looker Content Validator CI/CD Setup Guide
-description: Implementation guide for automated LookML syntax and Content Validation in continuous integration pipelines.
-tags: [spectacles, ci-cd, github-actions, content-validator]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: spectacles-repo
-    resource: "https://github.com/spectacles-ci/spectacles"
-    title: Spectacles CI Documentation
-    author: "team:spectacles"
----
-
 # Spectacles & Looker Content Validator CI/CD Setup
 
 This reference guide details how to implement automated LookML syntax and Content Validation in continuous integration pipelines.

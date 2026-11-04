@@ -1,18 +1,3 @@
----
-type: Reference
-title: Google Cloud PSO Benchmark Standards & Query Lifecycle
-description: Official Google Cloud PSO performance benchmarks, query lifecycle definitions, SLA warning thresholds, and latency targets.
-tags: [looker, pso, benchmarks, latency, sla, query-lifecycle]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: pso-standards
-    resource: "https://cloud.google.com/looker/docs"
-    title: Google Cloud PSO Looker Performance Standards
-    author: "team:google-pso"
----
-
 # Google Cloud PSO Benchmark Standards & Query Lifecycle Playbook
 
 This reference document defines the official **Google Cloud PSO Performance Benchmarks**, **Query Lifecycle Definitions**, **Warning Thresholds**, and **Remediation Protocols** for evaluating Looker query performance.

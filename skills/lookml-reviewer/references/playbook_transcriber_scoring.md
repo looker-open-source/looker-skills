@@ -1,20 +1,3 @@
----
-type: Playbook
-title: LookML Model Review & Transcriber Scoring Rubric
-description: Official 0–4 evaluation rubric across LookML Modeling Quality, End-User Experience, Architecture & PDTs, and Governance & Testing.
-tags: [transcriber, scoring-rubric, evaluation, lookml, governance]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: benchmarks
-    resource: /skills/custom/healthcheck/references/benchmarks.md
-    title: Google Cloud PSO Latency Benchmarks
-  - id: dev-workflows
-    resource: /skills/custom/healthcheck/references/development_workflows_and_ci.md
-    title: Development Workflows & CI/CD
----
-
 # LookML Model Review & Transcriber Scoring Rubric
 
 ## 1. Objective & Purpose

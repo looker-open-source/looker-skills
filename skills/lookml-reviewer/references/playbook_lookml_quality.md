@@ -1,40 +1,17 @@
----
-type: Playbook
-title: Looker Style Guide & LookML Modeling Standards Playbook
-description: Official LookML style standards, naming conventions, formatting rules, and DRY modeling patterns for high-quality Looker projects.
-tags: [lookml, style-guide, modeling, dry, primary-keys, snake-case]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: "lookml_modeling_guidelines"
-    resource: "skills/lookml_quality/references/lookml_modeling_guidelines.md"
-    title: "LookML Modeling Guidelines"
-  - id: "lookml_liquid_guidelines"
-    resource: "skills/lookml_quality/references/lookml_liquid_guidelines.md"
-    title: "LookML Liquid Guidelines"
-  - id: "using_looker_cli"
-    resource: "skills/shared/references/using_looker_cli.md"
-    title: "Looker CLI File Streaming & Discovery"
-  - id: "playbook_transcriber_scoring"
-    resource: "skills/lookml_quality/playbooks/playbook_transcriber_scoring.md"
-    title: "Transcriber Scoring Rubric"
----
-
 # Looker Style Guide & LookML Modeling Standards Playbook
 
 This reference document defines the official **LookML Style Standards**, **Naming Conventions**, **Formatting Rules**, and **DRY Modeling Patterns** for maintaining high-quality, self-service Looker projects.
 
 > [!NOTE]
-> **Upstream Vendor References**:
-> * [`lookml-modeling-guidelines`](../../../vendor/looker-skills/skills/lookml-modeling-guidelines/SKILL.md): DRY join modeling, view modularity, and dimension design.
-> * [`lookml-liquid`](../../../vendor/looker-skills/skills/lookml-liquid/SKILL.md): Liquid templating, parameter fields, and conditional formatting.
-> * [`lookml-access-grants`](../../../vendor/looker-skills/skills/lookml-access-grants/SKILL.md): Group-based access control and user attribute security.
-> * [`lookml-refinements`](../../../vendor/looker-skills/skills/lookml-refinements/SKILL.md): LookML view and explore refinements (`+view:`, `+explore:`).
-> * [`lookml-tests`](../../../vendor/looker-skills/skills/lookml-tests/SKILL.md): LookML automated assertion tests and model unit testing.
-> * [`lookml-sets`](../../../vendor/looker-skills/skills/lookml-sets/SKILL.md): Field set grouping, drilling set modularity, and explore exposure.
-> * [`lookml-pdt`](../../../vendor/looker-skills/skills/lookml-pdt/SKILL.md): Persistent derived tables, persistence triggers, and SQL derived table best practices.
-> * [`using-looker-cli`](../../../vendor/looker-skills/skills/using-looker-cli/SKILL.md): Looker CLI utilities for validation and project automation.
+> **Related LookML Skills**:
+> * [`lookml-modeling-guidelines`](../../lookml-modeling-guidelines/SKILL.md): DRY join modeling, view modularity, and dimension design.
+> * [`lookml-liquid`](../../lookml-liquid/SKILL.md): Liquid templating, parameter fields, and conditional formatting.
+> * [`lookml-access-grants`](../../lookml-access-grants/SKILL.md): Group-based access control and user attribute security.
+> * [`lookml-refinements`](../../lookml-refinements/SKILL.md): LookML view and explore refinements (`+view:`, `+explore:`).
+> * [`lookml-tests`](../../lookml-tests/SKILL.md): LookML automated assertion tests and model unit testing.
+> * [`lookml-sets`](../../lookml-sets/SKILL.md): Field set grouping, drilling set modularity, and explore exposure.
+> * [`lookml-view-derived-table`](../../lookml-view/references/derived_table.md): Persistent derived tables, persistence triggers, and SQL derived table best practices.
+> * [`using-looker-cli`](../../using-looker-cli/SKILL.md): Looker CLI utilities for validation and project automation.
 
 ---
 

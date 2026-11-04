@@ -1,15 +1,17 @@
 ---
 name: looker-audit
 description: >-
-  Audits a Looker instance for performance, governance, and cleanup opportunities.
-  Use when analyzing dashboard performance, identifying anti-best practices,
-  checking for excessive table calculations, or auditing datagroup health.
-  Don't use for general Looker onboarding or creating new dashboards.
+  Audits a Looker instance via looker-cli and System Activity for operational
+  governance, content cleanup (inactive users/dashboards, draft content), broken
+  datagroups/PDTs, and dashboard complexity. Use for Looker-only operational
+  and content governance audits (or as Pillar 1 within looker-bq-healthcheck).
+  Don't use for full-stack BigQuery INFORMATION_SCHEMA slot/storage healthchecks
+  (use looker-bq-healthcheck) or Looker onboarding.
 ---
 
 # Looker Audit & Health Check
 
-This skill guides you through auditing a Looker instance using `looker-cli` and System Activity to identify performance bottlenecks, governance gaps, and cleanup opportunities. It flags the violation of best practices and suggests optimal fixes e.g. code snippets or step-by-step guide. 
+This skill guides you through auditing a Looker instance using `looker-cli` and System Activity to identify performance bottlenecks, governance gaps, and cleanup opportunities. It flags the violation of best practices and suggests optimal fixes e.g. code snippets or step-by-step guide. (When performing an end-to-end 3-pillar Looker + LookML + BigQuery warehouse healthcheck and Technical Design Document, use the parent [`looker-bq-healthcheck`](../looker-bq-healthcheck/SKILL.md) orchestrator, which incorporates this audit as Pillar 1 alongside [3-Way Query Latency Phase Decomposition](../looker-bq-healthcheck/references/query_latency_breakdown.md) and [BigQuery Compute Diagnostics](../looker-bq-healthcheck/references/playbook_bigquery_compute.md)). 
 
 > [!IMPORTANT]
 > ## ⚠️ Rules of Engagement (CRITICAL)

@@ -1,17 +1,3 @@
----
-type: Reference
-title: History Query Analysis & Persona Profiling Guide
-description: Persona-based query segmentation, query complexity categorization, and dashboard error/killed query rate analysis.
-tags: [looker, system-activity, personas, error-rates, killed-queries]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: system-activity-history
-    resource: system__activity/history
-    title: Looker System Activity History Explore
----
-
 # History Query Analysis & Persona Profiling Playbook
 
 This reference document defines the **Persona-Based Query Segmentation**, **Query Complexity Categorization (Clean vs Feature-Laden)**, and **Dashboard Error/Killed Query Rate** metrics for evaluating user experience and query stability.

@@ -1,17 +1,3 @@
----
-type: Reference
-title: "Recipe: Housekeeping & Model Bloat Cleanup (using Henry)"
-description: Automated model bloat discovery, unused LookML view pruning, and stale dashboard metadata cleanup.
-tags: [henry, housekeeping, model-bloat, view-pruning]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: henry-guide
-    resource: /skills/custom/refactoring/references/henry_command_guide.md
-    title: Henry Command Guide
----
-
 # Recipe 1: Housekeeping & Model Bloat (using Henry)
 
 This deterministic workflow automates model bloat discovery, unused LookML view pruning, and stale dashboard metadata cleanup.

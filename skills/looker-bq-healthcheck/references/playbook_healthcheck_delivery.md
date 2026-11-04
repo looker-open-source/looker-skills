@@ -1,23 +1,3 @@
----
-type: Playbook
-title: Master Looker Healthcheck Delivery Playbook
-description: Authoritative 4-Pillar engagement delivery methodology, stakeholder interview frameworks, and thematic review structures.
-tags: [looker, healthcheck, delivery, interview, methodology, playbooks]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: benchmarks
-    resource: /skills/custom/healthcheck/references/benchmarks.md
-    title: Google Cloud PSO Performance Benchmarks
-  - id: transcriber-rubric
-    resource: /skills/custom/healthcheck/playbooks/playbook_transcriber_scoring.md
-    title: Transcriber Scoring Rubric
-  - id: system-activity
-    resource: /skills/custom/healthcheck/references/system_activity_queries.md
-    title: System Activity Query Bank
----
-
 # Master Looker Healthcheck Delivery Playbook
 
 This document defines the authoritative **End-to-End Looker Healthcheck Engagement Delivery Methodology**, stakeholder interview frameworks, thematic review structures, and consultant deliverables structured across the **4 Strategic Pillars**.
@@ -101,21 +81,21 @@ graph TD
 
 | Topic # | Engineering Domain | Specialized Playbook / Recipe | Review & Diagnosis Focus | Rectification & Remediation Focus | Target Benchmark / SLA |
 | :---: | :--- | :--- | :--- | :--- | :---: |
-| **1** | **Query Lifecycle Benchmarks** | [benchmarks.md](../references/benchmarks.md) | Audit 12 lifecycle stages against Google Cloud PSO latency thresholds. | Rebalance connections, break up monolithic models, fix Liquid prepare overhead. | `async < 5.0s`, `conn < 0.238s` |
+| **1** | **Query Lifecycle Benchmarks** | [benchmarks.md](benchmarks.md) | Audit 12 lifecycle stages against Google Cloud PSO latency thresholds. | Rebalance connections, break up monolithic models, fix Liquid prepare overhead. | `async < 5.0s`, `conn < 0.238s` |
 | **2** | **Performance Triage** | [playbook_looker_performance.md](playbook_looker_performance.md) | 4-Step progressive isolation (Dashboard $\rightarrow$ Explore $\rightarrow$ Model $\rightarrow$ Query) & 3-Way forensic triage. | Tune connection pool, remove table calculations, align datagroup caching. | `Overhead < 20%`, `Cache > 50%` |
-| **3** | **Query Outliers** | [query_outliers_diagnosis.md](../references/query_outliers_diagnosis.md) | Profile slowest queries (>8s) and isolated runtime spikes. | Implement partition filters, cluster keys, and PDT pre-aggregation. | 0 queries $> 30\text{s}$ in prod |
-| **4** | **User Persona & Error Analysis** | [history_query_analysis.md](../references/history_query_analysis.md) | Query volume by persona (Viewer vs Explorer vs Dev); calculate Error % and Killed %. | Remediate failing looks, address user query abandonment causes. | $\text{Killed Rate} < 5\%$ |
-| **5** | **Dashboard Density & Auto-Refresh** | [large_dashboards_optimization.md](../references/large_dashboards_optimization.md) | Identify dashboards with $>25$ query tiles or auto-refresh $< 30\text{m}$. | Deconstruct into tabbed layouts, link via HTML drill-down links, clamp refresh to ETL. | $\le 25\text{ tiles}$, $\text{Refresh} \ge \text{ETL}$ |
-| **6** | **Single Dashboard Audit** | [single_dashboard_optimization.md](../references/single_dashboard_optimization.md) | 10-Point forensic checklist on specific mission-critical dashboards. | Set row limits to 1 on single-value tiles, enforce global dashboard filters. | 10/10 Forensic Compliance |
-| **7** | **Schedules & Zombie Crons** | [content_delivery_schedules.md](../references/content_delivery_schedules.md) | Scan for top-of-hour (`:00`) schedule stacking, un-paged "Send All", and disabled user crons. | Stagger schedules off-hour (`:07`, `:22`, `:37`), disable "Send All", delete zombie crons. | 0 schedules on `:00` peak |
-| **8** | **Merged Queries** | [merged_queries_remediation.md](../references/merged_queries_remediation.md) | Locate in-memory merged query tiles causing browser crashes and JVM RAM bloat. | Refactor merged queries into native LookML `join:` relationships in Explore files. | 0 merged tiles in production |
+| **3** | **Query Outliers** | [query_outliers_diagnosis.md](query_outliers_diagnosis.md) | Profile slowest queries (>8s) and isolated runtime spikes. | Implement partition filters, cluster keys, and PDT pre-aggregation. | 0 queries $> 30\text{s}$ in prod |
+| **4** | **User Persona & Error Analysis** | [history_query_analysis.md](history_query_analysis.md) | Query volume by persona (Viewer vs Explorer vs Dev); calculate Error % and Killed %. | Remediate failing looks, address user query abandonment causes. | $\text{Killed Rate} < 5\%$ |
+| **5** | **Dashboard Density & Auto-Refresh** | [large_dashboards_optimization.md](large_dashboards_optimization.md) | Identify dashboards with $>25$ query tiles or auto-refresh $< 30\text{m}$. | Deconstruct into tabbed layouts, link via HTML drill-down links, clamp refresh to ETL. | $\le 25\text{ tiles}$, $\text{Refresh} \ge \text{ETL}$ |
+| **6** | **Single Dashboard Audit** | [single_dashboard_optimization.md](single_dashboard_optimization.md) | 10-Point forensic checklist on specific mission-critical dashboards. | Set row limits to 1 on single-value tiles, enforce global dashboard filters. | 10/10 Forensic Compliance |
+| **7** | **Schedules & Zombie Crons** | [content_delivery_schedules.md](content_delivery_schedules.md) | Scan for top-of-hour (`:00`) schedule stacking, un-paged "Send All", and disabled user crons. | Stagger schedules off-hour (`:07`, `:22`, `:37`), disable "Send All", delete zombie crons. | 0 schedules on `:00` peak |
+| **8** | **Merged Queries** | [merged_queries_remediation.md](merged_queries_remediation.md) | Locate in-memory merged query tiles causing browser crashes and JVM RAM bloat. | Refactor merged queries into native LookML `join:` relationships in Explore files. | 0 merged tiles in production |
 | **9** | **Unused Content & Code Bloat** | [playbook_content_governance.md](playbook_content_governance.md) | Scan for 90-day 0-query dashboards, looks, explores, and dead fields via Henry CLI. | Execute 3-stage deprecation funnel: Soft delete $\rightarrow$ Archive $\rightarrow$ Hard delete. | 0 unused explores exposed |
-| **10** | **LookML Style & Standards** | [playbook_lookml_quality.md](playbook_lookml_quality.md) | Audit snake_case compliance, mandatory measure prefixes (`total_`, `count_`), `primary_key: yes`. | Enforce DRY modeling, standard drill fields, hide foreign keys (`hidden: yes`). | 100% snake_case & primary keys |
-| **11** | **Aggregate Awareness & Architecture** | [aggregate_awareness_and_architecture.md](../references/aggregate_awareness_and_architecture.md) | Profile high-traffic explores suitable for compact rollups; audit project modularity. | Add `aggregate_table:` definitions; restructure monolithic repos to Hub & Spoke. | Sub-second dashboard queries |
-| **12** | **Development Workflows & CI/CD** | [development_workflows_and_ci.md](../references/development_workflows_and_ci.md) | Evaluate Git branching, pull request reviews, automated LookML data tests, and CI/CD. | Implement 3-Tier maturity framework, write `tests/*.test.lkml`, configure GitHub Actions. | Automated CI pre-merge gate |
-| **13** | **Security & Access Control** | [security_roles_and_access_control.md](../references/security_roles_and_access_control.md) | Audit direct user role assignments, admin sprawl, orphan roles, and user attribute caching. | Enforce Group-Based Access Control (GBAC), implement `access_grant:` row-level security. | 0 direct-user role bindings |
-| **14** | **Transcriber Scoring** | [playbook_transcriber_scoring.md](playbook_transcriber_scoring.md) | Grade instance across 4 Dimensions (LookML, UX, Architecture, Governance) on 0–4 scale. | Produce Transcriber Action Plan & weighted scoring breakdown. | Overall Score $\ge 2.5 / 4.0$ |
-| **15** | **System Activity Query Bank** | [system_activity_queries.md](../references/system_activity_queries.md) | Centralized query dictionary supporting all automated and ad-hoc telemetry extraction. | Run JSON query definitions against Looker `system__activity` models. | Instant diagnostic execution |
+| **10** | **LookML Style & Standards** | [playbook_lookml_quality.md](../../lookml-reviewer/references/playbook_lookml_quality.md) | Audit snake_case compliance, mandatory measure prefixes (`total_`, `count_`), `primary_key: yes`. | Enforce DRY modeling, standard drill fields, hide foreign keys (`hidden: yes`). | 100% snake_case & primary keys |
+| **11** | **Aggregate Awareness & Architecture** | [aggregate_awareness_and_architecture.md](aggregate_awareness_and_architecture.md) | Profile high-traffic explores suitable for compact rollups; audit project modularity. | Add `aggregate_table:` definitions; restructure monolithic repos to Hub & Spoke. | Sub-second dashboard queries |
+| **12** | **Development Workflows & CI/CD** | [development_workflows_and_ci.md](development_workflows_and_ci.md) | Evaluate Git branching, pull request reviews, automated LookML data tests, and CI/CD. | Implement 3-Tier maturity framework, write `tests/*.test.lkml`, configure GitHub Actions. | Automated CI pre-merge gate |
+| **13** | **Security & Access Control** | [security_roles_and_access_control.md](security_roles_and_access_control.md) | Audit direct user role assignments, admin sprawl, orphan roles, and user attribute caching. | Enforce Group-Based Access Control (GBAC), implement `access_grant:` row-level security. | 0 direct-user role bindings |
+| **14** | **Transcriber Scoring** | [playbook_transcriber_scoring.md](../../lookml-reviewer/references/playbook_transcriber_scoring.md) | Grade instance across 4 Dimensions (LookML, UX, Architecture, Governance) on 0–4 scale. | Produce Transcriber Action Plan & weighted scoring breakdown. | Overall Score $\ge 2.5 / 4.0$ |
+| **15** | **System Activity Query Bank** | [system_activity_queries.md](system_activity_queries.md) | Centralized query dictionary supporting all automated and ad-hoc telemetry extraction. | Run JSON query definitions against Looker `system__activity` models. | Instant diagnostic execution |
 
 ---
 
@@ -148,7 +128,7 @@ Consultant findings must **never be presented as raw, disorganized tile dumps**.
 
 At the conclusion of the engagement, the consultant or agent generates and delivers the standard **Healthcheck Handover Package**:
 
-1. **Executive 30-Check Diagnostic Scorecard & Synthesis** (Relayed dynamically to the user and persisted to Firestore):
+1. **Executive 30-Check Diagnostic Scorecard & Synthesis**:
    * Instance-wide or model-scoped overall health score (0–100%).
    * Executive scorecard summarizing status (🟢 PASSED, 🟡 WARNING, 🔴 CRITICAL) for all 30 checks.
    * Google Cloud PSO Query Lifecycle Latency Benchmark analysis.

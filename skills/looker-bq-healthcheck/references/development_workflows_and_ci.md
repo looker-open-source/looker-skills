@@ -1,17 +1,3 @@
----
-type: Reference
-title: Development Workflows, Governance & CI/CD Guide
-description: 3-Tier Maturity Framework, LookML data test protocols, and automated CI/CD pipelines for LookML engineering governance.
-tags: [lookml, ci-cd, data-tests, git, governance, spectacles]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: vendor-testing-suite
-    resource: /skills/vendor/looker-skills/skills/looker-architect/references/testing_suite.md
-    title: LookML Testing Suite
----
-
 # Development Workflows, Governance & CI/CD Playbook
 
 This reference document defines the **3-Tier Maturity Framework**, **LookML Data Test Protocols**, and **Automated CI/CD Pipelines** for establishing robust LookML engineering governance.

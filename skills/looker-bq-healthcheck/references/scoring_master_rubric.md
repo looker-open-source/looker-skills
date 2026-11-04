@@ -1,23 +1,3 @@
----
-type: Playbook
-title: Master Healthcheck 30-Check Scoring Standard & Mathematical Formulation
-description: Unified Google Cloud PSO multi-pillar scoring methodology, mathematical formulas, and 30-check evaluation standards.
-tags: [scoring, master, methodology, rubric, benchmarks, pso, multi-pillar, evaluation]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-31T10:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-31T10:00:00Z" }
-sources:
-  - id: p1-scoring
-    resource: /skills/looker_performance/playbooks/scoring_looker_performance.md
-    title: Pillar 1 Looker Performance Scoring
-  - id: p2-scoring
-    resource: /skills/lookml_quality/playbooks/scoring_lookml_quality.md
-    title: Pillar 2 LookML Quality Scoring
-  - id: p3-scoring
-    resource: /skills/bigquery_compute/playbooks/scoring_bigquery_compute.md
-    title: Pillar 3 BigQuery Compute Scoring
----
-
 # 🏆 Master Healthcheck 30-Check Scoring Standard
 
 This master playbook establishes the unified scoring architecture across all **3 Healthcheck Pillars** (30 automated checks).

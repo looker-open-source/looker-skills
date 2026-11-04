@@ -1,47 +1,19 @@
----
-type: Reference
-title: BigQuery & Warehouse Compute Optimization Guide
-description: SQL definitions and diagnostic thresholds for auditing BigQuery compute, slot contention, on-demand query costs, and partitioning.
-tags: [bigquery, slots, partition-pruning, query-costs, information-schema]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: connecting-bq
-    resource: /skills/vendor/looker-skills/skills/connecting-looker-to-bigquery/SKILL.md
-    title: Connecting Looker to BigQuery
-  - id: mig-optimize
-    resource: "https://google-cloud-professional-services.googlesource.com/mig-optimize"
-    title: MIG Optimize Diagnostic Framework
-    author: "team:google-pso"
-  - id: bi-engine-optimization
-    resource: skills/custom/healthcheck/references/bi_engine_optimization.md
-    title: BigQuery BI Engine & Memory Sizing Optimization Guide
-  - id: incremental-pdts-guide
-    resource: skills/custom/healthcheck/references/incremental_pdts_guide.md
-    title: Incremental Persistent Derived Tables (PDTs) Optimization Guide
-  - id: bigquery-search-indexes
-    resource: skills/custom/healthcheck/references/bigquery_search_indexes.md
-    title: BigQuery Search Indexes for Looker Explores Guide
----
-
 # BigQuery & Warehouse Compute Optimization Playbook
 
 This reference catalog provides the exact SQL query definitions, diagnostic thresholds, and optimization patterns for auditing BigQuery compute, slot contention, on-demand query costs, partition pruning, and datagroup ETL synchronization.
 
 > [!NOTE]
-> **Attested Computations & Upstream References**:
-> * [`slot_consumption_timeline.md`](../computations/slot_consumption_timeline.md): Attested BigQuery 24-hour slot consumption & saturation timeline query.
-> * [`bytes_billed_by_model.md`](../computations/bytes_billed_by_model.md): Attested query cost and gigabytes billed audit query.
-> * [`table_partition_ddl.md`](../computations/table_partition_ddl.md): Attested BigQuery DDL generator for table partitioning and clustering.
-> * [`connecting-looker-to-bigquery`](../../vendor/looker-skills/skills/connecting-looker-to-bigquery/SKILL.md): BigQuery connection architecture, BI Engine setup, and dataset permissions.
-> * [`mig-optimize`](https://google-cloud-professional-services.googlesource.com/mig-optimize): Google Cloud Professional Services BigQuery migration & slot/stage performance diagnostic framework.
+> **Related Computations & References**:
+> * [`slot_consumption_timeline.md`](slot_consumption_timeline.md): BigQuery 24-hour slot consumption & saturation timeline query.
+> * [`bytes_billed_by_model.md`](bytes_billed_by_model.md): Query cost and gigabytes billed audit query.
+> * [`table_partition_ddl.md`](table_partition_ddl.md): BigQuery DDL generator for table partitioning and clustering.
+> * [`connecting-looker-to-bigquery`](../../connecting-looker-to-bigquery/SKILL.md): BigQuery connection architecture, BI Engine setup, and dataset permissions.
 
 ---
 
 ## ⚡ 1. Slot Contention & Reservation Analysis
 
-When queries experience long execution or queue times, check for slot starvation and reservation saturation in BigQuery using the sanctioned [`slot_consumption_timeline.md`](../computations/slot_consumption_timeline.md) computation contract.
+When queries experience long execution or queue times, check for slot starvation and reservation saturation in BigQuery using [`slot_consumption_timeline.md`](slot_consumption_timeline.md).
 
 ### SQL Query: Slot Consumption Timeline (Past 24 Hours)
 ```sql

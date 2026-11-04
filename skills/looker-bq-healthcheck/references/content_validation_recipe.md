@@ -1,17 +1,3 @@
----
-type: Reference
-title: "Recipe: Content Validator CI/CD Pre-Deployment Check"
-description: Automated pre-deployment validation workflow using local Git and looker-cli content validator.
-tags: [looker-cli, content-validator, ci-cd, pre-deployment]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: spectacles-setup
-    resource: /skills/custom/refactoring/references/spectacles_ci_setup.md
-    title: Spectacles CI Setup
----
-
 # Recipe 2: Content Validator CI/CD Pre-Deployment Check
 
 This playbook guides the automated pre-deployment validation workflow using local Git and `looker-cli`.

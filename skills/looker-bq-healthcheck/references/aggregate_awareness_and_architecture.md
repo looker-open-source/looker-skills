@@ -1,17 +1,3 @@
----
-type: Reference
-title: Advanced Optimization, Aggregate Awareness & Enterprise Architecture
-description: Implementation protocols for Looker Aggregate Awareness (aggregate_table) and Hub & Spoke modular project architecture.
-tags: [looker, aggregate-awareness, rollups, hub-and-spoke, architecture]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: vendor-agg-awareness
-    resource: /skills/vendor/looker-skills/skills/looker-architect/references/aggregate_awareness.md
-    title: Looker Aggregate Awareness Reference
----
-
 # Advanced Optimization, Aggregate Awareness & Enterprise Architecture Playbook
 
 This reference document defines the complete implementation and diagnostic protocols for Looker **Aggregate Awareness** (`aggregate_table`) and **Hub & Spoke** modular project architecture.

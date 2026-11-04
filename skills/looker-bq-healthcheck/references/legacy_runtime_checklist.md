@@ -1,17 +1,3 @@
----
-type: Reference
-title: Legacy LookML Runtime Migration Checklist
-description: Technical rules and parameter mappings required to safely disable Legacy LookML Runtime in Looker instances.
-tags: [lookml, legacy-runtime, migration, checklist]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: runtime-recipe
-    resource: /skills/custom/refactoring/references/runtime_migration_recipe.md
-    title: Runtime Migration Recipe
----
-
 # Legacy LookML Runtime Migration Checklist
 
 This reference guide outlines the technical rules and parameter mappings required to safely disable Legacy LookML Runtime in Looker instances.

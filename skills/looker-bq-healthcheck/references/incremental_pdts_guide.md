@@ -1,20 +1,3 @@
----
-type: Reference
-title: Incremental Persistent Derived Tables (PDTs) Optimization Guide
-description: Architecture, LookML patterns, and BigQuery partition alignment for Incremental Persistent Derived Tables.
-tags: [looker, pdt, incremental-pdt, bigquery, partitioning, optimization]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-24T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-24T14:00:00Z" }
-sources:
-  - id: lookml-pdt-guidelines
-    resource: https://github.com/looker-open-source/looker-skills/tree/main/skills/lookml-pdt-guidelines
-    title: LookML PDT Guidelines
-  - id: warehouse-optimization
-    resource: skills/custom/healthcheck/references/warehouse_optimization.md
-    title: BigQuery & Warehouse Compute Optimization Guide
----
-
 # Incremental Persistent Derived Tables (PDTs) Optimization Guide
 
 When fact tables exceed millions or billions of rows, rebuilding a Persistent Derived Table (PDT) from scratch every cycle creates severe database slot contention, wastes warehouse scan budget, and delays downstream reporting.

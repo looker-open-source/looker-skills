@@ -1,17 +1,3 @@
----
-type: Reference
-title: Content Delivery & Schedule Optimization Guide
-description: Diagnostic protocols, failure pattern matching, and automated cleanup procedures for scheduled deliveries and scheduler queue optimization.
-tags: [looker, scheduler, cron, queue, zombie-schedules]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: system-activity-schedules
-    resource: system__activity/scheduled_plan
-    title: Looker System Activity Scheduled Plan Explore
----
-
 # Content Delivery & Schedule Optimization Playbook
 
 This reference document defines the diagnostic protocols, failure pattern matching, and automated cleanup procedures for optimizing scheduled deliveries, eliminating queue congestion, and purging zombie schedules.

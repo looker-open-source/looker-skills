@@ -1,17 +1,3 @@
----
-type: Reference
-title: Merged Queries Diagnostic & Native LookML Remediation Guide
-description: Operational risks of in-memory merged queries and step-by-step LookML refactoring into native joins.
-tags: [looker, merged-queries, joins, lookml-refactoring]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: modeling-guidelines
-    resource: /skills/vendor/looker-skills/skills/lookml-modeling-guidelines/SKILL.md
-    title: LookML Modeling Guidelines
----
-
 # Merged Queries Diagnostic & Native LookML Remediation Playbook
 
 This reference document defines the operational risks, diagnostic detection queries, and step-by-step LookML refactoring workflows for eliminating in-memory merged queries.

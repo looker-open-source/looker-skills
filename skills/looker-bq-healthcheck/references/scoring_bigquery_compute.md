@@ -1,20 +1,3 @@
----
-type: Playbook
-title: Pillar 3 BigQuery Engine & Compute Optimization Scoring Rubric
-description: Authoritative 0–100 scoring criteria, storage layout standards, slot utilization curves, and point deduction standards for Pillar 3 (Checks P3-21 to P3-30).
-tags: [scoring, pillar-3, bigquery, compute, slots, partitioning, clustering]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-31T10:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-31T10:00:00Z" }
-sources:
-  - id: bq-optimization
-    resource: /skills/bigquery_compute/references/warehouse_optimization.md
-    title: BigQuery Warehouse Optimization Reference
-  - id: master-scoring
-    resource: /skills/shared/playbooks/scoring_master_rubric.md
-    title: Master Healthcheck Scoring Standard
----
-
 # ⚡ Pillar 3: BigQuery Engine & Compute Optimization Scoring Rubric
 
 This playbook establishes the exact scoring criteria and point deduction thresholds for **Pillar 3** (Checks `P3-21` through `P3-30`).

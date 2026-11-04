@@ -1,20 +1,3 @@
----
-type: Playbook
-title: Pillar 2 LookML Modeling Quality & Architecture Scoring Rubric
-description: Authoritative 0–100 scoring criteria, AST inspection rules, and point deduction standards for Pillar 2 (Checks P2-11 to P2-20).
-tags: [scoring, pillar-2, lookml, modeling, code-quality, primary-keys, ast]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-31T10:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-31T10:00:00Z" }
-sources:
-  - id: transcriber-scoring
-    resource: /skills/lookml_quality/playbooks/playbook_transcriber_scoring.md
-    title: LookML Transcriber Scoring Rubric
-  - id: master-scoring
-    resource: /skills/shared/playbooks/scoring_master_rubric.md
-    title: Master Healthcheck Scoring Standard
----
-
 # 🧬 Pillar 2: LookML Modeling Quality & Architecture Scoring Rubric
 
 This playbook establishes the exact scoring criteria and point deduction thresholds for **Pillar 2** (Checks `P2-11` through `P2-20`).

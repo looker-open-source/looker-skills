@@ -1,17 +1,3 @@
----
-type: Reference
-title: Looker & BigQuery Interconnected Pipeline Architecture
-description: 6-stage interconnected execution pipeline blueprint, 4 major failure loops, and 5-dimensional audit strategy.
-tags: [looker, bigquery, pipeline-architecture, failure-loops, forensics]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: connecting-bq
-    resource: /skills/vendor/looker-skills/skills/connecting-looker-to-bigquery/SKILL.md
-    title: Connecting Looker to BigQuery
----
-
 # Looker & BigQuery Interconnected Pipeline Architecture
 
 To understand how performance problems propagate between Looker and BigQuery, you must view the system as an **interconnected execution pipeline**. A bottleneck in BigQuery is often caused by an architectural decision in LookML, and a slow dashboard is often caused by concurrency congestion rather than raw compute speed.

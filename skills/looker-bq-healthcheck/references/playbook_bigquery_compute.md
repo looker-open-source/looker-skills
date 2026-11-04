@@ -1,20 +1,3 @@
----
-type: Playbook
-title: BigQuery Engine & Compute Optimization Playbook
-description: Authoritative diagnostic and remediation playbook for BigQuery physical storage, table partitioning, clustering, slot contention, and Aggregate Awareness.
-tags: [bigquery, compute, slots, partitioning, clustering, aggregate-awareness, performance]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-28T12:30:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-28T12:30:00Z" }
-sources:
-  - id: bq-optimization
-    resource: /skills/bigquery_compute/references/warehouse_optimization.md
-    title: BigQuery Warehouse Optimization Reference
-  - id: bq-pipeline
-    resource: /skills/bigquery_compute/references/looker_bigquery_pipeline_architecture.md
-    title: Looker-BigQuery Pipeline Architecture
----
-
 # BigQuery Engine & Compute Optimization Playbook (Pillar 3)
 
 This playbook defines the diagnostic protocols, telemetry queries, and scoring rubrics for evaluating BigQuery engine health, storage layout, slot utilization, and query execution efficiency.

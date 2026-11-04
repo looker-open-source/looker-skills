@@ -1,17 +1,3 @@
----
-type: Reference
-title: Security Review, Roles, Permissions & Access Control Guide
-description: Diagnostic protocols for auditing user roles, group hierarchies (GBAC), license allocations, and LookML access grants.
-tags: [looker, security, gbac, access-grants, user-attributes]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: access-grants
-    resource: /skills/vendor/looker-skills/skills/lookml-access-grants/SKILL.md
-    title: LookML Access Grants
----
-
 # Security Review, Roles, Permissions & Access Control Playbook
 
 This reference document defines the diagnostic protocols and remediation workflows for auditing Looker user roles, group hierarchies, license allocations, and LookML access grants.

@@ -1,17 +1,3 @@
----
-type: Reference
-title: Single Dashboard Forensic Audit & Optimization Checklist
-description: 10-point actionable forensic audit checklist for evaluating and accelerating mission-critical Looker dashboards.
-tags: [looker, dashboard-optimization, single-dashboard, audit-checklist]
-status: stable
-generated: { by: looker_healthcheck_agent/v0.2, at: "2026-08-20T12:00:00Z" }
-verified: { by: "human:sampitcher", at: "2026-08-20T14:00:00Z" }
-sources:
-  - id: dashboard-standards
-    resource: /skills/vendor/looker-skills/skills/looker-architect/references/dashboard_standards.md
-    title: Looker Dashboard Standards
----
-
 # Single Dashboard Forensic Audit & Optimization Playbook
 
 This reference document defines the **10-Point Forensic Audit Framework** for evaluating, diagnosing, and optimizing individual mission-critical Looker dashboards.
