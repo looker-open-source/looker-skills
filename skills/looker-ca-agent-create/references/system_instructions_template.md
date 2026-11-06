@@ -1,18 +1,20 @@
-# Four-Part System Instructions Templates (XML & YAML)
+# Four-Part System Instructions Templates (Internal XML & YAML)
 
-Every Looker Conversational Analytics (CA) Agent created by `looker-ca-agent-create` must follow the token and character budget (`< 1,200` tokens, ideally `400-800` tokens; **`<= 4,800` characters** measured programmatically via `len()`), filter inlining, Looker native `"-NULL"` string filter syntax, valid Looker complete-day date filter syntax (`"30 days ago for 30 days"`), conditional date default, and single-query consolidation rules defined in `looker-ca-best-practices.md` Section 1. Store the resulting well-formed 4-part specification in `context.instructions` in Looker API 4.0.
+Every Looker Conversational Analytics (CA) Agent created by `looker-ca-agent-create` must store a well-formed 4-part specification inside `context.instructions` in Looker API 4.0 (`< 1,200` tokens, ideally `400-800` tokens; **`<= 4,800` characters**).
+
+> **Presentation & Validation Rule:** Author this XML or YAML internally for the API 4.0 payload—**do not dump raw XML/YAML blocks into the user chat** unless the user asks to view the raw instructions (or in MCP-only fallback mode without `looker-cli`). Validate strict XML 1.0 escaping (`&amp;`, zero raw `<`/`>` inside element bodies) and `len() <= 4800` inside the single Step 4 atomic creation command rather than running separate mid-workflow Python scripts.
 
 ---
 
 ## 1. Standalone Agent System Instructions Template (Well-Formed XML 1.0)
 
-Use this template when configuring a **Standalone Agent** grounded on 1 to 5 LookML Explores (escape `&` as `&amp;` and avoid raw unescaped `<` or `>` characters such as `<=` inside XML element bodies so strict XML 1.0 parsers like `xml.etree.ElementTree.fromstring` succeed):
+Use this template internally when configuring a **Standalone Agent** grounded on 1 to 5 LookML Explores:
 
 ```xml
 <agent_instructions>
   <role_and_tone>
     - Persona: Act as a [Domain Role, e.g., Senior Ecommerce Merchandising Analyst] supporting [Target Audience].
-    - Scope: Answer questions strictly using the attached Looker Explores ([list model.explore names]). Never fabricate metrics or extrapolate outside Looker query results.
+    - Scope: Answer questions strictly using the attached Looker Explores ([list model.explore names]), covering data from [min_date] through [max_date]. Never fabricate metrics or extrapolate outside Looker query results.
     - Tone: Concise, executive-ready, and data-grounded. State applied filters and date ranges in every answer.
   </role_and_tone>
 
@@ -25,7 +27,7 @@ Use this template when configuring a **Standalone Agent** grounded on 1 to 5 Loo
       - When excluding null string values on `[view.dimension_field]`, always use Looker filter syntax `"-NULL"` (and `"-EMPTY"`), never `"not null"`.
     - Conditional Default Date Range:
       - Apply `[view.date_field] = "30 days ago for 30 days"` (last 30 complete days) ONLY for general trend or Top-N summary questions when no time window is specified, and state this assumption clearly.
-      - Do NOT apply a default date filter when the user asks for lifetime totals or filters by a specific customer, account name, or order ID.
+      - Do NOT apply a default date filter when the user asks what the data covers, requests lifetime totals, or filters by a specific customer, account name, or ID.
     - Canonical Filter Value Mappings (Do not sample fields for these values):
       - `[view.status_field]`: Map "completed" or "paid" to `"Complete"`; "refunded" to `"Returned"`; "canceled" to `"Cancelled"`.
       - `[view.region_field]`: Map "US" or "United States" to `"USA"`; "UK" to `"United Kingdom"`.
@@ -53,7 +55,7 @@ Use this template when configuring a **Standalone Agent** grounded on 1 to 5 Loo
 
 ## 2. Dashboard Agent System Instructions Template (YAML)
 
-Use this template when configuring a **Dashboard Agent** (`"category": "dashboard"`, `"name": "<instance_origin>-<dashboard_id>"` on live Looker instances so the native Dashboard panel binds to it, `"sources"` populated from backing tile Explores, `"golden_query_ids"` omitted):
+Use this template internally when configuring a **Dashboard Agent** (`"category": "dashboard"`, `"name": "<instance_origin>-<dashboard_id>"` on live Looker instances, `"sources"` populated from backing tile Explores, `"golden_query_ids"` omitted):
 
 ```yaml
 agent_instructions:

@@ -1,111 +1,46 @@
 # Looker API 4.0 CA Endpoints & Looker MCP Integration Workflow
 
-Because Looker MCP does not expose dedicated `ConversationalAnalytics` write tools, `looker-ca-agent-optimize` uses a **hybrid execution contract** adhering to the **Parallel MCP Batching, JSONL Output Parsing, Safe Heredoc JSON Piping, and Authentication Fail-Fast Protocol** in `looker-ca-best-practices.md` Section 5:
-- **Looker MCP Tools (`looker-base`):** Used for agent discovery fallback (`system__activity.agent`), LookML & dashboard inspection (`get_dashboard`, `get_dimensions`, `get_measures`, `get_project_file`), Ground Truth verification (`query`), golden query short-URL generation (`query_url`), and isolated `dev_mode` (`{"devMode": true}`) LookML patching.
-- **Looker API 4.0 CLI (`looker-cli api conversationalanalytics`):** Used to load live CA Agent configs (when raw JSON was not supplied), register golden queries, run SxS evaluation conversations, manage `[TMP-SXS-EVAL]` clones, and apply approved agent updates.
+`looker-ca-agent-optimize` combines Looker MCP tools and `looker-cli api conversationalanalytics` under the **Parallel MCP Batching, JSONL Output, Single Atomic Deployment, and Auth Fail-Fast** rules in `looker-ca-best-practices.md` Section 4:
 
 ---
 
-## 1. Looker MCP Parallel Batching, JSONL Format & `filters` Contract (Steps 2, 3, 4, 5, and 7)
+## 1. Parallel Inspection & Query Verification Batches (Steps 2, 3, 4, and 6)
 
-| Workflow Step | Looker MCP Tool Batch | Execution Rule & Schema Contract |
+| Workflow Step | Looker MCP / CLI Batch | Execution Rule |
 | :--- | :--- | :--- |
-| **Step 2 (Agent Discovery Fallback)** | `query` on `system__activity.agent` | Resolve an Agent Name to its GUID (`agent.guid`) when given a display name. |
-| **Steps 2 & 3 (LookML & Dashboard Audit)** | **Batch 1:** `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, `get_project_files` (after `get_models`/`get_projects` if `project_id` is unknown; plus `get_dashboard` if `"category": "dashboard"`); **Batch 2:** `get_project_file`, `get_field_value_suggestions` | Reuse any Explore schema already in context; never call `get_explore` on top of `get_dimensions` + `get_measures`. **JSONL Format:** Multi-record MCP outputs (`get_dimensions`, `get_measures`, `query`) serialize one JSON object per line (JSONL, not a `[...]` array); read saved output files directly or parse line-by-line via `json.loads(line)`. |
-| **Steps 4 & 5 (Ground Truth & Short URLs)** | **Capped Parallel Batching (`<= 8` calls/turn):** `query` -> `query_url` | Pass `filters` as a **bare-key JSON object map** (`{"view.field": "-NULL"}` on strings, never `"not null"`, never inner-quoted keys like `{"\"view.field\"": ...}`, and **omit `filters` or pass `{}` when unfiltered—never `"filters": null`**) and `limit` as an **integer** (`10`). Verify `0` SQL/filter errors and `> 0` sane rows via `query` (`<= 8` calls/batch) before generating or registering Standalone Golden Query `/x/<slug>` links via `query_url` (`query_url` does not validate SQL/filter syntax). |
-| **Step 7 (LookML Dev-Branch Patch)** | `dev_mode` (`{"devMode": true}`), `get_project_file`, `update_project_file`, `validate_project`, `run_lookml_tests` | Read full file via `get_project_file` first, apply surgical additive edits via `update_project_file` (never full-file rewrites), and verify `0` errors (`validate_project`). Never deploy to production. |
+| **Step 2 (Load Target Agent)** | `get_agent "<id>"` or `search_agents` (`--limit 50` and `--category "dashboard" --limit 50`) | Resolve display names via `search_agents` (both Standalone and `--category "dashboard"`, which already return `id`, `name`, `description`, `sources`, `context.instructions`, and `golden_queries` inline; remember `get_agent` returns `404` on `"category": "dashboard"`). On MCP-only hosts, accept raw Agent JSON or query `system__activity.agent`. |
+| **Step 2 (LookML & Live Data Inspection)** | **Batch 1:** `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, `get_project_files` (+ `get_dashboard` if Dashboard Agent); **Batch 2 (`<= 8` calls):** core `.model.lkml`/`.view.lkml` via `get_project_file` + `get_field_value_suggestions` + `1-2` exploratory `query` checks | Never call `get_explore` on top of `get_dimensions` + `get_measures`. Read core Explore `.lkml` files and run `1-2` quick `query` checks (date coverage, real status/category values) so optimizations reflect real SQL logic and live data. Note any exposed fields missing `description:` or clear `label:` for Step 6. |
+| **Steps 3-5 (Golden Query Verification)** | **Capped Parallel Batch (`<= 8` calls/turn):** `query` -> `query_url` | Pass `filters` as a bare-key JSON object map (`"-NULL"` on strings, never `"not null"`, never `"filters": null`) and `limit` as an integer. Always verify `0` SQL errors and `> 0` sane rows via `query` **before** generating `/x/<slug>` URLs via `query_url`. |
+| **Step 6 (Optional LookML Patch — Only If User Says Yes)** | `dev_mode` (`{"devMode": true}`), `get_project_file`, `update_project_file`, `validate_project` | Read full `.view.lkml` file first (targeting `views/refined/` when present), apply surgical additive `description:` / `label:` edits, and confirm `0` errors (`validate_project`). Never deploy to production. |
 
 ---
 
-## 2. Looker API 4.0 Agent Discovery & Loading (Step 2)
+## 2. `Hard` Mode Live Evaluation, `[TMP-SXS-EVAL]` Clone & Two-Step Cleanup (Step 4)
 
-Never run `looker-cli --help` or `session login`/`logout` loops; enforce the Fail-Fast Auth rule in `looker-ca-best-practices.md` Section 5.
+Execute Step 4 **only when the user selects `Hard` mode**. Always pipe JSON payloads via quoted heredocs (`cat <<'EOF'`) or one Python block so apostrophes/newlines never break quoting:
 
-### A. MCP-Only Raw JSON Path vs. Live Agent Lookup
-- **Raw JSON Provided in Step 1:** Parse the user-supplied Agent JSON directly without invoking `looker-cli` (enables zero-token static `Audit` mode in cloud/chat MCP-only environments).
-- **Display Name Lookup:** Query Looker MCP `query` (`model: "system__activity"`, `explore: "agent"`, `fields: ["agent.id", "agent.guid", "agent.name", "agent.category", "agent.dashboard", "agent.dashboard_title", "user.email"]`) or run:
-  ```bash
-  looker-cli api conversationalanalytics search_agents --name "<agent_name>"
-  ```
-- **Load Agent by GUID (`GET /api/4.0/agents/{agent_id}`) & `Dashboard Agent` `HTTP 404` Fallback:**
-  ```bash
-  looker-cli api conversationalanalytics get_agent "<agent_id>"
-  ```
-  - **Dashboard Agent `HTTP 404` Quirk:** `get_agent "<agent_id>"` returns **`HTTP 404 Not Found`** for `"category": "dashboard"` agents. Whenever inspecting, backing up, or verifying a Dashboard Agent (or if `get_agent` returns `404`), fetch the full agent payload via `looker-cli api conversationalanalytics search_agents --category "dashboard"` and filter by `id` or `"name": "<instance_origin>-<dashboard_id>"` (note that Looker's native Dashboard panel binds strictly to `"name": "<instance_origin>-<dashboard_id>"` and hides `"category": "dashboard"` agents from `/conversations`).
-- **Verified Looker API 4.0 `Agent` / `WriteAgent` Schema:**
-  - `id` (string GUID), `name` (required string; `"<instance_origin>-<dashboard_id>"` on live native Dashboard Agents), `description` (required string)
-  - `category`: `"conversation"` / omitted for Standalone Agents, or `"dashboard"` for Dashboard Agents (Looker API 4.0 has **no `dashboard_id` field** on `Agent` or `WriteAgent`)
-  - `sources` (required non-nullable array): `[{"model": "<model_name>", "explore": "<explore_name>"}]`
-  - `context`: `{"instructions": "<4-part strict XML 1.0 or YAML string, <= 4,800 chars>"}`
-  - `code_interpreter`: `true | false` (default `false`)
-  - `golden_queries` / `golden_query_ids`: Integer ID array (`[101, 102]`) for Standalone Agents; omitted for Dashboard Agents
+1. **Run Baseline & Candidate Eval Questions (`3-5` Questions Recommended for Speed):**
+   - Create conversation: `looker-cli api conversationalanalytics create_conversation -` (`{"agent_id": "<id>", "name": "[TMP-SXS] Q1"}`).
+   - Send message: `looker-cli api conversationalanalytics conversational_analytics_chat -` (`{"conversation_id": "<conv_id>", "user_message": "<question>"}`).
+   - Record wall-clock latency (P50/P90), NDJSON thoughts (`data.type == "DATA" and data.kind == "THOUGHT"`), generated Looker queries, `python_and_chart_agent` overhead, and accuracy vs. Ground Truth `query` results.
+2. **Test Candidate Upgrade on Isolated `[TMP-SXS-EVAL]` Clone:**
+   - Never overwrite the real agent before verifying candidate fixes in `Hard` mode. Clone via `create_agent -` with mandatory `"name": "[TMP-SXS-EVAL] <Original Name>"`, `"description"`, `"sources"`, candidate `"context"`, `"code_interpreter"`, and candidate `"golden_query_ids"`.
+   - Run **1 clean SxS round**; if target metrics improve with zero regressions, proceed directly to Step 5 (run a 2nd SxS round only if a target question still fails—strictly max 2 rounds).
+3. **Mandatory Two-Step Soft+Hard Cleanup:**
+   - Immediately after SxS finishes, purge every temporary conversation, the `[TMP-SXS-EVAL]` agent, and any unretained Golden Query using `update_* {"deleted": true}` followed by `delete_*` so Looker's `Recent` sidebar stays completely clean.
 
 ---
 
-## 3. Execute Eval Suite, Clone `[TMP-SXS-EVAL]` & Two-Step Cleanup (Steps 4 & 5)
+## 3. Step 5: Default Atomic Backup & Agent Optimization
 
-Always pipe JSON payloads using quoted heredocs (`cat <<'EOF'`) so apostrophes or newlines inside questions and XML/YAML instructions never break bash syntax:
+Once Step 3 (`Soft` mode) or Step 4 (`Hard` mode) finishes—unless the user explicitly asked for a read-only inspection without modifying the agent, or `looker-cli` is unavailable—apply the agent optimization **automatically in one single atomic command** (`set -euo pipefail` / single `python3 - <<'PY'` script):
 
-### A. Run Eval Conversations & Capture NDJSON Reasoning Traces
-1. **Create Conversation (`POST /api/4.0/conversations` — `"name"` is mandatory):**
-   ```bash
-   cat <<'EOF' | looker-cli api conversationalanalytics create_conversation -
-   {
-     "agent_id": "<agent_id_or_temp_sxs_id>",
-     "name": "[TMP-SXS] Round 1 - Q1"
-   }
-   EOF
-   ```
-2. **Send Eval Question (`POST /api/4.0/conversational_analytics/chat` — `"user_message"` is mandatory):**
-   ```bash
-   cat <<'EOF' | looker-cli api conversationalanalytics conversational_analytics_chat -
-   {
-     "conversation_id": "<conv_id>",
-     "user_message": "What was our net revenue by region last quarter?"
-   }
-   EOF
-   ```
-   - Record wall-clock latency (P50/P90), NDJSON reasoning steps (`data.type == "DATA" and data.kind == "THOUGHT"`), generated Looker queries, `python_and_chart_agent` invocations, and final data rows vs. Ground Truth.
-
-### B. Clone Temporary `[TMP-SXS-EVAL]` Agent & Mandatory Two-Step Cleanup
-- **Register Candidate Golden Queries (`Standalone` Only):** Follow `looker-ca-best-practices.md` Section 3 & Section 5 (`query`-verified `query_url` + `create_golden_query -` with `<= 1` question per entry in a single shell loop).
-- **Create Temporary SxS Agent (`POST /api/4.0/agents` — `"name"`, `"description"`, and `"sources"` are mandatory):**
-  ```bash
-  cat <<'EOF' | looker-cli api conversationalanalytics create_agent -
-  {
-    "name": "[TMP-SXS-EVAL] Retail Analytics Agent",
-    "description": "Temporary SxS evaluation clone of Retail Analytics Agent.",
-    "sources": [
-      {"model": "retail_analytics", "explore": "order_items"}
-    ],
-    "context": {
-      "instructions": "<agent_instructions>...</agent_instructions>"
-    },
-    "code_interpreter": false,
-    "golden_query_ids": [101, 102]
-  }
-  EOF
-  ```
-- **Mandatory Two-Step Soft+Hard Cleanup:** Immediately after Round 1/2 finishes, purge every temporary conversation, temporary `[TMP-SXS-EVAL]` agent, and unretained golden query using the exact two-step `update_* {"deleted": true}` + `delete_*` sequence in `looker-ca-best-practices.md` Section 5 so zero clutter remains in the Looker UI `Recent` sidebar.
-
----
-
-## 4. Atomic CA Agent Update & Complete Rollback Protocol (Step 7)
-
-Execute **only after explicit human approval in Step 6**. On live CLI hosts, consolidate steps 1-3 below plus post-patch live verification (`get_agent "<agent_id>"`, or `search_agents --category "dashboard"` for Dashboard Agents) into **one atomic `set -euo pipefail` shell/Python heredoc command** (keeping intermediate JSON payloads in scratch/tmp and aborting immediately if the backup file fails to write) to avoid multiple terminal prompts or mid-step context compaction:
-1. **Save & Verify Rollback Snapshot First:** Write the full prior agent JSON payload (including `backup["golden_queries"]`) to `/tmp/ca_agent_backup_<agent_id>_<timestamp>.json` (or output it inline if local disk writes are unavailable), confirm the file is non-empty, and report the path to the user.
-2. **Sync Approved Golden Queries (`Standalone` Only):** Register new `query`-verified golden queries via `query_url` + `create_golden_query -` (and delete obsolete ones via `delete_golden_query "<old_gq_id>"` only after backup verification) and assemble the final integer `golden_query_ids` list.
-3. **Patch Only Approved Agent Fields (`PATCH /api/4.0/agents/{agent_id}`):**
-   ```bash
-   cat <<'EOF' | looker-cli api conversationalanalytics update_agent "<agent_id>" -
-   {
-     "context": {
-       "instructions": "<agent_instructions>...</agent_instructions>"
-     },
-     "code_interpreter": false,
-     "golden_query_ids": [101, 102]
-   }
-   EOF
-   ```
-4. **Provide Complete Rollback Command (Including Replaced Golden Queries):** Print a copy-pasteable rollback snippet for the user. Whenever Step 7 deleted an obsolete Golden Query (`delete_golden_query "<old_gq_id>"`) and created new session Golden Query IDs, `update_agent` alone cannot revive deleted IDs—the rollback snippet must: **(a)** recreate any deleted Golden Queries from `backup["golden_queries"]` (`create_golden_query -` with `is_active`, `questions`, `answer`) and collect their restored IDs alongside surviving IDs, **(b)** restore `context`, `sources`, `code_interpreter`, and `golden_query_ids` via `update_agent "<agent_id>" -`, and **(c)** `delete_golden_query` the newly created session IDs.
-5. **Export Validated LookML Patch (If Plan B Approved):** Save the unified diff to `/tmp/ca_lookml_patch_<agent_id>.diff` (or render inline) with `What changed`, `Why`, and `Affected Eval Questions`.
+1. **Save & Verify Pre-Update Rollback Backup First:**
+   - Write the complete original agent JSON (including `golden_queries`) to `/tmp/ca_agent_backup_<agent_id>_<timestamp>.json` and abort immediately if the backup file is empty or fails to write.
+2. **Validate Upgraded Instructions In-Memory (`0.1s`):**
+   - Assert `len(instructions) <= 4800` and, in XML mode, verify strict XML 1.0 well-formedness via `xml.etree.ElementTree.fromstring(instructions)`.
+3. **Sync Verified Golden Queries (`Standalone` Only):**
+   - Register any new or repaired `query`-verified Golden Queries via `create_golden_query -` (`<= 1` question per entry, `< 20` total cap) and remove broken/obsolete ones via `delete_golden_query "<old_gq_id>"` only after the backup JSON is safely written.
+4. **Update the Live Agent (`PATCH /api/4.0/agents/{agent_id}`):**
+   - Run `update_agent "<agent_id>" -` explicitly preserving `"name"`, `"description"`, `"category"` (including `"category": "dashboard"` and `"name": "<instance_origin>-<dashboard_id>"` on Dashboard Agents), and `"sources"` alongside upgraded `"context": {"instructions": ...}`, `"code_interpreter"`, and `"golden_query_ids"` (omitting `"golden_query_ids"` on Dashboard Agents).
+   - Keep full rollback capability ready (restoring `backup["golden_queries"]`, `context`, `sources`, and `code_interpreter` from `/tmp/ca_agent_backup_<agent_id>_<timestamp>.json` if requested by the user).

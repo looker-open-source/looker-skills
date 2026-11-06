@@ -1,19 +1,18 @@
 ---
 name: looker-ca-agent-create
 description: >-
-  Builds and configures brand-new Looker Conversational Analytics (CA)
-  Standalone Agents and Dashboard Agents from scratch. Use when the user asks to
-  create, scaffold, or design a new Looker CA agent, author initial 4-part
-  XML/YAML system instructions, curate seed golden queries, configure Dashboard
-  Agent context, or enrich LookML metadata for a new CA agent deployment. Do not
-  use for auditing, diagnosing reasoning traces, or running Side-by-Side (SxS)
-  optimizations on an existing CA agent (use looker-ca-agent-optimize) or
-  optimizing general LookML SQL, caching, or PDT queries (use
-  looker-performance-optimizer).
+  Builds and deploys Looker Conversational Analytics (CA) Standalone Agents and
+  Dashboard Agents from scratch. Use when asked to create, build, scaffold, or
+  deploy a new Looker CA or Dashboard agent. Checks existing CA agents first to
+  avoid duplicates, profiles live LookML and Explore data, creates the agent
+  automatically by default with verified sample questions, and offers optional
+  LookML description and label improvements afterward. Do not use for optimizing
+  or evaluating an existing CA agent (use looker-ca-agent-optimize) or tuning
+  general LookML SQL, caching, or PDTs (use looker-performance-optimizer).
 license: Apache-2.0
 compatibility: Requires looker-base (Looker MCP via looker-mcp-skill and looker-cli via installing-looker-cli / authenticating-looker-cli; MCP-only fallback supported).
 metadata:
-  version: 0.1.0
+  version: "0.1.0"
   domain: looker-analytics-agents
   status: preview
   usage-interface: looker-mcp looker-cli
@@ -25,64 +24,43 @@ metadata:
 
 ## Overview
 
-This skill designs, validates, and deploys production-ready Looker Conversational Analytics (CA) **Standalone Agents** (Explore-backed) and **Dashboard Agents** (Dashboard-backed) from the ground up using the five-step `build_agent` workflow.
+This skill checks whether a suitable Conversational Analytics (CA) agent already exists on your Looker instance, and when a new one is needed, designs, validates against live data, and **deploys a production-ready Standalone Agent or Dashboard Agent directly by default**, followed by a simple optional **Yes / No** offer to enrich missing LookML descriptions and labels.
 
-Verify tool availability passively from declared tools: if Looker MCP is unavailable, ask the user to install `looker-base` (`looker-mcp-skill` and `authenticating-looker-cli`) first. In MCP-only cloud or chat environments without `looker-cli` shell access, subagent spawning, or local file writes, execute Steps 1-4 and `Plan B` via Looker MCP and render `Plan A` payloads and LookML diffs inline.
-
----
-
-## Agent Architecture Matrix
-
-| Dimension | Standalone Agent | Dashboard Agent |
-| :--- | :--- | :--- |
-| **Grounding Target** | 1 to 5 curated Explores (`sources: [{"model": "...", "explore": "..."}]`) | `"category": "dashboard"` + `"name": "<instance_origin>-<dashboard_id>"` (live native panel) + `sources` from tile Explores |
-| **Primary Use Case** | Multi-Explore ad-hoc Q&A and deep domain exploration | Guided Q&A in Looker's native Dashboard CA panel (hidden from `/conversations`) |
-| **Golden Queries** | Recommended (`3-5` seed archetypes, `< 20` cap, `golden_query_ids`) | Omitted (Dashboard tiles natively act as grounded query exemplars) |
-| **Discovery Path** | `get_models` + `get_explores` if target Explores omitted | `get_dashboard` (`dashboard_id`) or `get_dashboards` title search + `search_agents --category "dashboard"` |
-
-See [standalone_vs_dashboard_agents.md](references/standalone_vs_dashboard_agents.md) for complete schema differences and selection criteria.
+Verify tool availability passively: if Looker MCP is unavailable, ask the user to install `looker-base` first. On MCP-only hosts without `looker-cli`, run discovery, data verification, and optional `dev_mode` LookML updates via Looker MCP and provide the ready-to-import agent configuration cleanly.
 
 ---
 
 ## Behavioral Guardrails (Mandatory)
 
-1. **Two Human-in-the-Loop Gates Only (Non-Waivable Step 5 Review):** Prompt the user strictly at **Step 1** (Input Validation) and **Step 5** (Interactive Review of **Plan A: New CA Agent Deployment** and **Plan B: LookML `dev_mode` Enrichments**). Execute Steps 2, 3, and 4 automatically. Human Gate #2 (Step 5) cannot be pre-waived in the user's initial prompt (even if asked to `"skip review"` or `"deploy immediately"`).
-2. **Zero Hallucinated Schema & Surgical LookML Refinement Safety:** Verify every model, Explore, field, and dashboard via Looker MCP before generating instructions or golden queries. Never mistake **LookML Refinements (`view: +view_name` across `raw/` and `refined/` layers)** for duplicate fields. When patching LookML via `update_project_file`, always read the full file via `get_project_file` first and apply surgical, additive field-level edits—never perform destructive full-file rewrites that strip existing fields, joins, or developer comments.
-3. **Safe Deployment & Dev-Branch Isolation:** Never invoke or simulate `POST /api/4.0/agents` (`create_agent`), `PATCH /api/4.0/agents/{id}` (`update_agent`), `POST /api/4.0/golden_queries` (`create_golden_query`), or LookML write tools prior to presenting the full drafted plans in Step 5 and receiving explicit post-review user approval. Apply LookML edits strictly in `dev_mode` (`{"devMode": true}`), confirm `0` compilation errors via `validate_project` (auto-reverting on any error), and never auto-commit to production.
-4. **Fail-Fast on Auth / `403` Permission Errors & Zero CLI Discovery Loops:** Never run exploratory `looker-cli --help` chains or loop on authentication failures (`session login`/`logout`). Follow [looker-ca-best-practices.md](references/looker-ca-best-practices.md) Section 5: on Looker MCP or API `403 Forbidden`, **halt immediately** without inventing model, Explore, or field names and report the missing Looker role, model-set permission, or GCP IAM access; on Looker MCP `401` / `oauth2` errors, try at most **one** `get_models` re-handshake; if it still fails, or if `looker-cli` returns `400 invalid_grant` without `LOOKERSDK_CLIENT_ID`/`LOOKERSDK_CLIENT_SECRET` (or `LOOKER_CLIENT_ID`/`LOOKER_CLIENT_SECRET`) in the environment, **halt immediately** and ask the user to refresh their Looker API 4.0 credentials.
+1. **Concise, Business-Friendly UX (Zero Technical Walls or `Plan A / Plan B` Jargon):** Keep user-facing messages concise (`~10-15` lines) and written in plain business language. Never use `"Plan A"` / `"Plan B"` labels, multi-option technical menus, or dump raw XML/YAML code blocks, `/x/<slug>` internals, or `.lkml` diffs into chat unless the user explicitly asks to inspect technical details.
+2. **Check Existing Agents First, Create by Default, Ask Yes/No for LookML Last:**
+   - **Gate #1 (Step 1):** Always check existing CA agents on the instance first; if a similar agent exists, summarize who it serves, its description, and its instructions in plain language and ask if the user wants to use it or continue creating a new one. Ask only concise scoping questions if required inputs are missing.
+   - **Default Creation (Steps 2-4):** Once Gate #1 is confirmed, inspect LookML + live data, verify sample Golden Queries, and **create the CA Agent automatically by default** without stopping beforehand for pre-deployment approval menus (unless the user explicitly asked for a dry-run preview without creating).
+   - **Gate #2 (Step 5):** Confirm the newly created agent (Name, ID, link, plain-language summary, and sample questions), then ask a single **Yes / No** question offering to fix any missing LookML `description:` or `label:` fields in `dev_mode`.
+3. **100% Technical Rigor Under the Hood & Refinement Safety:** Internally enforce all standards in [looker-ca-best-practices.md](references/looker-ca-best-practices.md) and [lookml-ca-modeling-standards.md](references/lookml-ca-modeling-standards.md): read `.model.lkml` and core `.view.lkml` files (`raw/` and `refined/`) in parallel to understand SQL formulas and joins, profile real data via `query`, verify `3-5` Golden Queries via `query` before `query_url`, enforce 4-part XML/YAML (`<= 4,800` chars, `"-NULL"`, `"30 days ago for 30 days"`, `code_interpreter: false`) validated inside the single Step 4 deployment command (never spawn separate mid-workflow Python scripts), and apply approved LookML edits surgically in `dev_mode` with `0` errors on `validate_project` and zero auto-commits to production.
+4. **Fail-Fast on Auth / `403` Errors & Zero CLI Discovery Loops:** Never run `looker-cli --help` or `session login`/`logout` loops. Halt immediately on `403 Forbidden`, repeated `401`, or `400 invalid_grant` per [looker-ca-best-practices.md](references/looker-ca-best-practices.md) Section 4 and report the missing permission or credential refresh needed.
 
 ---
 
-## Five-Step `build_agent` Execution Workflow
+## Five-Step `build_agent` Workflow
 
-### Step 1: Validate Inputs *(Human Gate #1)*
-If any required input below is missing from the user's prompt, **STOP IMMEDIATELY** and ask the user—never run any shell command (including `ls` even on the skill's own directory, `which`, `env`, or `looker-cli`), inspect `~/.config/looker-cli/config.yaml`, or call any Looker MCP tool during Step 1 (see [standalone_vs_dashboard_agents.md](references/standalone_vs_dashboard_agents.md)):
-- **Agent Goal / Intent** *(Required)*: Target persona, business domain, and primary questions the agent must answer.
-- **Agent Type** *(Required)*: `Standalone Agent` or `Dashboard Agent`.
-- **Context & Business Rules** *(Optional)*: Fiscal calendar conventions, mandatory exclusions, metric disambiguation rules, and default time windows.
-- **Target Explores** *(Optional for Standalone Agent)*: Specific `model.explore` targets. If omitted, discover candidate Explores automatically in Step 2.
-- **Reference Dashboard URL / ID / Slug** *(Required for Dashboard Agent)*: The target dashboard backing the agent.
+### Step 1: Check Existing Agents & Confirm Scope *(Human Gate #1)*
+Follow [standalone_vs_dashboard_agents.md](references/standalone_vs_dashboard_agents.md):
+1. **Check Existing Agents on the Instance First:** Run `looker-cli api conversationalanalytics search_agents --limit 50` and `search_agents --category "dashboard" --limit 50` (filtering out `"deleted": true`; or MCP `system__activity.agent` fallback when `looker-cli` is absent; skip only in offline fixtures). If one or more similar agents match the user's topic, model, Explore, or Dashboard, present a concise plain-language summary (**Name**, **Target Audience**, **Description**, and **Key Instruction Rules**) and ask whether that existing agent works for them or if they still want to create a new one.
+2. **Collect Missing Scoping Inputs Plainly:** Ensure **Goal / Target Audience**, **Agent Type** (`Standalone Agent` vs. `Dashboard Agent`), and **Dashboard URL/ID/Title** (if Dashboard Agent; Standalone Explores can be auto-discovered in Step 2 if omitted) are clear—asking concise, jargon-free questions at Gate #1 if any are missing (and when no live Looker connection exists, pause immediately at Gate #1 without running any `run_command`/`ls` shell calls).
 
-### Step 2: Inspect LookML & Determine Eval Dataset
-1. **Inspect Semantic Metadata via Parallel Looker MCP Batches:**
-   - Reuse any Explore schema or date-coverage context already fetched in the session (see [looker-ca-best-practices.md](references/looker-ca-best-practices.md) Section 5; note multi-record MCP outputs use JSONL).
-   - For **Standalone Agents**, run `get_models` (resolving `project_id` if unknown) and `get_explores` when discovery is needed, then fetch `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, and `get_project_files` in one parallel batch (without calling `get_explore`), followed by a parallel batch of `get_project_file` + `get_field_value_suggestions`.
-   - For **Dashboard Agents**, call `get_dashboard` (`dashboard_id`, using `get_dashboards` only if searching by title) to extract tile titles, backing `model.explore` targets, default dashboard filters, and KPI definitions, inspect the backing Explores with `get_dimensions` and `get_measures` in parallel, and when `looker-cli` is available check `search_agents --category "dashboard"` (`get_agent` returns `404` on Dashboard Agents) to detect any pre-existing auto-created `<instance_origin>-<dashboard_id>` record.
-   - If access is blocked (`403 Forbidden`) or credentials are expired (`401` / `400 invalid_grant`), halt immediately without fabricating schema metadata and report the exact missing Looker role, model-set permission, or Looker API 4.0 credential refresh required.
-2. **Establish Baseline Eval Dataset (`3-5` Test Questions):**
-   - Formulate **3 to 5 representative natural-language test questions** paired with target Ground Truth Looker query definitions covering core KPIs, time-series breakdowns, and categorical filters (to be verified together with the seed Golden Queries in Step 4).
+### Step 2: Parallel LookML & Live Data Profiling
+Execute two fast parallel MCP batches (`<= 8` calls/batch) per [standalone_vs_dashboard_agents.md](references/standalone_vs_dashboard_agents.md):
+1. **Batch 1:** Resolve `get_models` (for `project_id` and candidate models) / `get_explores` (or `get_dashboard` for Dashboard Agents) first when needed, then fetch `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, and `get_project_files` in parallel (noting any exposed fields missing `description:` or clear `label:` for Step 5).
+2. **Batch 2:** Read `.model.lkml` / `.explore.lkml` and core Explore `.view.lkml` files (`views/refined/` and joined views) via `get_project_file` alongside `get_field_value_suggestions` and `1-2` exploratory `query` calls (date coverage, row counts, top categories) to ground the agent in real SQL semantics and live data.
 
-### Step 3: Develop Agent Configurations (`Plan A` & `Plan B`)
-Author the complete agent package adhering to [looker-ca-best-practices.md](references/looker-ca-best-practices.md) and [lookml-ca-modeling-standards.md](references/lookml-ca-modeling-standards.md):
-1. **Plan A — CA Agent Package (`A1..A3` — Target: Looker API 4.0 `POST /api/4.0/agents` or `PATCH /api/4.0/agents/{id}`):**
-   - **`A1` (Four-Part XML/YAML System Instructions — `context.instructions`):** Draft concise instructions (`< 1,200` tokens / `<= 4,800` chars via `len()`) following [system_instructions_template.md](references/system_instructions_template.md) with explicit `<role_and_tone>`, `<explore_and_filtering_rules>`, `<semantic_and_execution_rules>`, and `<presentation_and_analysis_rules>` blocks (enforcing strict XML 1.0 escaping with `&amp;` and zero raw `<`/`>` inside element bodies). Inline verified filter values, document dataset date coverage and any `filter_only` fields, use valid Looker complete-day date syntax (`"30 days ago for 30 days"`, never `"last 30 complete days"` in Looker filter maps) and native `"-NULL"` string filter syntax (never `"not null"`), and enforce single-query consolidation.
-   - **`A2` (Agent Metadata & Settings):** Define mandatory `"name"`, `"description"`, and `"sources": [{"model": "...", "explore": "..."}]` (for Dashboard Agents, set `"category": "dashboard"` and use `"name": "<instance_origin>-<dashboard_id>"` on live instances so the native Dashboard panel binds cleanly—never `"dashboard_id"`), and set `"code_interpreter": false` by default (`true` adds `+15s to +20s` per query via `python_and_chart_agent`).
-   - **`A3` (Seed Golden Queries — `Standalone Agent` Only):** Create **3 to 5 seed Golden Queries** (strictly `< 20` total, `<= 50%` overlap with the Step 2 Baseline Eval Dataset) following [golden_queries_and_deployment.md](references/golden_queries_and_deployment.md).
-2. **Plan B — Safe LookML Metadata Enrichments (`B1..Bn` — Target: Looker `dev_mode`):** Prepare surgical, additive LookML patches (`description:`, `label:`, `primary_key: yes`, safe `hidden: yes`) targeting `views/refined/` when refinements exist, each with a **`[LookML Safety & Impact Check]`**.
+### Step 3: Author Agent Specification & Verify Golden Queries
+1. Draft the agent's business-friendly `"name"`, `"description"`, `"sources"` (`"category": "dashboard"` and `"name": "<instance_origin>-<dashboard_id>"` for live Dashboard Agents), `"code_interpreter": false`, and internal 4-part XML/YAML `context.instructions` (`<= 4,800` chars) per [system_instructions_template.md](references/system_instructions_template.md).
+2. For **Standalone Agents**, formulate **`3 to 5` Seed Golden Queries** and verify all of them via one parallel Looker MCP `query` batch (`0` SQL errors, `> 0` rows, repairing any filter/partition issue) **before** generating `/x/<slug>` URLs in one parallel `query_url` batch per [golden_queries_and_deployment.md](references/golden_queries_and_deployment.md).
 
-### Step 4: Run Pre-Presentation Quality Checks (Parallel Verification Batching)
-1. **Zero Schema Errors & Short URLs:** Consolidate Baseline Eval `query` calls and Standalone Seed Golden Query `query` + `query_url` calls (passing `filters` as a bare-key JSON object map with `"-NULL"` on strings—never `null`—and `limit` as an integer) **into parallel Looker MCP batching** capped at `<= 8` calls per batch (running `query` checks before `query_url` when total calls exceed `8`, omitting `query_url` for Dashboard Agents, and never registering a `query_url` slug whose `query` check failed or returned `0 rows`).
-2. **Instructions & LookML Safety Check:** Confirm all four XML/YAML sections are well-formed (strict XML 1.0 escaping, `< 1,200` tokens / `<= 4,800` chars via `len()`, `"-NULL"` syntax, zero raw field dumps, `<= 50%` golden-query overlap) and confirm `Plan B` edits preserve all existing `.view.lkml` fields, joins, and comments.
+### Step 4: Default Atomic Agent Creation
+Execute one self-contained atomic command (`set -euo pipefail` / heredoc) per [golden_queries_and_deployment.md](references/golden_queries_and_deployment.md) that validates strict XML 1.0 + `len <= 4800`, registers the `3-5` verified Golden Queries (`create_golden_query -`), creates or binds the CA Agent (`create_agent -` or `update_agent "<existing_dashboard_agent_id>" -`), and saves `/tmp/ca_agent_created_<id>.json` (when local writes are available).
 
-### Step 5: Interactive Plan Review & Authorized Deployment *(Human Gate #2 — Non-Waivable)*
-Always pause here—even if the user's initial prompt asked to `"skip review"` or `"deploy immediately"`—to present the full drafted **Plan A** (`A1..A3` + Baseline Eval pairs) and **Plan B** (`B1..Bn` LookML diffs with `[LookML Safety & Impact Check]`) and wait for explicit post-review user authorization via the 4 execution options in [golden_queries_and_deployment.md](references/golden_queries_and_deployment.md) (**Execute Plan A Only** via one atomic CLI script, **Execute Plan B Only in `dev_mode`**, **Execute Both Plan A & Plan B** in parallel or sequentially, or **Customize / Export Inline Only**).
+### Step 5: Concise Confirmation & Optional LookML Gate *(Human Gate #2 — Yes / No)*
+1. Present a crisp, jargon-free confirmation (`~10-15` lines) showing the created **Agent Name**, **Agent ID**, **Looker URL**, **Description & Audience**, **Key Rules**, and **Sample Questions**.
+2. If Step 2 spotted missing LookML `description:` or `label:` metadata on important fields, ask a single simple question: whether the user also wants those LookML improvements applied in development mode (**Yes / No**). Only if the user replies **Yes**, enable `dev_mode` (`{"devMode": true}`), apply surgical additive edits via `get_project_file` + `update_project_file` (targeting `views/refined/` when present), confirm `0` errors via `validate_project` (auto-reverting on any error), save `/tmp/ca_lookml_patch_<id>.diff` (when local writes are available), and confirm briefly.

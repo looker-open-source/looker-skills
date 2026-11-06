@@ -1,67 +1,63 @@
-# Standalone Agents vs. Dashboard Agents: Architecture & Input Validation
+# Standalone Agents vs. Dashboard Agents: Existing-Agent Discovery, Scoping & Inspection
 
-This reference defines the architectural differences, input validation rules (Step 1), and Looker MCP discovery workflows (Step 2) for building Looker Conversational Analytics (CA) **Standalone Agents** and **Dashboard Agents**.
+This reference defines Step 1 (Existing Similar Agent Discovery & Gate #1 Scoping) and Step 2 (Parallel LookML & Live Data Inspection) for `looker-ca-agent-create`.
 
 ---
 
-## 1. Architectural Comparison (Looker API 4.0 `WriteAgent`)
+## 1. Architectural Comparison (Internal API 4.0 Mapping)
 
 | Attribute | Standalone Agent | Dashboard Agent |
 | :--- | :--- | :--- |
-| **API 4.0 Grounding Fields** | `"sources": [{"model": "...", "explore": "..."}]` (1 to 5 curated Explores) | `"category": "dashboard"` + `"sources": [{"model": "...", "explore": "..."}]` populated from dashboard tile Explores (no `dashboard_id` field exists on `WriteAgent`) |
-| **Mandatory `WriteAgent` Fields** | `"name"`, `"description"`, `"sources"` | `"name"` (`"<instance_origin>-<dashboard_id>"` on live Looker instances so the native Dashboard CA panel binds to it—hidden from `/conversations`; or dashboard title/ID in offline fixtures without an instance URL), `"description"` (referencing dashboard title/ID), `"sources"` |
-| **Target Persona** | Domain analysts, business ops, and cross-functional teams asking open-ended questions | Executives, account managers, and stakeholders exploring a curated dashboard |
-| **System Instructions (`context.instructions`)** | Cross-Explore routing, semantic metric disambiguation, conditional default date/status filters (`"30 days ago for 30 days"`, `"-NULL"` syntax), and cohort rules | Dashboard tile-to-measure mappings, executive KPI definitions, dashboard default filter inheritance, and drill-down guidance |
-| **Golden Queries (`golden_query_ids`)** | **Recommended (`3-5` seed queries, `< 20` cap, 1 question/entry via `POST /api/4.0/golden_queries`)** | **Omitted** (Dashboard tiles natively act as grounded query exemplars) |
-| **`code_interpreter` Default** | `false` by default | `false` by default |
+| **When to Choose** | Open-ended Q&A across 1 to 5 LookML Explores | Guided Q&A inside Looker's native Dashboard CA panel |
+| **API 4.0 Grounding Fields** | `"sources": [{"model": "...", "explore": "..."}]` | `"category": "dashboard"` + `"name": "<instance_origin>-<dashboard_id>"` + `"sources"` from tile Explores |
+| **Golden Queries (`golden_query_ids`)** | `3-5` verified seed queries (`< 20` cap, 1 question/entry) | Omitted (Dashboard tiles act as native exemplars) |
+| **`code_interpreter` Default** | `false` (avoids `+15-20s` latency overhead) | `false` |
 
 ---
 
-## 2. Step 1 Input Validation Checklist
+## 2. Step 1: Check Existing Agents First & Confirm Scope *(Human Gate #1)*
 
-If any required input below is missing, halt immediately at Step 1 and ask the user before invoking any Looker MCP tool, inspecting `~/.config/looker-cli/config.yaml`, or running any shell command (including `ls`, `which`, `env`, or `looker-cli`):
+### A. Always Check for Similar Existing CA Agents on the Instance First
+Before creating any new agent, inspect the CA agents that already exist on the Looker instance so the user does not accidentally duplicate an existing agent they did not know about:
+1. **Fetch Active Agents (1 Fast Read-Only Check):**
+   - When `looker-cli` is available, fetch both Standalone and Dashboard agents (filtering out `"deleted": true`):
+     - `looker-cli api conversationalanalytics search_agents --limit 50` (returns Standalone agents including `id`, `name`, `description`, `sources`, and `context.instructions` inline)
+     - `looker-cli api conversationalanalytics search_agents --category "dashboard" --limit 50` (returns Dashboard agents inline)
+   - On MCP-only hosts without `looker-cli`, query Looker MCP `query` (`model: "system__activity"`, `explore: "agent"`, `fields: ["agent.guid", "agent.name", "agent.description", "agent.category", "agent.dashboard_title"]`).
+   - *(Offline Fixture Exception: Skip this network check only if the user's prompt provides an offline mock/fixture without a live Looker connection).*
+2. **Evaluate Similarity & Ask the User in Plain Language:**
+   - Compare existing non-deleted agents against the user's requested topic, model, Explore, or Dashboard.
+   - **If one or more similar existing agents are found:** Pause at Gate #1, present a concise, non-technical summary of each matching agent:
+     - **Agent Name** (and ID / Looker link)
+     - **Who It Is For (Target Audience):** Extracted from its description and instructions
+     - **Description & Data Scope:** Which Explore/Dashboard and business metrics it covers
+     - **Summary of Current Instructions:** 2-3 plain-language bullets on how it behaves
+     Then ask clearly whether **that existing agent already meets their needs** (or if they want to optimize it instead), **or if they still want to continue creating a new agent** (collecting any missing scoping inputs below in the same prompt).
 
-1. **Agent Goal / Intent *(Required)*:**
-   - Must specify the business domain, target user persona, and primary analytical questions (for example: *"Help regional sales directors analyze pipeline velocity, win rates, and ARR churn"*).
-2. **Agent Type *(Required)*:**
-   - **`Standalone Agent`:** Flexible ad-hoc querying across 1 to 5 curated LookML Explores independent of a dashboard layout.
-   - **`Dashboard Agent`:** Conversational experience anchored to an existing Looker Dashboard and its KPI tiles.
-3. **Context & Business Rules *(Optional)*:**
-   - Capture fiscal year start month, standard exclusions (`is_test_account = No`, `order_status != 'Cancelled'`), currency conventions, and default time windows (for example, last 30 complete days—always expressed in Looker filter syntax as `"30 days ago for 30 days"`, never literal `"last 30 complete days"`, which fails with `HTTP 400`). If omitted, infer baseline conventions during Step 2 and highlight them for confirmation in Step 5.
-4. **Target Explores *(Optional for Standalone Agent)*:**
-   - Accept 1 to 5 `model_name.explore_name` targets.
-   - **Auto-Discovery Fallback:** If omitted for a `Standalone Agent`, run `get_models` followed by `get_explores` (passing `model`) in Step 2 to rank and select curated Explores matching the Agent Goal.
-   - **Mega-Explore Warning:** If an Explore exposes `> 15` joined views or hundreds of uncurated fields, recommend a narrower curated Explore or scoping fields via LookML `fields:` / `hidden: yes`.
-5. **Reference Dashboard URL / ID / Slug *(Required for Dashboard Agent)*:**
-   - If the user requests a `Dashboard Agent` without providing a dashboard URL, ID, or title/slug, halt immediately at Step 1 and ask for it.
-
----
-
-## 3. Step 2 LookML & Dashboard Inspection Workflow
-
-Follow the parallel MCP batching and JSONL parsing rules in `looker-ca-best-practices.md` Section 5:
-
-### Flow A: Standalone Agent Discovery
-1. Reuse any Explore schema already fetched in the session. Call `get_models` (if `project_id` or target Explores are unknown) and `get_explores` (`model`) when auto-discovering 1-5 curated Explores.
-2. Fetch `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, and `get_project_files` in one parallel MCP batch (never calling `get_explore` on top of `get_dimensions` + `get_measures`).
-3. In a second parallel batch, read `.model.lkml` / `.view.lkml` files via `get_project_file` (checking `primary_key: yes` on joined views, missing `description:`/`label:`, unhidden technical `_id` keys, and `+view_name` refinements across `raw/` and `refined/`) alongside `get_field_value_suggestions` on categorical filter dimensions.
-
-### Flow B: Dashboard Agent Discovery
-1. Call `get_dashboard` (`dashboard_id`) directly when given an ID/slug (use `get_dashboards` only when searching by title to resolve `dashboard_id`).
-2. Extract the dashboard title, description, global dashboard filters (`default_value`, `field`), and every query tile's title, `model`, `explore`, `fields`, `filters`, and `sorts` to populate `"sources"` and tile-to-measure mappings.
-3. Fetch `get_dimensions` and `get_measures` in parallel on each backing `model.explore` used by the dashboard tiles to identify natural drill-down dimensions and metadata gaps.
-4. When `looker-cli` is available on a live instance, run `looker-cli api conversationalanalytics search_agents --category "dashboard"` (`get_agent` returns `HTTP 404` on `"category": "dashboard"`) to check whether Looker Core already auto-created `"name": "<instance_origin>-<dashboard_id>"` so Step 5 updates it via `update_agent` instead of creating an orphaned duplicate.
+### B. Concise Scoping Inputs (Ask Plainly Only What Is Missing)
+Keep Gate #1 questions short, friendly, and free of Looker API jargon:
+1. **Purpose & Target Audience *(Required)*:** Who will use this agent and what business questions should it answer?
+2. **Agent Type *(Required)*:** `Standalone Agent` (explore data freely) or `Dashboard Agent` (attached to a specific Looker Dashboard).
+3. **Data Target:**
+   - For a `Dashboard Agent`: **Dashboard URL, ID, or Title** *(Required)*.
+   - For a `Standalone Agent`: **Target Model / Explore(s)** *(Optional—if omitted, auto-discover the best curated 1-5 Explores in Step 2)*.
+4. **Default Business Preferences *(Optional)*:** Preferred default time window (e.g., last 30 days), geographic scope, or Top-N limit (offer sensible defaults if unspecified).
 
 ---
 
-## 4. Formulating the Baseline Eval Dataset (`3-5` Questions)
+## 3. Step 2: Parallel LookML & Live Data Profiling (Preserving 100% Agent Quality)
 
-In Step 2, design **3 to 5 representative evaluation questions** paired with target Ground Truth Looker queries (verified via Looker MCP `query` in Step 4):
+Once Gate #1 is confirmed to create a new agent, execute Step 2 automatically in **two fast parallel MCP batches** (`<= 8` calls per batch) so the agent understands both the LookML business logic and the real underlying data:
 
-| Question Archetype | Purpose | Step 4 Ground Truth Verification |
-| :--- | :--- | :--- |
-| **1. Headline KPI + Default Filter** | Verifies conditional default time window (`"30 days ago for 30 days"`) and mandatory exclusions (`"-NULL"`) | Run via Looker MCP `query` (bare-key object `filters`, integer `limit`) |
-| **2. Dimensional Breakdown / Top-N** | Verifies grouping dimension selection and sorting rules | Confirm `fields`, `sorts`, and `limit` match business expectations |
-| **3. Disambiguated Metric / Ratio** | Tests selection between closely named measures (e.g., Gross vs. Net) | Confirm exact measure name from `get_measures` |
-| **4. Categorical Value Mapping** | Tests inlined filter synonyms (e.g., `"Enterprise"` to `"ENT_TIER_1"`) | Verify canonical filter string via `get_field_value_suggestions` |
-| **5. Multi-View Join or Cohort Filter** | Tests cross-view join integrity and symmetric aggregation | Verify zero fanout errors and valid SQL generation |
+### Flow A: Standalone Agent Inspection & Data Profiling
+1. **Batch 1 — Compiled Schema & File Index:**
+   - Call `get_models` / `get_explores` first only if `project_id` or target Explores are not yet known.
+   - Run `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, and `get_project_files` in **one parallel MCP batch** (never call `get_explore` on top of `get_dimensions` + `get_measures`). Note any key exposed fields missing `description:` or clear `label:` for the optional Step 5 Yes/No offer.
+2. **Batch 2 — Core `.lkml` Semantics + Live Data Queries (`<= 8` Calls):**
+   - Read the `.model.lkml` / `.explore.lkml` file and the **core Explore `.view.lkml` files** (`views/refined/` and primary joined views—skipping unrelated models or dashboards) via `get_project_file` to understand `join:` relationships, `sql:` measure formulas, currency fields, `filter_only` fields, BigQuery partition/regex constraints, and `+view_name` refinements.
+   - In the **same parallel batch**, run `get_field_value_suggestions` on key categorical dimensions plus **`1 to 2` exploratory Looker MCP `query` calls** (checking exact `MIN`/`MAX` date coverage, total row volume, and top categorical values) so the agent's description, instructions, and `3-5` Seed Golden Queries reflect real data rather than guesses.
+
+### Flow B: Dashboard Agent Inspection & Data Profiling
+1. Call `get_dashboard` (`dashboard_id`, using `get_dashboards` only if searching by title) to extract dashboard title, default filters, and every query tile's title, `model`, `explore`, `fields`, and `filters`.
+2. In parallel, fetch `get_dimensions`, `get_measures`, and core `.model.lkml` / `.view.lkml` definitions for the backing tile Explores alongside `get_field_value_suggestions` and a quick date-coverage `query` check.
+3. Check the Step 1 `search_agents --category "dashboard"` list for any pre-existing auto-created `"name": "<instance_origin>-<dashboard_id>"` record so Step 4 updates it cleanly via `update_agent` instead of creating a duplicate.
