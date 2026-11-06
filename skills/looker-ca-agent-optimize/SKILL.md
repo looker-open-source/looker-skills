@@ -59,7 +59,7 @@ Pause immediately at Gate #1 (do not read `references/` files yet and do not exe
 
 ### Step 2: Parallel Agent, LookML & Live Data Inspection
 Follow [ca_api_and_mcp_workflow.md](references/ca_api_and_mcp_workflow.md):
-1. Load the agent via `get_agent "<id>"` or `search_agents` (`--limit 50` and `--category "dashboard" --limit 50`, required for Dashboard Agents where `get_agent` returns `404`), and resolve `project_id` via `get_models` if needed.
+1. Load the agent via `get_agent "<id>"` or `search_agents` (`--limit 50` and `--category "dashboard" --limit 50`, required for Dashboard Agents where `get_agent` returns `404`), check `is_lookml` (`lookml_agent_id` / `lookml_edit_uri`) to detect LookML-defined agents, and resolve `project_id` via `get_models` if needed.
 2. Run **Batch 1** (`get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, `get_project_files`, plus `get_dashboard` if Dashboard Agent) and **Batch 2** (`<= 8` calls: `.model.lkml`/core `.view.lkml` files via `get_project_file` + `get_field_value_suggestions` + `1-2` quick `query` checks on date coverage and real category/status values).
 
 ### Step 3: Static Best-Practice Diagnosis & Upgrade Drafting *(`Soft` & `Hard`)*
@@ -69,7 +69,7 @@ Evaluate description clarity, 4-part XML/YAML instructions (`"-NULL"`, valid dat
 Run the `3-5` eval questions against Ground Truth `query` results and the current agent, classify reasoning loops via [reasoning_trace_diagnostics.md](references/reasoning_trace_diagnostics.md), test the upgraded config on an isolated `[TMP-SXS-EVAL]` clone (1 clean round; Round 2 cap only if a question still fails), and immediately execute the mandatory **two-step soft+hard cleanup** per [ca_api_and_mcp_workflow.md](references/ca_api_and_mcp_workflow.md).
 
 ### Step 5: Default Atomic Backup & Agent Upgrade
-Execute one atomic command (`set -euo pipefail` / heredoc) per [ca_api_and_mcp_workflow.md](references/ca_api_and_mcp_workflow.md) that saves `/tmp/ca_agent_backup_<id>_<ts>.json` first (when local writes are available), validates strict XML 1.0 + `len <= 4800`, syncs verified Golden Queries, and updates the live agent via `update_agent "<id>" -`.
+For UI/API-managed agents (`is_lookml` false/absent), execute one atomic command (`set -euo pipefail` / heredoc) per [ca_api_and_mcp_workflow.md](references/ca_api_and_mcp_workflow.md) that saves `/tmp/ca_agent_backup_<id>_<ts>.json` first (when local writes are available), validates strict XML 1.0 + `len <= 4800`, updates existing Golden Queries in place (`update_golden_query`) or registers new ones (`create_golden_query`), and updates the live agent via `update_agent "<id>" -`. If `is_lookml` is `true`, skip `PATCH /agents/{id}` and route the agent's instruction/golden-query updates into its LookML file (`lookml_edit_uri`) during Step 6 `dev_mode`.
 
 ### Step 6: Concise Summary & Optional LookML Gate *(Human Gate #2 — Yes / No)*
 1. Present a clear, business-friendly summary (`~10-15` lines) per [sxs_evaluation_workflow.md](references/sxs_evaluation_workflow.md): **Agent Name & ID**, **What Improved** in plain language (plus the compact `Before vs. After` table if `Hard` mode ran), and confirmation of the saved rollback backup.

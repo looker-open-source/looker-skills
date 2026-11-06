@@ -23,7 +23,7 @@ Consolidate **strict XML 1.0 / character-length validation (`len <= 4800`)**, **
 1. **Validate Instructions In-Memory (`0.1s`):**
    - Assert `len(instructions) <= 4800` and, in XML mode, parse via `xml.etree.ElementTree.fromstring(instructions)` (auto-escaping any bare `&` that is not already `&amp;`/`&lt;`/`&gt;`/`&quot;`/`&apos;`) before calling Looker API 4.0.
 2. **Register Verified Golden Queries (`Standalone` Only):**
-   - Call `looker-cli api conversationalanalytics create_golden_query -` for each of the `3-5` verified `/x/<slug>` URLs (`{"is_active": true, "questions": ["<single_question>"], "answer": "https://<host>/x/<slug>"}`) and collect integer `golden_query_ids`.
+   - Call `looker-cli api conversationalanalytics create_golden_query -` for each of the `3-5` verified `/x/<slug>` URLs (`{"questions": ["<single_question>"], "answer": "https://<host>/x/<slug>"}`; omit read-only `is_active`) and collect integer `golden_query_ids`.
 3. **Create or Bind the CA Agent:**
    - **Standalone Agent:** Call `create_agent -` with mandatory `"name"`, `"description"`, `"sources"`, `"context": {"instructions": ...}`, `"code_interpreter": false`, and `"golden_query_ids"`.
    - **Dashboard Agent:** Check whether `"name": "<instance_origin>-<dashboard_id>"` already existed in Step 1 `search_agents --category "dashboard"`; if so, patch it via `update_agent "<existing_id>" -`, otherwise create it via `create_agent -` with `"name": "<instance_origin>-<dashboard_id>"`, `"category": "dashboard"`, `"sources"` from tile Explores, `"context"`, and `"code_interpreter": false` (omitting `"golden_query_ids"`).
