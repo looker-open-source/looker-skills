@@ -1,12 +1,12 @@
-# Looker Performance Optimizer Skill
+# Looker Performance Skill
 
-Welcome to the **Looker Performance Optimizer Skill** repository. This is a specialized developer skill designed for AI coding assistants (like Antigravity) and senior Looker developers to audit, diagnose, and optimize query performance in existing Looker projects.
+Welcome to the **Looker Performance Skill** repository. This is a specialized developer skill designed for AI coding assistants (like Antigravity) and senior Looker developers to actively optimize and refactor query performance in existing Looker projects.
 
 Unlike scratch scaffolding, this skill focuses on **evaluating running Looker instances**, identifying bottlenecks, establishing caching/persistence strategies, and refactoring inefficient LookML.
 
 ---
 
-## 1. What is the Looker Performance Optimizer?
+## 1. What is the Looker Performance Skill?
 This skill is a **macro-skill** containing a highly structured, 7-step diagnostic and optimization workflow. It bridges the gap between raw database performance (SQL execution) and Looker semantic modeling (LookML).
 
 ### The Specialized Reference Library

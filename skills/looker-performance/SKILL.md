@@ -1,15 +1,20 @@
 ---
-name: looker-performance-optimizer
-description: Master developer skill for auditing, diagnosing, and optimizing query performance in Looker projects. Enforces caching alignment, PDT materialization strategies, and parallel subagent SQL profiling.
+name: looker-performance
+description: >-
+  Master developer skill for actively refactoring and optimizing query performance in
+  LookML projects. Enforces ETL-aligned datagroup caching, PDT materialization strategies,
+  join pruning, and parallel subagent SQL EXPLAIN profiling. Use when writing or
+  refactoring LookML to fix slow queries or Explores. Don't use for full-instance
+  System Activity or database healthcheck audits (use looker-healthcheck).
 license: Apache-2.0
 metadata:
   publisher: google
   version: v1
 ---
 
-# Looker Performance Optimizer
+# Looker Performance
 
-This master developer skill governs the lifecycle of auditing, diagnosing, and optimizing query performance in new or existing Looker projects. It enforces a strict performance-first design, database caching alignment, strategic data materialization, and advanced SQL profiling using parallel subagents and Looker MCP tools.
+This master developer skill governs the lifecycle of auditing, diagnosing, and optimizing query performance in new or existing Looker projects. It enforces a strict performance-first design, database caching alignment, strategic data materialization, and advanced SQL profiling using parallel subagents and Looker MCP tools. (When running a full-instance Looker or warehouse diagnostic audit or generating an executive Technical Design Document, start with the [`looker-healthcheck`](../looker-healthcheck/SKILL.md) orchestrator, which delegates active LookML refactoring to this skill and provides warehouse-specific references for [Warehouse Compute & Acceleration](../looker-healthcheck/references/playbook_bigquery_compute.md)).
 
 All optimizations developed under this skill must be dialect-agnostic, database-efficient, and preserve the integrity of existing business logic.
 
