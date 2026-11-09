@@ -1,21 +1,20 @@
 ---
-name: looker-performance-optimizer
+name: looker-performance
 description: >-
   Master developer skill for actively refactoring and optimizing query performance in
   LookML projects. Enforces ETL-aligned datagroup caching, PDT materialization strategies,
   join pruning, and parallel subagent SQL EXPLAIN profiling. Use when writing or
   refactoring LookML to fix slow queries or Explores. Don't use for full-instance
-  System Activity or BigQuery INFORMATION_SCHEMA healthcheck audits (use
-  looker-bq-healthcheck or looker-audit).
+  System Activity or database healthcheck audits (use looker-healthcheck).
 license: Apache-2.0
 metadata:
   publisher: google
   version: v1
 ---
 
-# Looker Performance Optimizer
+# Looker Performance
 
-This master developer skill governs the lifecycle of auditing, diagnosing, and optimizing query performance in new or existing Looker projects. It enforces a strict performance-first design, database caching alignment, strategic data materialization, and advanced SQL profiling using parallel subagents and Looker MCP tools. (When running a full-instance Looker + BigQuery diagnostic audit or generating an executive Technical Design Document, start with the [`looker-bq-healthcheck`](../looker-bq-healthcheck/SKILL.md) orchestrator, which delegates active LookML refactoring to this skill and provides BigQuery-specific references for [Aggregate Awareness](../looker-bq-healthcheck/references/aggregate_awareness_and_architecture.md), [Incremental PDTs](../looker-bq-healthcheck/references/incremental_pdts_guide.md), and [BI Engine](../looker-bq-healthcheck/references/bi_engine_optimization.md)).
+This master developer skill governs the lifecycle of auditing, diagnosing, and optimizing query performance in new or existing Looker projects. It enforces a strict performance-first design, database caching alignment, strategic data materialization, and advanced SQL profiling using parallel subagents and Looker MCP tools. (When running a full-instance Looker or warehouse diagnostic audit or generating an executive Technical Design Document, start with the [`looker-healthcheck`](../looker-healthcheck/SKILL.md) orchestrator, which delegates active LookML refactoring to this skill and provides warehouse-specific references for [Warehouse Compute & Acceleration](../looker-healthcheck/references/playbook_bigquery_compute.md)).
 
 All optimizations developed under this skill must be dialect-agnostic, database-efficient, and preserve the integrity of existing business logic.
 
