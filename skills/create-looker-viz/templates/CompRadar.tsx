@@ -69,7 +69,7 @@ export const {component_name}: React.FC<Props> = ({ data, config }) => {
 
   return (
     <div className="viz-container" style={{ width: '100%', height: '400px', display: 'flex', justifyContent: 'center', backgroundColor: bgColor, padding: '15px', borderRadius: '4px' }}>
-      <div style={{ width: '350px', height: '350px' }>
+      <div style={{ width: '350px', height: '350px' }}>
         <Radar data={chartData} options={options} />
       </div>
     </div>

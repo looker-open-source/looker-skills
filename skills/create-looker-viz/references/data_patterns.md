@@ -325,3 +325,16 @@ if (typeof this.trigger === 'function') {
 }
 ```
 
+---
+
+## 10. Numeric Data Mapping & NaN Prevention
+
+Looker query responses can contain non-numeric or `null` data. Always verify the value type before mapping row fields to charts to prevent `NaN` errors:
+
+```javascript
+const measures = Object.keys(row).filter(key => 
+  row[key].value !== null && typeof row[key].value === 'number'
+);
+```
+
+

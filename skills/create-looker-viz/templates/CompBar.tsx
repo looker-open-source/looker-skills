@@ -69,7 +69,7 @@ export const {component_name}: React.FC<Props> = ({ data, config }) => {
   };
 
   return (
-    <div className="viz-container" style={{ width: '100%', height: '400px', backgroundColor: bgColor, padding: '15px', borderRadius: '4px' }>
+    <div className="viz-container" style={{ width: '100%', height: '400px', backgroundColor: bgColor, padding: '15px', borderRadius: '4px' }}>
       <Bar data={chartData} options={options} />
     </div>
   );

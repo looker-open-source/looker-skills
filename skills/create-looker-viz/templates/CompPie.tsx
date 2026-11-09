@@ -61,9 +61,9 @@ export const {component_name}: React.FC<Props> = ({ data, config }) => {
   };
 
   return (
-    <div className="viz-container" style={{ width: '100%', height: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: bgColor, padding: '15px', borderRadius: '4px', color: textColor }>
+    <div className="viz-container" style={{ width: '100%', height: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: bgColor, padding: '15px', borderRadius: '4px', color: textColor }}>
       <h2>{title}</h2>
-      <div style={{ width: '300px', height: '300px', marginTop: '10px' }>
+      <div style={{ width: '300px', height: '300px', marginTop: '10px' }}>
         <Pie data={chartData} options={options} />
       </div>
     </div>

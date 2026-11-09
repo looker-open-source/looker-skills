@@ -18,21 +18,21 @@ export const {component_name}: React.FC<Props> = ({ data, config }) => {
   const borderStyle = showGridlines ? '1px solid #eee' : 'none';
 
   return (
-    <div className="viz-container" style={{ backgroundColor: bgColor, color: textColor, padding: '15px', borderRadius: '4px' }>
-      <h2 style={{ marginBottom: '15px' }>{title}</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif' }>
+    <div className="viz-container" style={{ backgroundColor: bgColor, color: textColor, padding: '15px', borderRadius: '4px' }}>
+      <h2 style={{ marginBottom: '15px' }}>{title}</h2>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif' }}>
         <thead>
-          <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left', backgroundColor: '#f5f5f5' }>
+          <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left', backgroundColor: '#f5f5f5' }}>
             {columns.map((col: string) => (
-              <th key={col} style={{ padding: '10px' }>{col}</th>
+              <th key={col} style={{ padding: '10px' }}>{col}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {data.map((row: any, i: number) => (
-            <tr key={i} style={{ borderBottom: borderStyle }>
+            <tr key={i} style={{ borderBottom: borderStyle }}>
               {columns.map((col: string) => (
-                <td key={col} style={{ padding: '10px' }>
+                <td key={col} style={{ padding: '10px' }}>
                   {row[col]?.rendered || String(row[col]?.value ?? '')}
                 </td>
               ))}

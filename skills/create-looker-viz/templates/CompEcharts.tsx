@@ -34,11 +34,11 @@ export const {component_name}: React.FC<Props> = ({ data, config }) => {
   };
 
   return (
-    <div style={{ width: '100%', height: '100vh', boxSizing: 'border-box' }>
+    <div style={{ width: '100%', height: '100vh', boxSizing: 'border-box' }}>
       <ReactECharts 
         option={option} 
-        style={{ height: '100%', width: '100%' } 
-        opts={{ renderer: 'canvas' } 
+        style={{ height: '100%', width: '100%' }} 
+        opts={{ renderer: 'canvas' }} 
       />
     </div>
   );

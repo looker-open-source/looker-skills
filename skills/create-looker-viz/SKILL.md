@@ -17,20 +17,8 @@ This skill provides a workflow for engineering Looker custom visualizations. It 
 ## 0. CRITICAL BEHAVIORAL DIRECTIVES (MUST READ FIRST)
 1. **Always ask for a query slug first (Lack of Planning):** **NEVER** write code or guess data shapes without first halting execution and explicitly asking the user for a representative Looker Explore URL or Query Slug. 
 2. **The Rule of Surgical Modification (Rewriting over Refactoring):** When modifying an existing visualization file, you **MUST NOT** rewrite or regenerate the entire file. You **MUST** perform surgical, localized block replacements to modify only the broken or requested lines. Complete rewrites waste tokens and delete human-written logic.
-3. **Data Mapping Bug Prevention (NaN fix):** Looker query responses can contain non-numeric data. Always verify the value type before mapping to charts to prevent `NaN` errors. Use this exact syntax:
-   ```javascript
-   const measures = Object.keys(row).filter(key => 
-     row[key].value !== null && typeof row[key].value === 'number'
-   );
-   ```
-4. **Safe Option Registration:** Looker's `this.trigger` is not always available immediately during initialization. You must validate it before calling it:
-   ```javascript
-   if (typeof this.trigger === 'function') {
-       this.trigger('registerOptions', options);
-   } else {
-       window.refreshSettingsPanel && window.refreshSettingsPanel(this);
-   }
-   ```
+3. **Data Mapping Bug Prevention (NaN fix):** Looker query responses can contain non-numeric data. Always verify the value type (`row[key].value !== null && typeof row[key].value === 'number'`) before mapping to charts to prevent `NaN` errors (see Section 10 of [references/data_patterns.md](references/data_patterns.md)).
+4. **Safe Option Registration:** Looker's `this.trigger` is not always available immediately during initialization. Always validate `typeof this.trigger === 'function'` before calling `this.trigger('registerOptions', options)`, falling back to `window.refreshSettingsPanel` (see Section 9 of [references/data_patterns.md](references/data_patterns.md)).
 
 ## Core Agent Instructions
 You are a **Looker Custom Viz Expert**. When the user asks you to generate a new visualization, you must adhere to these directives:
@@ -74,7 +62,7 @@ You are a **Looker Custom Viz Expert**. When the user asks you to generate a new
 
 ## Usage Instructions
 
-To engineer a new visualization, use the CLI tool bundled with this skill:
+To engineer a new visualization, execute the bundled Python CLI generator non-interactively (do not halt to ask for inputs already provided by the user):
 
 1. Execute the Python generator:
    [scripts/create_looker_viz.py](scripts/create_looker_viz.py)
@@ -108,18 +96,3 @@ Before deploying the output to Looker, the agent and developer must verify:
 *   [ ] **0x0 Canvas Guard**: If using external libraries like ECharts, verify the width/height are not `0` before rendering to prevent Looker's hidden iframe rendering bugs.
 *   [ ] **Resize Observation**: Ensure the chart redraws itself if the Looker dashboard tile is resized.
 *   [ ] **Looker Cell Formatting**: Use `rendered` values (e.g., `row[col].rendered`) when available to respect LookML formatting instead of raw `.value`s.
-
-## AI Agent Execution & Subagent Delegation Guidelines
-
-To optimize execution speed and prevent token bloat, follow these execution strategies:
-
-### 1. Non-Interactive Project Initialization
-When initializing a new visualization project, the agent **MUST** execute `create_looker_viz.py` non-interactively using the CLI arguments `--name`, `--title`, and `--framework`. Do not halt to ask the user for inputs if they have already provided them.
-
-### 2. Autonomous Surgical Refactoring & The Rule of Surgical Modification
-To protect developer comments, preserve existing configurations, and optimize API token efficiency, the agent **MUST** adhere to the following surgical editing protocol:
-* **Prohibition of Full Rewrites**: During any refactoring or debugging iteration on an *existing* visualization codebase, the agent **MUST NOT** rewrite, regenerate, or reconstruct the entire file from scratch.
-* **Targeted Block Replacements**: The agent **MUST** perform surgical, localized block replacements (such as search-and-replace, line-targeted edits, or targeted tool calls) to modify *only* the specific broken or misaligned lines of code.
-
-### 3. Subagent Delegation for Complex Debugging
-If you encounter complex rendering bugs, webpack/vite build issues, or need to research Looker's visualization API documentation comprehensively, use the `invoke_subagent` tool to spawn a specialized `research` subagent to investigate the problem and return targeted solutions.

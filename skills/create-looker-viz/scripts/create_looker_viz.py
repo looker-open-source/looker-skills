@@ -22,37 +22,21 @@ def generate_config_json(dim_count, metric_count, style_options):
 
 def main():
     parser = argparse.ArgumentParser(description="Initialize a Looker Custom Visualization")
-    parser.add_argument("--name", help="Project directory name")
-    parser.add_argument("--title", help="Visualization Title")
+    parser.add_argument("--name", required=True, help="Project directory name")
+    parser.add_argument("--title", required=True, help="Visualization Title")
     parser.add_argument("--framework", choices=["react", "vanilla"], default="react")
     parser.add_argument("--type", choices=["table", "cond-table", "bar", "pie", "radar", "echarts"], default=None)
     args = parser.parse_args()
 
-    # Interactive config if args are missing
-    if not args.name or not args.title:
-        print("Interactive Mode Started!")
-        if not os.path.exists("viz-config.json"):
-            print("Generating default viz-config.json...")
-            with open("viz-config.json", "w") as f:
-                f.write('{\n  "name": "my-viz",\n  "title": "My Custom Viz",\n  "type": "table",\n  "framework": "react",\n  "metrics": 1\n}')
-        input("Please configure viz-config.json in your editor. Press Enter when ready...")
-        
-        with open("viz-config.json", "r") as f:
-            config = json.load(f)
-        project_name = config.get("name", "my-viz")
-        project_title = config.get("title", "My Viz")
-        viz_type = config.get("type", "table")
-        framework = config.get("framework", "react").lower()
+    project_name = args.name
+    project_title = args.title
+    framework = args.framework.lower()
+    if args.type:
+        viz_type = args.type
+    elif "spider" in project_name.lower() or "radar" in project_name.lower():
+        viz_type = "radar"
     else:
-        project_name = args.name
-        project_title = args.title
-        framework = args.framework.lower()
-        if args.type:
-            viz_type = args.type
-        elif "spider" in project_name.lower() or "radar" in project_name.lower():
-            viz_type = "radar"
-        else:
-            viz_type = "table"
+        viz_type = "table"
 
     project_dir = os.path.abspath(project_name)
     if not os.path.exists(project_dir):
@@ -78,7 +62,7 @@ def main():
     if viz_type in ["bar", "pie", "radar"]:
         extra_deps += ',\n    "chart.js": "^4.4.1",\n    "react-chartjs-2": "^5.2.0"'
     elif viz_type == "echarts":
-        extra_deps += ',\n    "echarts": "^5.4.3"'
+        extra_deps += ',\n    "echarts": "^5.4.3",\n    "echarts-for-react": "^3.0.2"'
         
     # Write Package.json
     package_json = package_json_tmpl.replace("{name}", project_name).replace("{extra_deps}", extra_deps)
@@ -104,7 +88,7 @@ def main():
         
     # Write Index HTML
     ext = "js" if is_vanilla else "tsx"
-    index_html = index_html_tmpl.replace("main.tsx", f"main.{ext}")
+    index_html = index_html_tmpl.replace("main.tsx", f"main.{ext}").replace("{title}", project_title)
     with open(os.path.join(project_dir, "index.html"), "w") as f:
         f.write(index_html)
         
@@ -150,7 +134,9 @@ looker.plugins.visualizations.add({
         }
         comp_tmpl_name = comp_map.get(viz_type, "CompTable.tsx")
         with open(os.path.join(src_dir, "VizComponent.tsx"), "w") as f:
-            comp_content = load_template(comp_tmpl_name).replace("{component_name}", "VizComponent")
+            comp_content = (load_template(comp_tmpl_name)
+                .replace("{component_name}", "VizComponent")
+                .replace("{title}", project_title))
             f.write(comp_content)
             
         with open(os.path.join(src_dir, "useLookerData.ts"), "w") as f:

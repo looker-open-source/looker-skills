@@ -65,6 +65,8 @@ export interface LookerChartConfig {
   legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'none';
   fillOpacity?: number;
   gridlines?: boolean;
+  threshold?: string;
+  highlightColor?: string;
   [key: string]: unknown;
 }
 
