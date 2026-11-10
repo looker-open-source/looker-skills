@@ -2,10 +2,10 @@
 
 ## 1. Lifecycle & Canvas Guards
 
-- **`create(element, config)`**: Runs once on initialization. Create fluid DOM wrappers (`width: 100%; height: 100%`), inject fonts, and attach a `ResizeObserver`. Do not render data here.
+- **`create(element, config)`**: Runs once on initialization. Unmount/disconnect any prior root or `ResizeObserver`, create a fluid wrapper (`width: 100%; height: 100%`), inject fonts, and observe resizes. Do not render data here.
 - **`updateAsync(data, element, config, queryResponse, details, done)`**: Runs on data changes, tile resizes, and option edits.
   1. Call `this.clearErrors?.()` at the start.
-  2. Always invoke `done()` on every exit path (including empty-data and `addError` branches), waiting until animations or React 18 commits (`requestAnimationFrame(() => done())`) settle so PDF/PNG scheduled deliveries never time out or capture blank frames.
+  2. Always invoke `done()` on every exit path (including empty-data and `addError` branches). In React 18, race `requestAnimationFrame` with `setTimeout(..., 100)` because Chromium suspends `requestAnimationFrame` on below-the-fold cross-origin/opaque iframes during scheduled PDF/PNG exports.
   3. **Detached DOM & `0x0` Canvas Guards**:
      - **ECharts**: If `this.chart && this.chart.getDom() !== container`, call `this.chart.dispose()` before re-initializing, and pass fallback dimensions (`{ width: container.clientWidth || 600, height: container.clientHeight || 420 }`) to `echarts.init()` so initial `0x0` iframe layouts never lock a blank canvas.
      - **Chart.js**: If `this.chart && this.chart.canvas !== canvas`, call `this.chart.destroy()` (`dispose()` does not exist on Chart.js; omitting `destroy()` throws `Canvas is already in use`).
@@ -14,26 +14,14 @@
 
 ## 2. Safe Formatting, XSS Escaping & Native Drills
 
-### Formatting & HTML/SVG Escaping
-- For plain-text labels, prefer `cell.rendered ?? String(cell.value ?? '')` (or `window.LookerCharts?.Utils?.textForCell(cell)`).
-- For LookML HTML-formatted cells, guard `window.LookerCharts?.Utils?.htmlForCell ? window.LookerCharts.Utils.htmlForCell(cell) : escapeHtml(cell?.rendered ?? cell?.value ?? '')` so offline harnesses without `window.LookerCharts` never throw.
-- **Prevent XSS / DOM corruption**: Always HTML-escape raw `cell.value`, `cell.rendered`, and `field.label` strings before interpolating into Vanilla JS `innerHTML`, SVG strings, or ECharts HTML `tooltip.formatter` (which defaults to `renderMode: 'html'`):
+- **Plain text**: Prefer `cell?.rendered || String(cell?.value ?? '')` (or `window.LookerCharts?.Utils?.textForCell(cell)`), using `||` rather than `??` on `rendered` so `rendered: ""` does not mask a non-empty `value`.
+- **HTML cells**: Guard `window.LookerCharts?.Utils?.htmlForCell ? window.LookerCharts.Utils.htmlForCell(cell) : escapeHtml(cell?.rendered || String(cell?.value ?? ''))` (using `escapeHtml` from `src/types.ts` or `src/main.js`).
+- **Prevent XSS / DOM corruption**: Always `escapeHtml(...)` raw `cell.value`, `cell.rendered`, `field.label`, and pivot labels before interpolating into Vanilla JS `innerHTML`, SVG markup, or ECharts HTML `tooltip.formatter` (which defaults to `renderMode: 'html'`).
+- **Click-to-Drill & Strict CSP**: Looker's iframe CSP blocks inline attributes (`onclick="..."`). Use JSX handlers (`onClick`) in React or `addEventListener` with `data-*` attributes in Vanilla JS, and pass the **raw DOM `Event`** to `LookerCharts.Utils.openDrillMenu` (`event.nativeEvent` in React, `params.event?.event` in ECharts, `chartEvent.native` in Chart.js):
 
 ```typescript
-const HTML_ENTITIES: Record<string, string> = {
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-};
-function escapeHtml(str: unknown): string {
-  return String(str ?? '').replace(/[&<>"']/g, (c) => HTML_ENTITIES[c] || c);
-}
-```
-
-### Click-to-Drill & Strict CSP
-Looker's sandboxed iframe CSP blocks inline handlers (`onclick="..."`, `onmouseover="..."`). Use JSX handlers (`onClick`) in React or `addEventListener` with `data-*` attributes in Vanilla JS, and pass the **raw DOM `Event`** to `LookerCharts.Utils.openDrillMenu` (`event.nativeEvent` in React, `params.event?.event` in ECharts, `chartEvent.native` in Chart.js):
-
-```javascript
-function handleCellClick(nativeEvent, cell) {
-  if (cell?.links && cell.links.length > 0 && window.LookerCharts?.Utils?.openDrillMenu) {
+function handleCellClick(nativeEvent: Event | null | undefined, cell: LookerCell | undefined): void {
+  if (nativeEvent && cell?.links && cell.links.length > 0 && window.LookerCharts?.Utils?.openDrillMenu) {
     nativeEvent.preventDefault();
     window.LookerCharts.Utils.openDrillMenu({
       links: cell.links,
@@ -47,7 +35,7 @@ function handleCellClick(nativeEvent, cell) {
 
 ## 3. Settings Pane (`options`) & Visual Integrity
 
-Declare `options` on the visualization object; **every declared option key must visibly affect the rendered chart**:
+Declare `options` on the visualization object (never mutate nested option descriptors in-place across multi-tile instances, and ensure **every declared option key visibly affects rendered output**):
 
 | Property | Supported Values |
 | :--- | :--- |
@@ -58,11 +46,10 @@ Declare `options` on the visualization object; **every declared option key must 
 
 ```javascript
 options: {
-  show_labels: { type: 'boolean', label: 'Show Data Labels', default: true, section: 'Plot', order: 1 },
   legend_position: {
     type: 'string', label: 'Legend Position', display: 'select', default: 'bottom',
     values: [{ Left: 'left' }, { Right: 'right' }, { Bottom: 'bottom' }, { Hidden: 'none' }],
-    section: 'Plot', order: 2,
+    section: 'Plot', order: 1,
   },
   custom_color_palette: {
     type: 'array', label: 'Color Palette', display: 'colors',
@@ -72,7 +59,7 @@ options: {
 ```
 
 **Visual Integrity Conventions**:
-- **Axes & labels**: Start bar/column value axes at `0` (line/scatter/radar axes may use labeled non-zero minimums). Never render `90°` vertical axis labels—rotate overlapping labels `30°–45°` or switch to horizontal bars. Color-code dual axes with a toggle in `options`.
+- **Axes & labels**: Start bar/column value axes at `0` (line/scatter/radar axes may use labeled non-zero minimums). Never render `90°` vertical axis labels—rotate overlapping labels `30°-45°` or switch to horizontal bars. Color-code dual axes with a toggle in `options`.
 - **Palettes & gridlines**: Match palette structure to data (distinct hues for categorical, single-hue light-to-dark for sequential, two-hue neutral-midpoint for diverging), avoid pure red/green pairs, and keep gridlines subtle (`rgba(15, 23, 42, 0.08)`).
 
 ---
@@ -114,7 +101,7 @@ function injectLookerFonts() {
 
 ### Native Looker `"No results"` Empty State
 When `!data || data.length === 0`:
-- **React (`<App />`)**: Render the empty state **as JSX inside `<App />`** (never overwrite `element.innerHTML` outside React, which detaches `#viz-root` and freezes subsequent non-empty updates; ensure chart `useEffect` hooks include `isEmpty` in their dependency array so ECharts/Chart.js re-attaches when rows return).
+- **React (`<App />`)**: Render the empty state **as JSX inside `<App />`** (never overwrite `element.innerHTML` outside React, which detaches `#viz-root`; include `isEmpty` in chart `useEffect` dependency arrays so ECharts/Chart.js re-attaches when rows return).
 - **Vanilla JS**: Write `EMPTY_STATE_HTML` into `this._wrap` (not `element`, keeping `ResizeObserver` attached), then call `done()`:
 
 ```javascript

@@ -1,64 +1,64 @@
 # Data Patterns & Recipes
 
-## 1. Handling Pivots (Filtering Row Totals & Reading Labels)
+*(In Vanilla `.js` files, strip TypeScript `: Type` / `as Type` annotations and import `getCell` from `src/main.js`.)*
 
-When `queryResponse.pivots` is present, filter out `!p.is_total` so Looker's `"$$$_row_total_$$$"` column does not double-count stacked series. Read human-readable series labels from `pivot.metadata` or `pivot.data` rather than raw `"2026-Q4|FIELD|Direct Web"` keys, and use `getCell(row, measure.name, pivot.key)`:
+## 1. Handling Pivots (Filtering Row Totals, Null Metadata & Cross-Pivot Calcs)
+
+Filter `!p.is_total` so Looker's `"$$$_row_total_$$$"` column does not double-count stacked series. Guard `null` metadata entries (`m?.rendered`), preserve `"0"` pivot values, and fall back to `getCell(row, metric.name)` for flat cross-pivot table calculations (`pivot_index`, `pivot_row`):
 
 ```typescript
 const activePivots = (queryResponse.pivots || []).filter((p) => !p.is_total);
-const measures = queryResponse.fields.measures || [];
 
-function formatPivotLabel(pivot: { key: string; metadata?: Record<string, { rendered?: string; label?: string }>; data?: Record<string, string> }): string {
+function formatPivotLabel(pivot: LookerPivot): string {
   if (pivot.metadata) {
-    const parts = Object.values(pivot.metadata).map((m) => m.rendered || m.label).filter(Boolean);
+    const parts = Object.values(pivot.metadata).map((m) => m?.rendered || m?.label).filter(Boolean);
     if (parts.length > 0) return parts.join(' · ');
   }
   if (pivot.data) {
-    const parts = Object.values(pivot.data).filter(Boolean);
+    const parts = Object.values(pivot.data).map((v) => (v != null && v !== '' ? String(v) : '')).filter(Boolean);
     if (parts.length > 0) return parts.join(' · ');
   }
-  return pivot.key.replace(/\|FIELD\|/g, ' · ');
+  return pivot.label || pivot.key.replace(/\|FIELD\|/g, ' · ');
 }
 
 if (activePivots.length > 0) {
   activePivots.forEach((pivot) => {
     measures.forEach((measure) => {
-      const cell = getCell(row, measure.name, pivot.key);
+      const cell = getCell(row, measure.name, pivot.key) ?? getCell(row, measure.name);
     });
   });
 }
 ```
 
-## 2. Color Palettes
+## 2. Color Palettes (Strict String Narrowing)
 
-Expose a `display: 'colors'` option in `options` and fall back to an accessible hex array (do **not** call `looker.charts.Utils.getScale`, which does not exist on `window.looker` in API v2):
+Expose a `display: 'colors'` option in `options` and filter `custom_color_palette` with a type guard so `Array.isArray` on `unknown` never infers `any[]` (do **not** call `looker.charts.Utils.getScale`, which does not exist in API v2):
 
 ```typescript
 const DEFAULT_PALETTE = ['#1A73E8', '#0F9D58', '#F29900', '#9334E6', '#00ACC1', '#D93025'];
-const palette =
+const palette: string[] =
   Array.isArray(config.custom_color_palette) && config.custom_color_palette.length > 0
-    ? config.custom_color_palette
+    ? config.custom_color_palette.filter((c): c is string => typeof c === 'string')
     : DEFAULT_PALETTE;
 ```
 
-## 3. Merged Results & Table Calculations (`dimension_like` / `measure_like`)
+## 3. Merged Results & Table Calculations (`dimension_like` / `measure_like` / `table_calculations`)
 
-Merged Results and Table Calculations often leave `fields.dimensions` or `fields.measures` empty while populating `dimension_like` and `measure_like`:
+Check `dimension_like` before `dimensions` and deduplicate `measure_like`, `measures`, and `table_calculations` by `name` (putting `measures` first drops Table Calculations whenever `>= 1` regular measure exists):
 
 ```typescript
-const dimensions =
-  queryResponse.fields.dimensions && queryResponse.fields.dimensions.length > 0
-    ? queryResponse.fields.dimensions
-    : queryResponse.fields.dimension_like || [];
-const measures =
-  queryResponse.fields.measures && queryResponse.fields.measures.length > 0
-    ? queryResponse.fields.measures
-    : queryResponse.fields.measure_like || [];
+const f = queryResponse.fields;
+const dimensions = f.dimension_like && f.dimension_like.length > 0 ? f.dimension_like : f.dimensions || [];
+const dimNames = new Set(dimensions.map((d) => d.name));
+const seenMetrics = new Set<string>();
+const measures = [...(f.measure_like || []), ...(f.measures || []), ...(f.table_calculations || [])].filter(
+  (m) => !dimNames.has(m.name) && !seenMetrics.has(m.name) && (seenMetrics.add(m.name), true)
+);
 ```
 
-## 4. Query Shape Validation (`this.addError`)
+## 4. Query Shape Validation (`this.addError` Inside `plugin.updateAsync`)
 
-Validate field counts using the `dimension_like` / `measure_like` fallbacks above and always call `done()` before returning:
+Validate field counts using the resolved `dimensions` and `measures` arrays inside `plugin.updateAsync`, and always call `done()` before returning:
 
 ```typescript
 this.clearErrors?.();
@@ -75,17 +75,24 @@ if (dimensions.length < 1 || measures.length < 1) {
 
 ## 5. Hierarchical Trees (Sunburst, Treemap, Org/Dependency Graphs)
 
-Convert flat rows into a nested tree matching `dimensions` order, supporting optional `pivotKey`, preserving `node.cell` and measure drill `links` on single-row leaves, and keeping parent dimension drills when multiple rows aggregate into one leaf:
+Convert flat rows into a nested tree matching `dimensions` order, preserving `node.cell` and measure `links` on single-row leaves while resetting `node.links` to parent `dimLinks` when multiple rows aggregate into one leaf:
 
 ```typescript
-function convertToHierarchy(data: LookerChartData, dimensions: LookerField[], measureName: string, pivotKey?: string) {
-  interface TreeNode { name: string; value?: number; cell?: LookerCell; links: LookerLink[]; children?: TreeNode[] }
-  const root: TreeNode[] = [];
+interface HierarchyNode {
+  name: string;
+  value?: number;
+  cell?: LookerCell;
+  links: LookerLink[];
+  children?: HierarchyNode[];
+}
+
+function convertToHierarchy(data: LookerChartData, dimensions: LookerField[], measureName: string, pivotKey?: string): HierarchyNode[] {
+  const root: HierarchyNode[] = [];
   data.forEach((row) => {
     let level = root;
     dimensions.forEach((dim, idx) => {
       const dimCell = getCell(row, dim.name);
-      const name = dimCell?.value != null ? String(dimCell.rendered ?? dimCell.value) || '(Empty)' : '∅';
+      const name = dimCell?.value != null ? (dimCell.rendered || String(dimCell.value)) || '(Empty)' : '∅';
       const dimLinks = dimCell?.links || [];
       let node = level.find((n) => n.name === name);
       if (!node) {
@@ -98,9 +105,7 @@ function convertToHierarchy(data: LookerChartData, dimensions: LookerField[], me
         const isAggregated = node.value !== undefined;
         node.value = (node.value || 0) + val;
         node.cell = isAggregated ? undefined : measCell;
-        if (!isAggregated && measCell?.links && measCell.links.length > 0) {
-          node.links = measCell.links;
-        }
+        node.links = isAggregated ? dimLinks : measCell?.links && measCell.links.length > 0 ? measCell.links : dimLinks;
       } else {
         node.children = node.children || [];
         level = node.children;
@@ -113,7 +118,7 @@ function convertToHierarchy(data: LookerChartData, dimensions: LookerField[], me
 
 ## 6. Formatting Custom Aggregated Rollups (`SSF`)
 
-Looker API v2 does not bundle `SSF` into custom iframes automatically (run `npm install ssf` if needed, or check `window.SSF`). Hoist `fmt` and `ssf` before the closure for strict TypeScript narrowing, guard non-finite inputs, and pre-index `rendered` strings in a `Map` for `O(1)` lookup:
+Looker API v2 does not bundle `SSF` automatically (`npm install ssf` if needed, or check `window.SSF`). Hoist `fmt` and `ssf` before the closure for strict narrowing, normalize `-0`, and index both flat and pivoted `rendered` cells for `O(1)` fallback:
 
 ```typescript
 function getFormatterForMeasure(data: LookerChartData, measure: LookerField | undefined, pivotKey?: string) {
@@ -122,29 +127,38 @@ function getFormatterForMeasure(data: LookerChartData, measure: LookerField | un
   const renderedByVal = new Map<number, string>();
   if (measure) {
     data.forEach((r) => {
-      const c = getCell(r, measure.name, pivotKey);
-      if (typeof c?.value === 'number' && c.rendered && !renderedByVal.has(c.value)) {
-        renderedByVal.set(c.value, c.rendered);
-      }
+      const entry = r[measure.name];
+      const cells =
+        pivotKey !== undefined
+          ? [getCell(r, measure.name, pivotKey)]
+          : entry && typeof entry === 'object' && !('value' in entry)
+            ? Object.values(entry as LookerPivotCellMap)
+            : [getCell(r, measure.name)];
+      cells.forEach((c) => {
+        if (typeof c?.value === 'number' && Number.isFinite(c.value) && c.rendered && !renderedByVal.has(c.value)) {
+          renderedByVal.set(c.value === 0 ? 0 : c.value, c.rendered);
+        }
+      });
     });
   }
   return (val: number | null | undefined): string => {
     if (typeof val !== 'number' || !Number.isFinite(val)) return '';
+    const n = val === 0 ? 0 : val;
     if (fmt && ssf) {
-      try { return ssf.format(fmt, val); } catch { /* fallback below */ }
+      try { return String(ssf.format(fmt, n)); } catch { /* fallback below */ }
     }
-    return renderedByVal.get(val) ?? val.toLocaleString();
+    return renderedByVal.get(n) ?? n.toLocaleString();
   };
 }
 ```
 
-## 7. Safe Dynamic Option Registration (`registerOptions`)
+## 7. Safe Dynamic Option Registration (`registerOptions` Inside `plugin.updateAsync`)
 
-Snapshot initial static `this.options` once (`_baseOptions`), include field labels in the cache key, and guard `typeof this.trigger === 'function'`:
+Snapshot initial static `this.options` once (`_baseOptions`), prefer full `m.label` over `m.label_short` (avoiding duplicate `"Count"` labels across joined views), and guard `typeof this.trigger === 'function'`:
 
 ```typescript
 const baseOpts = (this._baseOptions as Record<string, unknown> | undefined) ?? (this._baseOptions = { ...this.options });
-const nextKey = measures.map((m) => `${m.name}:${m.label_short || m.label || ''}`).join('|');
+const nextKey = measures.map((m) => `${m.name}:${m.label || m.label_short || ''}`).join('|');
 if (this._registeredKey !== nextKey) {
   this._registeredKey = nextKey;
   const dynamicOptions: Record<string, unknown> = {
@@ -153,7 +167,7 @@ if (this._registeredKey !== nextKey) {
       type: 'string',
       label: 'Size By Measure',
       display: 'select',
-      values: measures.map((m) => ({ [m.label_short || m.label || m.name]: m.name })),
+      values: measures.map((m) => ({ [m.label || m.label_short || m.name]: m.name })),
       default: measures[0]?.name || '',
       section: 'Series',
     },
@@ -169,7 +183,7 @@ if (this._registeredKey !== nextKey) {
 
 ## 8. Finite Numeric Validation (`NaN` & `Infinity` Prevention)
 
-Because `typeof NaN === 'number'` and `typeof Infinity === 'number'` are `true` in JavaScript, always combine `typeof` with `Number.isFinite` over declared `measures` / `measure_like` (never infer measures via `Object.keys(row)`, which misclassifies numeric ID/year dimensions):
+Because `typeof NaN === 'number'` and `typeof Infinity === 'number'` are `true` in JavaScript, always pair `typeof` with `Number.isFinite` over declared `measures` (never infer measures via `Object.keys(row)`):
 
 ```typescript
 function getNumericValue(row: LookerRow, field: string, pivotKey?: string): number | null {
