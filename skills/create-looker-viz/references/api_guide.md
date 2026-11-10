@@ -123,21 +123,19 @@ Looker runs custom visualizations inside sandboxed iframes with a strict **Conte
 
 ## 4. Defining Configuration Options (The Settings Pane)
 
-To allow users to customize your visualization (e.g., toggle gridlines, change colors, adjust font sizes), declare configuration options inside the `options` property of your visualization object. Looker automatically translates this schema into interactive control widgets inside the visualization's **Edit** panel.
+Declare configuration options inside the `options` property of your visualization object. Looker translates this schema into interactive controls inside the **Edit** panel.
 
 ### Supported Option Schema Properties
-Each option key maps to a configuration definition with the following properties:
-*   `type`: The data type of the option. Must be one of: `'string'`, `'number'`, or `'boolean'`.
-*   `label`: The user-facing label shown in the Looker settings panel.
-*   `default`: The default value when the visualization is first loaded.
-*   `section`: The tab name in Looker's Edit panel (e.g. `"Plot"`, `"Series"`, `"Formatting"`) to group controls together. If omitted, the option is placed in the default tab.
-*   `order`: An integer determining the sorting order of the controls in the panel (lower values appear first).
-*   `display`: Controls the UI input widget type. Supported displays depend on the `type`:
-    *   **Dropdown Selection** (`type: 'string'` or `'number'`): Set `display: 'select'` and provide a `values` array.
-    *   **Radio Buttons** (`type: 'string'` or `'number'`): Set `display: 'radio'` and provide a `values` array.
-    *   **Text Field** (`type: 'string'` or `'number'`): Set `display: 'text'`.
-    *   **Toggle Switch (Checkbox)** (`type: 'boolean'`): Looker renders a simple toggle switch automatically (no `display` setting required).
-    *   **Color Picker / Palette** (`type: 'string'` or `'array'`): Set `display: 'color'` or `display: 'colors'`.
+*   `type`: `'string'`, `'number'`, or `'boolean'`.
+*   `label`: User-facing label in the Looker settings panel.
+*   `default`: Default value when first loaded.
+*   `section`: Tab name in Looker's Edit panel (e.g. `"Plot"`, `"Series"`, `"Formatting"`).
+*   `order`: Integer sorting order in the panel (lower values appear first).
+*   `display`: Controls the UI input widget type:
+    *   **Dropdown / Radio** (`type: 'string'` or `'number'`): `display: 'select'` or `'radio'` with a `values` array.
+    *   **Text Field** (`type: 'string'` or `'number'`): `display: 'text'`.
+    *   **Toggle Switch** (`type: 'boolean'`): Rendered automatically.
+    *   **Color Picker / Palette** (`type: 'string'` or `'array'`): `display: 'color'` or `'colors'`.
 
 ### Option Declaration Example
 ```javascript
@@ -145,74 +143,35 @@ looker.plugins.visualizations.add({
   id: 'my_chart',
   label: 'My Custom Chart',
   options: {
-    // 1. Boolean Toggle (renders as a checkbox/toggle switch)
-    show_labels: {
-      type: 'boolean',
-      label: 'Show Data Labels',
-      default: true,
-      section: 'Plot',
-      order: 1
-    },
-    // 2. Select Dropdown (renders as a dropdown menu)
+    show_labels: { type: 'boolean', label: 'Show Data Labels', default: true, section: 'Plot', order: 1 },
     legend_position: {
-      type: 'string',
-      label: 'Legend Position',
-      default: 'bottom',
-      display: 'select',
-      values: [
-        { 'Left': 'left' },
-        { 'Right': 'right' },
-        { 'Bottom': 'bottom' },
-        { 'Hidden': 'none' }
-      ],
-      section: 'Plot',
-      order: 2
+      type: 'string', label: 'Legend Position', default: 'bottom', display: 'select',
+      values: [{ 'Left': 'left' }, { 'Right': 'right' }, { 'Bottom': 'bottom' }, { 'Hidden': 'none' }],
+      section: 'Plot', order: 2
     },
-    // 3. Color Palette Selector (renders Looker's color palette picker)
     custom_color_palette: {
-      type: 'array',
-      label: 'Color Palette',
-      display: 'colors',
-      default: ['#1a73e8', '#34a853', '#fbbc05', '#ea4335'],
-      section: 'Series',
-      order: 1
+      type: 'array', label: 'Color Palette', display: 'colors',
+      default: ['#1a73e8', '#34a853', '#fbbc05', '#ea4335'], section: 'Series', order: 1
     },
-    // 4. Numeric Text Input (renders as a numeric text box)
-    chart_max_value: {
-      type: 'number',
-      label: 'Y-Axis Maximum',
-      default: 100,
-      display: 'text',
-      section: 'Axes',
-      order: 1
-    }
+    chart_max_value: { type: 'number', label: 'Y-Axis Maximum', default: 100, display: 'text', section: 'Axes', order: 1 }
   },
-  // ... create, updateAsync ...
+  updateAsync: function(data, element, config, queryResponse, details, done) {
+    const showLabels = config.show_labels;
+    const legendPos = config.legend_position;
+    const colors = config.custom_color_palette || ['#1a73e8'];
+    const yAxisMax = config.chart_max_value;
+    // ... render chart ...
+  }
 });
 ```
-
-### Accessing Options inside `updateAsync`
-The selected configuration values are passed directly into the `config` parameter of `updateAsync`. You can read them by key:
-```javascript
-updateAsync: function(data, element, config, queryResponse, details, done) {
-  const showLabels = config.show_labels; // true/false
-  const legendPos = config.legend_position; // 'left', 'right', 'bottom', or 'none'
-  const colors = config.custom_color_palette || ['#1a73e8']; 
-  const yAxisMax = config.chart_max_value;
-  // ... render chart ...
-}
-```
-
 
 ---
 
 ## 5. Loading Dependencies & Harness Compatibility
 
-When your custom visualization requires external libraries (like D3, Rough.js, or React), you must handle loading them in a way that works in Looker's production environment (complying with CSP) and your local offline development harness.
+Handle external libraries (like D3, Rough.js, or React) so they work in Looker's production sandbox (CSP-compliant) and the local offline harness.
 
 ### Step 1: Declare Dependencies in `manifest.lkml` (For Production)
-Declare all external library URLs in the `dependencies` array of the `visualization` block. Looker will load these libraries natively in the sandbox before executing your visualization script.
-
 ```lkml
 visualization: {
   id: "my_custom_viz"
@@ -226,25 +185,15 @@ visualization: {
 ```
 
 ### Step 2: Implement Hybrid Loader in JS (For Harness Compatibility)
-Since the local harness does not parse `manifest.lkml`, you must write a script loader that falls back to dynamic loading when the libraries are not already globally defined. 
-
-Use this pattern at the start of your visualization file to define a hybrid loader:
+Since the local harness does not parse `manifest.lkml`, fall back to dynamic script loading when libraries are not already defined on `window`:
 
 ```javascript
-// Helper to load external scripts dynamically, checking if already loaded globally (via manifest)
 function loadScript(src, globalName) {
   return new Promise((resolve, reject) => {
-    // 1. If library is already loaded globally (by Looker manifest), resolve immediately
-    if (globalName && window[globalName]) {
+    if ((globalName && window[globalName]) || document.querySelector(`script[src="${src}"]`)) {
       resolve();
       return;
     }
-    // 2. If script tag already exists in document, resolve
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve();
-      return;
-    }
-    // 3. Otherwise (Local Harness mode), load the script dynamically
     const script = document.createElement('script');
     script.src = src;
     script.onload = resolve;
@@ -252,29 +201,17 @@ function loadScript(src, globalName) {
     document.head.appendChild(script);
   });
 }
-```
 
-Then, call this loader inside `updateAsync` before rendering:
-
-```javascript
-updateAsync: function(data, element, config, queryResponse, details, done) {
-  this.clearErrors();
-
-  // Load dependencies before rendering
-  Promise.all([
-    loadScript('https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js', 'd3'),
-    loadScript('https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js', 'rough')
-  ]).then(() => {
-    // Render chart once libraries are ready
-    this.renderChart(element);
-    if (done) done();
-  }).catch(err => {
-    this.addError({
-      group: "load_dependency",
-      title: "Dependency Error",
-      message: "Failed to load required libraries."
-    });
-    if (done) done();
-  });
-}
+// Inside updateAsync:
+this.clearErrors();
+Promise.all([
+  loadScript('https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js', 'd3'),
+  loadScript('https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js', 'rough')
+]).then(() => {
+  this.renderChart(element);
+  if (done) done();
+}).catch(() => {
+  this.addError({ group: "load_dependency", title: "Dependency Error", message: "Failed to load required libraries." });
+  if (done) done();
+});
 ```

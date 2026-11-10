@@ -4,7 +4,7 @@ description: Use this skill when the user asks to create, architect, or generate
 license: Apache-2.0
 metadata:
   publisher: google
-  version: v1
+  version: "0.1.0"
 ---
 
 # Looker Custom Visualization Generator
@@ -66,7 +66,8 @@ To engineer a new visualization, execute the bundled Python CLI generator non-in
 
 1. Execute the Python generator:
    [scripts/create_looker_viz.py](scripts/create_looker_viz.py)
-   *(Run `python3 <path-to-script> --name <dir> --title "<title>" --framework <react|vanilla>`)*
+   *(Run `python3 <path-to-script> --name <dir> --title "<title>" --framework <react|vanilla> --type <table|cond-table|bar|pie|radar|echarts>`)*
+   *(In cloud or chat environments without a local Python runtime, scaffold the project directly using the files in `templates/`.)*
 
 ## Supported Chart Templates
 When generating a visualization, you can implement one of these proven templates:

@@ -33,7 +33,7 @@ def main():
     framework = args.framework.lower()
     if args.type:
         viz_type = args.type
-    elif "spider" in project_name.lower() or "radar" in project_name.lower():
+    elif "radar" in project_name.lower():
         viz_type = "radar"
     else:
         viz_type = "table"
