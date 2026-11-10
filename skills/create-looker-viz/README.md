@@ -51,4 +51,3 @@ To maximize the AI's token efficiency and maintainability, this skill is archite
 *   **The Engine (`scripts/create_looker_viz.py`)**: A 130-line CLI code generator that drives the interactive `viz-config.json` workflow.
 *   **The Blueprints (`templates/`)**: 21 native code assets (`.tsx`, `.ts`, `.json`) offering full syntax highlighting for human maintainers.
 *   **The Library (`references/`)**: Uses **Progressive Disclosure** via `file://` links to provide the AI with deep-dive Looker API documentation only when it encounters complex bugs.
-*   **The Reference (`examples/`)**: A fully working, compiled Vanilla JS prototype that the AI can dynamically read to self-correct its own code.

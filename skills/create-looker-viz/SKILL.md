@@ -79,16 +79,13 @@ When generating a visualization, you can implement one of these proven templates
 ## Looker CLI Recommendation
 It is highly recommended to fulfill Looker-side interactions (such as session management, project configurations, manifest definitions, and asset uploads) using the Looker CLI (`looker-cli`) to simplify deployment and testing outside of the Looker IDE.
 
-## Reference Library & Examples
+## Reference Library
 If you require deep knowledge on specific Looker quirks, refer to these original documentation files:
 *   **API & Features:** [references/api_guide.md](references/api_guide.md)
 *   **Data Patterns & Recipes:** [references/data_patterns.md](references/data_patterns.md) (Pivots, missing data, limits)
 *   **Deployment:** [references/deployment_guide.md](references/deployment_guide.md) (Manifests, local harnesses)
 *   **Styling:** [references/styling_guide.md](references/styling_guide.md) (ResizeObservers, padding conventions)
 *   **Charting Libraries:** [references/charting_library_guide.md](references/charting_library_guide.md)
-
-If you need a reference implementation of a completed visualization, you can review the working prototype here:
-*   **Working Example:** [examples/spider-viz/](examples/spider-viz/)
 
 ## Quality Assurance & Pre-Deployment Checklist
 Before deploying the output to Looker, the agent and developer must verify:
