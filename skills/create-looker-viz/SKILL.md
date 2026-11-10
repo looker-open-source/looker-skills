@@ -52,25 +52,24 @@ You are a **Looker Custom Viz Expert**. When the user asks you to generate a new
 
 ## Supported Frameworks
 
-1. **React / TypeScript (`--framework react`)**
+1. **React / TypeScript (`react`)**
    - **Best For:** Complex interactive dashboards, enterprise-scale projects.
-   - **Features:** Strong typing of Looker data shapes, component encapsulation, out-of-the-box Chart.js integration.
+   - **Features:** Strong typing of Looker data shapes, component encapsulation, out-of-the-box Chart.js and ECharts integration.
    
-2. **Vanilla JavaScript (`--framework vanilla`)**
+2. **Vanilla JavaScript (`vanilla`)**
    - **Best For:** Extremely lightweight visualizations, zero React dependencies, projects requiring strict final bundle size limits.
-   - **Features:** Full Vite HMR support, direct DOM manipulation, bare-bones Chart.js integration.
+   - **Features:** Full Vite HMR support, direct DOM manipulation, bare-bones Chart.js or D3.js integration.
 
 ## Usage Instructions
 
-To engineer a new visualization, execute the bundled Python CLI generator non-interactively (do not halt to ask for inputs already provided by the user):
+To engineer a new visualization:
 
-1. Execute the Python generator:
-   [scripts/create_looker_viz.py](scripts/create_looker_viz.py)
-   *(Run `python3 <path-to-script> --name <dir> --title "<title>" --framework <react|vanilla> --type <table|cond-table|bar|pie|radar|echarts>`)*
-   *(In cloud or chat environments without a local Python runtime, scaffold the project directly using the files in `templates/`.)*
+1. Read the project scaffolding blueprints in [references/scaffolding_guide.md](references/scaffolding_guide.md).
+2. Create the target project directory (`<project-name>/`) and write the Vite configuration, TypeScript interfaces (`src/utils/types.ts`), Looker plugin entrypoint (`src/main.tsx` or `src/main.js` with the offline mock-data harness), and chart component tailored to the user's Looker query shape and config options.
+3. Run `npm install` and `npm run build` to verify the visualization compiles cleanly into `dist/bundle.js`.
 
-## Supported Chart Templates
-When generating a visualization, you can implement one of these proven templates:
+## Supported Chart Architectures
+When generating a visualization, you can implement one of these proven patterns:
 1. **Table** (Zero-dependency native HTML table)
 2. **Conditional Table** (Highlights cells based on thresholds)
 3. **Bar / Pie / Radar Charts** (using Chart.js)
@@ -82,11 +81,13 @@ It is highly recommended to fulfill Looker-side interactions (such as session ma
 
 ## Reference Library
 If you require deep knowledge on specific Looker quirks, refer to these original documentation files:
+*   **Project Scaffolding & Templates:** [references/scaffolding_guide.md](references/scaffolding_guide.md) (React/TS & Vanilla JS Vite blueprints)
 *   **API & Features:** [references/api_guide.md](references/api_guide.md)
 *   **Data Patterns & Recipes:** [references/data_patterns.md](references/data_patterns.md) (Pivots, missing data, limits)
 *   **Deployment:** [references/deployment_guide.md](references/deployment_guide.md) (Manifests, local harnesses)
 *   **Styling:** [references/styling_guide.md](references/styling_guide.md) (ResizeObservers, padding conventions)
 *   **Charting Libraries:** [references/charting_library_guide.md](references/charting_library_guide.md)
+*   **Visualization Best Practices:** [references/visualization_guide.md](references/visualization_guide.md)
 
 ## Quality Assurance & Pre-Deployment Checklist
 Before deploying the output to Looker, the agent and developer must verify:
