@@ -78,8 +78,12 @@ Deploy changes directly to Looker via the CLI without git commits.
 3.  **Upload File**:
     ```bash
     npm run build
-    looker-cli project file create my-viz-dev manifest.lkml manifest.lkml --force
-    looker-cli project file create my-viz-dev viz_bundle.js dist/viz_bundle.js --force
+    looker-cli session update dev
+    # First upload:
+    looker-cli project file create my-viz-dev manifest.lkml manifest.lkml
+    looker-cli project file create my-viz-dev viz_bundle.js dist/bundle.js
+    # Subsequent rebuilds:
+    looker-cli project file update my-viz-dev viz_bundle.js dist/bundle.js
     ```
 
 ### Strategy C: Local HTTPS Server (Alternative)
@@ -94,4 +98,4 @@ Serve the file locally over HTTPS.
 ## 4. Registry & Dev Mode Gotchas
 *   **ID Matching**: The `id` defined in the `manifest.lkml` project file (e.g. `id: "my_custom_viz"`) **must exactly match** the `id` string passed to `looker.plugins.visualizations.add({ id: 'my_custom_viz' })` inside your JavaScript code. If they do not match, the explore interface will load a blank visualization container.
 *   **Initial Production Footprint**: When registering a **new** custom visualization ID for the first time, Looker's registry will not display it in the Explore dropdowns under Development Mode until the project's manifest has been committed and deployed to production **at least once**. Once this initial manifest is pushed to production, subsequent code changes to the JS files inside your dev workspace are instantly hot-reloaded without further deploys.
-*   **Git Commit Step Required for Prod**: The Looker API has no endpoint to commit changes. Running `looker-cli project file update` only writes the changes to your Development Mode workspace. To push changes all the way to production, you must instruct the user to open the Looker IDE UI, click **Commit Changes & Push**, and then click **Deploy to Production** to merge the changes. Running `looker-cli project deploy` without this manual commit step will not deploy uncommitted changes.
+*   **Committing & Deploying to Production**: Running `looker-cli project file create` or `update` only writes changes to your Development Mode workspace. On Looker-hosted bare Git projects (`"git_service_name": "bare"`), you can commit and deploy to production 100% from the CLI using `looker-cli project commit <project_id> -m "..."` followed by `looker-cli project deploy <project_id>`. For external Git providers where deploy keys or Git auth are not yet configured for the CLI, instruct the user to open the Looker IDE UI, click **Commit Changes & Push**, and then click **Deploy to Production**.

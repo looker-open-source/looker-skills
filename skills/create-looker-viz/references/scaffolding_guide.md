@@ -16,7 +16,6 @@ Use these blueprints to scaffold a Looker Custom Visualization project directly 
 └── src/
     ├── App.tsx
     ├── VizComponent.tsx
-    ├── index.css
     ├── looker.d.ts
     ├── main.tsx
     └── utils/
@@ -52,21 +51,29 @@ Add `"chart.js": "^4.4.1", "react-chartjs-2": "^5.2.0"` for Bar/Pie/Radar charts
 ```
 
 ### `vite.config.ts`
+Configure Vite's `lib` mode as an inline `iife` bundle (and define `process.env.NODE_ENV` for React) to guarantee a single self-contained `dist/bundle.js` that executes cleanly inside Looker's sandboxed `<script>` loader. Inject styles via inline styles or a `<style>` tag rather than importing external `.css` files.
 ```typescript
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
   build: {
+    lib: {
+      entry: 'src/main.tsx',
+      name: 'LookerCustomViz',
+      formats: ['iife'],
+      fileName: () => 'bundle.js',
+    },
     rollupOptions: {
       output: {
-        entryFileNames: 'bundle.js',
-        assetFileNames: '[name].[ext]',
-        chunkFileNames: '[name].js',
-      }
-    }
-  }
+        inlineDynamicImports: true,
+      },
+    },
+  },
 })
 ```
 
@@ -184,7 +191,6 @@ export type LookerVisualizationDetails = Record<string, unknown>;
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import './index.css'
 import { LookerChartData, LookerChartConfig, LookerQueryResponse, LookerVisualizationDetails } from './utils/types'
 
 if (typeof looker !== 'undefined' && looker?.plugins?.visualizations) {

@@ -68,4 +68,4 @@ Because dashboard tiles are small, charts should not be cluttered with text. Uti
 *   Position tooltips dynamically relative to the mouse pointer or target node.
 
 ### 3. Expose Click-to-Drill Menus
-Always intercept click events on chart data elements (bars, columns, scatter dots) to open Looker's native drill menu. If a cell contains drill links, do not perform navigation; instead, pass the native event to `LookerCharts.Utils.openDrillMenu`. Refer to the [references/api_guide.md](file://./api_guide.md#L81-L99) for details.
+Always intercept click events on chart data elements (bars, columns, scatter dots) to open Looker's native drill menu. If a cell contains drill links, do not perform navigation; instead, pass the native event to `LookerCharts.Utils.openDrillMenu`. Refer to [api_guide.md](api_guide.md) for details.
