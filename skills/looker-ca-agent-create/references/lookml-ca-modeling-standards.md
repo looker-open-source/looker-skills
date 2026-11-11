@@ -17,7 +17,7 @@ This shared reference defines the LookML semantic layer standards used by `looke
 ## 2. Refinement Awareness & Join / Noise Guardrails
 
 - **Respect LookML Refinements (`view: +view_name`) Across `raw/` and `refined/` Layers:** Enterprise LookML projects commonly define base columns in `views/raw/*.view.lkml` and enrich those same fields in `views/refined/*.view.lkml` using `view: +view_name` (or `extends:`). Looker compiles a refined field into a single dimension—**never mistake a `+view_name` refinement for a duplicate field**, and always apply metadata additions to the `refined/` layer when one exists.
-- **Prefer Instruction Disambiguation Over Risky `hidden: yes` Changes:** Never add `hidden: yes` to fields that may be referenced by existing dashboards or Explores. If two fields look similar to the CA Agent, disambiguate them inside the agent's `<semantic_and_execution_rules>` instructions rather than risking a breaking LookML edit.
+- **Prefer Instruction Disambiguation Over Risky `hidden: yes` Changes:** Never add `hidden: yes` to fields that may be referenced by existing dashboards or Explores. If two fields look similar to the CA Agent, disambiguate them inside the agent's `semantic_and_execution_rules:` instructions rather than risking a breaking LookML edit.
 - **Check Join Integrity (`primary_key: yes` & Expensive Joins):** Inspect Explore `join:` blocks in `.model.lkml` / `.explore.lkml` for `relationship:` cardinality, `primary_key: yes` on joined views, `filter_only` parameters, and expensive regex or cross joins so the agent's instructions avoid fanouts and slow queries.
 
 ---
