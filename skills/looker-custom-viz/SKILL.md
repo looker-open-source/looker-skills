@@ -1,7 +1,7 @@
 ---
 name: looker-custom-viz
 description: >-
-  Creates, customizes, debugs, and deploys Looker Custom Visualizations (API v2) in React/TypeScript or Vanilla JavaScript (ECharts, Chart.js, D3, Recharts) with an offline Vite mock-data harness and `manifest.lkml` bundle config. Use when building bespoke dashboard tiles (such as Sunburst, radar, calendar heatmap, or Marimekko charts) beyond Looker's native visualization menu or troubleshooting existing custom visualization scripts. Don't use for configuring native Looker Explore/LookML chart types or building full-page Looker Extension Framework apps.
+  Creates, customizes, debugs, and deploys custom JavaScript/TypeScript chart plugins for Looker Explores and dashboards. Use when scaffolding, fixing, or deploying Looker custom visualizations (`visualization` in `manifest.lkml`, `updateAsync`, Edit-pane `options`) or when a Looker tile needs a visual layout unsupported by built-in charts. Don't use for native Looker charts, Highcharts `advanced_vis_config` overrides, Looker Extension apps/tiles, or charts outside Looker.
 license: Apache-2.0
 compatibility: Requires Node.js (npm) for Vite builds; Looker MCP or looker-cli optional for live Looker deployment.
 metadata:
