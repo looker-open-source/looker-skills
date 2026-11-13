@@ -1,14 +1,8 @@
-# Four-Part System Instructions Templates (Human-Readable YAML / Markdown)
+# Four-Part System Instructions Templates (Human-Readable Root-Level YAML)
 
-Every Looker Conversational Analytics (CA) Agent created by `looker-ca-agent-create` must store a well-formed 4-part YAML / Markdown specification inside `context.instructions` in Looker API 4.0 (**Drafting Target: `3,200 - 4,200` characters / `~55-70` lines**; **Hard Validation Cap: `<= 4,800` characters** / `< 1,200` tokens).
+## 1. Standalone Agent System Instructions Template *(Lines 1-50)*
 
-> **Human-Readable Symbols, Root-Level Keys & Character Budget Rule:** Author this YAML internally for the API 4.0 payload—**do not dump raw YAML blocks into the user chat** unless the user asks to view the raw instructions (or in MCP-only fallback mode without `looker-cli`). Because users read and edit `context.instructions` directly as plain text in the Looker UI (**Edit Agent -> Instructions**), **always write natural human-readable symbols (`&`, `<`, `>`, `>=`, `<=`) and NEVER use XML tags (`<agent_instructions>`) or HTML/XML entity escaping (`&amp;`, `&lt;`, `&gt;`)**. Place the 4 canonical keys (`role_and_tone:`, `explore_and_filtering_rules:`, `semantic_and_execution_rules:`, `presentation_and_analysis_rules:`) directly at the **root level (column 0)** without an outer `agent_instructions:` wrapper key, and aim for **`3,200 - 4,200` characters** on your first draft so `len(instructions) <= 4800` passes on the first attempt without retry loops.
-
----
-
-## 1. Standalone Agent System Instructions Template (Human-Readable YAML)
-
-Use this template internally when configuring a **Standalone Agent** grounded on 1 to 5 LookML Explores:
+Author `context.instructions` as **4-part root-level YAML** (**drafting target: `3,200-4,200` chars / `~55-70` lines**; **hard cap: `<= 4,800` chars**; natural `&`, `<`, `>`, `>=`, `<=` symbols; zero XML wrapper tags, zero `&amp;`/`&lt;`/`&gt;` entities, zero outer `agent_instructions:` wrapper key, zero `	` tabs). Do not dump raw YAML into chat unless requested (or in MCP-only fallback mode):
 
 ```yaml
 # Agent System Instructions (Standalone Agent)
@@ -55,11 +49,9 @@ presentation_and_analysis_rules:
     - "Format currency in USD ($#,##0.00) and percentages to one decimal place (0.0%)."
 ```
 
----
+## 2. Dashboard Agent System Instructions Template *(Lines 52-91)*
 
-## 2. Dashboard Agent System Instructions Template (Human-Readable YAML)
-
-Use this template internally when configuring a **Dashboard Agent** (`"category": "dashboard"`, `"name": "<instance_origin>-<dashboard_id>"` on live Looker instances, `"sources"` populated from backing tile Explores, `"golden_query_ids"` omitted):
+Author `context.instructions` as **4-part root-level YAML** (**drafting target: `3,200-4,200` chars**; **hard cap: `<= 4,800` chars**; natural `&`, `<`, `>` symbols; zero XML tags or `&amp;` entities) for a **Dashboard Agent** (`"category": "dashboard"`, `"name": "<instance_origin>-<dashboard_id>"`, `"sources"` from tile Explores, `"golden_query_ids"` omitted):
 
 ```yaml
 # Agent System Instructions (Dashboard Agent)
