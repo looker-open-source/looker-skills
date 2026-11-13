@@ -1,11 +1,6 @@
 ---
 name: looker-performance
-description: >-
-  Master developer skill for actively refactoring and optimizing query performance in
-  LookML projects. Enforces ETL-aligned datagroup caching, PDT materialization strategies,
-  join pruning, and parallel subagent SQL EXPLAIN profiling. Use when writing or
-  refactoring LookML to fix slow queries or Explores. Don't use for full-instance
-  System Activity or database healthcheck audits (use looker-healthcheck).
+description: "Diagnoses and refactors slow LookML queries, explores, joins, PDTs, and caching policies in LookML code. Use when optimizing a specific slow explore, query ID, or dashboard tile's compiled SQL, fixing join fanouts or chasm traps in .model.lkml, refactoring a failing or slow PDT in .view.lkml to incremental materialization with partition/cluster keys, adding sql_always_where or always_filter partition pruning, or refactoring persist_for into ETL-aligned datagroup triggers. Don't use for instance-wide System Activity health checks or content vacuuming (use looker-healthcheck) or static LAMS style and naming reviews (use lookml-reviewer)."
 license: Apache-2.0
 metadata:
   publisher: google
@@ -38,7 +33,7 @@ Use this mode when diagnosing and optimizing an active, slow dashboard or explor
     *   Align caching datagroups.
     *   Materialize heavy transformations into PDTs (following the PDT Decision Matrix).
     *   Correct join relationships and implement join pruning.
-4.  **Verification & Delta Measurement**: Re-run the compiler (`health_analyze`) to ensure zero syntax errors, re-execute the queries, and document the performance improvement matrix.
+4.  **Verification & Delta Measurement**: Re-run the LookML compiler (`looker-cli project validate <project_id>` or MCP `validate_project`) to ensure zero syntax errors, re-execute the queries, and document the performance improvement matrix.
 5.  **Safe Production Deploy**: Deploy the optimized, validated LookML branch to production.
 
 ---
@@ -73,7 +68,7 @@ To prevent massive, historical PDTs (especially Incremental PDTs) from crashing 
 
 1.  **Historical Capping (Phase-in)**: In the initial LookML PDT definition, temporarily cap the historical query using a conditional date filter (e.g., querying only the last 30 days of data). This ensures the physical table is created successfully on the database in seconds.
 2.  **Incremental Backfill (Bootstrap & Expand)**: Once the initial table is created, programmatically expand the historical filter backwards in manageable batches (e.g., month-by-month backfills) to build the full history without triggering a single, massive transaction crash.
-3.  **Dry-Run Cost Estimation**: Prior to building a heavy PDT, call Looker MCP's `query` or `query_sql` tools to run a dry-run estimation of the bytes scanned to verify if it will exceed database connection query limits.
+3.  **Dry-Run Cost Estimation**: Prior to building a heavy PDT on BigQuery, compile the SQL via Looker MCP `query_sql` (or `looker-cli query runquery <query_slug_or_id> --format sql`) and pipe it to `bq query --use_legacy_sql=false --dry_run` to estimate bytes scanned before materialization.
 4.  **Architectural Offloading (ELT Outsourcing)**: If a historical dataset is too massive to be compiled or backfilled within Looker's PDT layer, the agent **MUST** instruct the developer to offload the materialization to the database warehouse layer (using dbt, scheduled queries, or database materialized views), mapping Looker as a standard read-only view.
 
 ---
@@ -94,11 +89,11 @@ To diagnose query performance and run execution plans, the AI agent **MUST** lev
 
 | Performance Action | Looker CLI Command | Looker MCP Tool |
 | :--- | :--- | :--- |
-| **Fetch Generated SQL** | `looker-cli api query query <id> --fields sql` | `query(query_id)` or `query_sql` |
-| **Run Query (Test)** | `looker-cli api query run_query --query_id <id>` | `query` or `run_dashboard` |
-| **Check Query State** | `looker-cli api query query_task ...` | `health_pulse` or `health_analyze` |
-| **Database Introspection** | `looker-cli api metadata connection_columns <conn> --schema_name <schema>`<br>*(See also: `connection_tables`, `connection_schemas`, `connection_databases`)* | `get_connection_table_columns`<br>*(See also: `get_connection_tables`)* |
-| **LookML Compile Check** | `looker-cli project validate <id>` | `health_analyze` |
+| **Fetch Generated SQL** | `looker-cli query runquery <query_slug_or_id> --format sql` | `query_sql(model, explore, fields)` |
+| **Run Query (Test)** | `looker-cli api query run_query <query_id> json` | `query(model, explore, fields)` or `run_dashboard` |
+| **Check Query State** | `looker-cli api query query_task <query_task_id>` | *(CLI only — no MCP wrapper for `query_task`)* |
+| **Database Introspection** | `looker-cli api metadata connection_columns <conn> --schema_name <schema>`<br>*(See also: `connection_tables`, `connection_schemas`, `connection_databases`)* | `get_connection_table_columns`<br>*(See also: `get_connection_tables`, `get_connection_schemas`, `get_connection_databases`)* |
+| **LookML Compile Check** | `looker-cli project validate <project_id>` | `validate_project` |
 
 ---
 

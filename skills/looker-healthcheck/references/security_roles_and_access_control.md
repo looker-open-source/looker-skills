@@ -88,6 +88,18 @@ Locates users assigned expensive Developer licenses who have not logged into Loo
 }
 ```
 
+#### D. Over-Privileged Custom Permission Sets (`looker-cli` API Check)
+Audit all permission sets to identify non-Admin roles granting elevated administrative or code-access permissions (`admin`, `manage_models`, `see_lookml`, `develop`, `see_system_activity`, `see_users`):
+```bash
+looker-cli api role all_permission_sets | jq '[.[] | select(.permissions | any(. == "admin" or . == "manage_models" or . == "see_lookml" or . == "develop" or . == "see_system_activity" or . == "see_users")) | {id, name, permissions}]'
+```
+
+#### E. Model Set Isolation & Access Filters
+Verify that roles are scoped to domain-specific Model Sets rather than the wildcard `All` model set, and inspect row-level `access_filter` rules on sensitive users:
+```bash
+looker-cli api role all_model_sets | jq '[.[] | select(.all_access == true or (.models | length > 10)) | {id, name, all_access, model_count: (.models | length)}]'
+```
+
 ---
 
 ## 🛠️ Part 2: How to Rectify & Enforce Access Control

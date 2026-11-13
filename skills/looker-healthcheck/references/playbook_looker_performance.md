@@ -79,8 +79,8 @@ Follow this top-down hierarchy using System Activity inline queries in [system_a
 3. **Step 3: Dashboard & User Pivoting**:
    * Pivot runtime by `history.result_source` (`query` vs `cache`).
    * If queries are slow only under `query`, the bottleneck is warehouse execution. If slow even under `cache`, the bottleneck is frontend tile bloat or dynamic fields.
-4. **Step 4: Query ID Isolation & SQL Inspection**:
-   * Isolate the top slow Query IDs and inspect generated SQL (`looker-cli api query query <id> --fields sql`) and LookML definitions.
+4. **Step 4: Query ID / Slug Isolation & SQL Inspection**:
+   * Isolate the top slow Query IDs and Slugs (`query.slug` from `system__activity/query_metrics`) and inspect generated SQL (`looker-cli query runquery <query_slug_or_id> --format sql`) and LookML definitions.
 
 ---
 
@@ -107,7 +107,7 @@ Check `system__activity/query_metrics` for the exact `query.id`:
 * `postprocessing`: In-memory table calculations and formatting.
 
 ### Vector 2: SQL & Join Inefficiencies
-Inspect physical SQL generated via `looker-cli api query query <id> --fields sql`:
+Inspect physical SQL generated via `looker-cli query runquery <query_slug_or_id> --format sql`:
 * **Redundant Joined Tables**: Looker `LEFT JOIN`ing views that have no selected fields in `SELECT`. Ensure explore join declarations use proper `relationship:` parameters and join conditions.
 * **Symmetric Aggregations (`SUM_DISTINCT`)**: Looker injects `SUM(DISTINCT CAST(...))` when it detects a fanout risk from a missing `primary_key: yes` or incorrect join cardinality.
 * **Non-Key Join Predicates**: Functions or string comparisons in `ON` clauses (`LOWER(TRIM(...))`) preventing partition pruning.

@@ -107,14 +107,15 @@ view: orders {
   
   dimension: id {
     primary_key: yes
-    type: number
+    hidden: yes
+    type: string
     sql: ${TABLE}.id ;;
     description: "Unique order identifier (Primary Key)."
   }
   
   dimension: user_id {
     hidden: yes
-    type: number
+    type: string
     sql: ${TABLE}.user_id ;;
   }
   

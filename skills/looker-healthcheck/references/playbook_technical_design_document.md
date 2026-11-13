@@ -57,7 +57,7 @@ graph TD
   - Replace non-deterministic UUID / timestamp triggers (`GENERATE_UUID()`) with ETL watermark triggers:
     ```lookml
     datagroup: etl_watermark_datagroup {
-      sql_trigger: SELECT MAX(created_at) FROM `<project_id>.<dataset_id>.<fact_table>` ;;
+      sql_trigger_value: SELECT MAX(completed_at) FROM `<project_id>.<dataset_id>.etl_job_metadata` WHERE table_name = '<fact_table>' ;;
       max_cache_age: "4 hours"
     }
     ```

@@ -1,17 +1,6 @@
 ---
-type: howto
 name: lookml-reviewer
-title: LookML Code Review Procedure
-description: >-
-  Review a LookML codebase or file to confirm its compliance with official best
-  practices and style guidelines using the Looker CLI (looker-cli). Use this skill
-  whenever the user asks to review, audit, check, or critique LookML code or a LookML project.
-tags:
-  - looker
-  - lookml
-  - code-review
-  - lams
-  - best-practices
+description: "Reviews LookML files, branches, or pull requests for code quality, LAMS style compliance, maintainability, and Conversational Analytics semantic readiness using looker-cli. Use when asked to review, lint, critique, or audit .view.lkml and .model.lkml files against LookML best practices (primary_key rules, string ID types, naming conventions, hidden ID fields, join relationships, field descriptions). Don't use for live instance System Activity health checks (use looker-healthcheck), refactoring slow SQL/PDTs or caching triggers for runtime performance (use looker-performance), or greenfield project scaffolding (use looker-architect)."
 license: Apache-2.0
 metadata:
   publisher: google
@@ -27,9 +16,9 @@ This skill performs a rigorous code audit on LookML files, checking them against
 When invoked, execute the following steps precisely:
 
 1. **Pre-flight Guardrails & Verification**:
-   Before requesting details or fetching code, verify that `looker-cli` is installed and authenticated:
+   Before requesting details or fetching code, verify that `looker-cli` is installed and authenticated (ensure `~/.local/bin` is in `PATH` and never scan `/` with `find`):
    - **Verify CLI Installation**:
-     Run: `looker-cli --help`
+     Run: `export PATH="$HOME/.local/bin:$PATH" && command -v looker-cli`
      **If the command fails or is not found**: Halt immediately and instruct the user:
      > "`looker-cli` is not installed or not in your PATH. Please refer to the installation instructions in the Looker CLI documentation: https://github.com/looker-open-source/looker-cli"
    - **Verify Authentication & Looker Configuration**:
@@ -95,7 +84,11 @@ When invoked, execute the following steps precisely:
        ```
 
 4. **Analyze Codebase / Target File**:
-   - Perform a comprehensive analysis of the retrieved LookML file(s) against Looker best practices (refer to the guides in `references/`: [conversational-analytics-best-practices.md](references/conversational-analytics-best-practices.md), [lams-style-guide.md](references/lams-style-guide.md), [lookml-dos-and-donts.md](references/lookml-dos-and-donts.md), [sustainable-maintainable-lookml.md](references/sustainable-maintainable-lookml.md), [playbook_lookml_quality.md](references/playbook_lookml_quality.md), and the 0–4 Transcriber Maturity Rubric in [playbook_transcriber_scoring.md](references/playbook_transcriber_scoring.md)).
+   - Load only the reference guides and line ranges in `references/` matching the user's review scope:
+     - **Core Style & LAMS Rules (Default)**: [lams-style-guide.md](references/lams-style-guide.md) (`Lines 17-110`), [lookml-dos-and-donts.md](references/lookml-dos-and-donts.md) (`Lines 20-55`), and [playbook_lookml_quality.md](references/playbook_lookml_quality.md) (`Lines 7-103`)
+     - **DRY & Refinement Architecture**: [sustainable-maintainable-lookml.md](references/sustainable-maintainable-lookml.md) (`Lines 15-108`)
+     - **Conversational Analytics Readiness *(Load only when reviewing for BI / GenAI agents)***: [conversational-analytics-best-practices.md](references/conversational-analytics-best-practices.md) (`Lines 25-71`)
+     - **0–4 Transcriber Quantitative Rubric *(Load only when a numeric quality score is requested)***: [playbook_transcriber_scoring.md](references/playbook_transcriber_scoring.md) (`Lines 21-140`)
    - If reviewing a single file, audit the file thoroughly (checking field definitions, primary keys, foreign keys, naming conventions, descriptions, count measure filters, and conversational analytics readiness).
    - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking model-explore relationships, view joins, primary keys, symmetric aggregate `SUM(DISTINCT)` fanout prevention, datagroups, naming conventions, conversational analytics readiness, and optional 0–4 Transcriber scoring).
 

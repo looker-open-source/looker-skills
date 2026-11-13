@@ -80,9 +80,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install Looker CLI
+      - name: Install Looker CLI (GitHub Release Binary)
         run: |
-          npm install -g @looker/looker-cli
+          curl -sSL "https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli_1.2.1_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin looker-cli
+          chmod +x /usr/local/bin/looker-cli
 
       - name: Validate LookML Project
         env:
@@ -90,16 +91,20 @@ jobs:
           LOOKERSDK_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
           LOOKERSDK_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
         run: |
-          looker-cli project validate ${{ secrets.LOOKER_PROJECT_ID }}
+          looker-cli project validate "${{ secrets.LOOKER_PROJECT_ID }}" --port 443
 
       - name: Run Content Validator
+        env:
+          LOOKERSDK_BASE_URL: ${{ secrets.LOOKER_BASE_URL }}
+          LOOKERSDK_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
+          LOOKERSDK_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
         run: |
-          looker-cli api content_validator run_content_validation
+          looker-cli api content content_validation --project_names "${{ secrets.LOOKER_PROJECT_ID }}" --port 443
 ```
 
 ### Pre-Merge Gateway Checks:
 1. **LookML Syntax**: `looker-cli project validate <project_id>` guarantees 0 syntax errors or broken include paths.
-2. **Content Validator**: `looker-cli api content_validator run_content_validation` compares the active development branch against production dashboards and catches broken tiles before merging.
+2. **Content Validator**: `looker-cli api content content_validation` compares the active development branch against production dashboards and catches broken tiles before merging.
 
 ---
 

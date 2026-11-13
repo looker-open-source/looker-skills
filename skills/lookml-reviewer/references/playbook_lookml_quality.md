@@ -2,17 +2,6 @@
 
 This reference document defines the official **LookML Style Standards**, **Naming Conventions**, **Formatting Rules**, and **DRY Modeling Patterns** for maintaining high-quality, self-service Looker projects.
 
-> [!NOTE]
-> **Related LookML Skills**:
-> * [`lookml-modeling-guidelines`](../../lookml-modeling-guidelines/SKILL.md): DRY join modeling, view modularity, and dimension design.
-> * [`lookml-liquid`](../../lookml-liquid/SKILL.md): Liquid templating, parameter fields, and conditional formatting.
-> * [`lookml-access-grants`](../../lookml-access-grants/SKILL.md): Group-based access control and user attribute security.
-> * [`lookml-refinements`](../../lookml-refinements/SKILL.md): LookML view and explore refinements (`+view:`, `+explore:`).
-> * [`lookml-tests`](../../lookml-tests/SKILL.md): LookML automated assertion tests and model unit testing.
-> * [`lookml-sets`](../../lookml-sets/SKILL.md): Field set grouping, drilling set modularity, and explore exposure.
-> * [`lookml-view-derived-table`](../../lookml-view/references/derived_table.md): Persistent derived tables, persistence triggers, and SQL derived table best practices.
-> * [`using-looker-cli`](../../using-looker-cli/SKILL.md): Looker CLI utilities for validation and project automation.
-
 ---
 
 ## 🔍 Part 1: How to Review & Diagnose Style Violations
@@ -80,10 +69,10 @@ measure: count_distinct_users {
 
 ### Rule 2: Universal Dimension Naming & Masking
 * **Condition Dimensions**: Boolean / YesNo dimensions must start with `is_` or `has_` (e.g. `is_active_subscriber`, `has_completed_checkout`).
-* **Foreign Keys**: Must be marked `hidden: yes` to declutter the business user field picker:
+* **Primary & Foreign Keys**: Must use `type: string` (to prevent accidental numeric aggregations and preserve leading zeroes) and foreign keys must be marked `hidden: yes` to declutter the business user field picker:
 ```lookml
 dimension: user_id {
-  type: number
+  type: string
   sql: ${TABLE}.user_id ;;
   hidden: yes
   description: "Technical foreign key for joining to users view."

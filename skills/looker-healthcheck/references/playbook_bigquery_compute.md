@@ -25,31 +25,37 @@ This master playbook defines the diagnostic protocols, `INFORMATION_SCHEMA` tele
 
 Execute these queries via `bq query --use_legacy_sql=false --format=prettyjson "<SQL>"` or the BigQuery Studio console:
 
-### Step 1: Physical Partitioning & Clustering (`INFORMATION_SCHEMA.TABLE_STORAGE`)
-Inspect table partitioning types, clustering columns, and logical storage across target datasets:
+### Step 1: Physical Partitioning & Clustering (`INFORMATION_SCHEMA.PARTITIONS` & `TABLES`)
+Inspect table partitioning expressions, clustering columns, and logical storage across target datasets (`INFORMATION_SCHEMA.TABLE_STORAGE` is region-scoped and does not expose `partition_id` or `clustering_fields`; join dataset-scoped `PARTITIONS` and `TABLES` instead):
 ```sql
 SELECT
-  table_name,
-  total_rows,
-  ROUND(total_logical_bytes / POW(1024, 3), 2) AS size_gb,
-  partition_id,
-  clustering_fields
-FROM `<project_id>.<dataset_id>.INFORMATION_SCHEMA.TABLE_STORAGE`
-WHERE total_rows > 1000000
-ORDER BY total_rows DESC;
+  p.table_name,
+  SUM(p.total_rows) AS total_rows,
+  ROUND(SUM(p.total_logical_bytes) / POW(1024, 3), 2) AS size_gb,
+  COUNT(DISTINCT IF(p.partition_id != '__NULL__', p.partition_id, NULL)) AS partition_count,
+  REGEXP_EXTRACT(t.ddl, r'PARTITION BY ([^\n;]+)') AS partition_expr,
+  REGEXP_EXTRACT(t.ddl, r'CLUSTER BY ([^\n;]+)') AS clustering_fields
+FROM `<project_id>.<dataset_id>`.INFORMATION_SCHEMA.PARTITIONS AS p
+LEFT JOIN `<project_id>.<dataset_id>`.INFORMATION_SCHEMA.TABLES AS t
+  USING (table_catalog, table_schema, table_name)
+GROUP BY p.table_name, t.ddl
+HAVING SUM(p.total_rows) > 1000000
+ORDER BY total_rows DESC
+LIMIT 100;
 ```
 
 ---
 
 ### Step 2: Slot Utilization Timeline (`INFORMATION_SCHEMA.JOBS_TIMELINE_BY_PROJECT`)
-Check whether queries are being throttled by warehouse slot starvation over the last 24 hours:
+Check whether queries are being throttled by warehouse slot starvation over the last 24 hours (always include `job_creation_time` alongside `period_start` to enable partition pruning on `JOBS_TIMELINE_BY_PROJECT`):
 ```sql
 SELECT
   TIMESTAMP_TRUNC(period_start, HOUR) as hour_window,
   ROUND(AVG(period_slot_ms) / 1000, 2) as avg_slots,
   ROUND(MAX(period_slot_ms) / 1000, 2) as peak_slots
-FROM `region-us.INFORMATION_SCHEMA.JOBS_TIMELINE_BY_PROJECT`
-WHERE period_start >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_TIMELINE_BY_PROJECT
+WHERE job_creation_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
+  AND period_start >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
 GROUP BY 1
 ORDER BY hour_window DESC
 LIMIT 24;
@@ -78,8 +84,9 @@ SELECT
   ROUND(total_bytes_billed / POW(1024, 3), 2) AS gb_billed,
   ROUND((total_bytes_billed / POW(10, 12)) * 6.25, 4) AS cost_usd,
   ROUND(total_slot_ms / 1000, 2) AS slot_seconds,
+  bi_engine_statistics.bi_engine_mode AS bi_engine_mode,
   query
-FROM `region-us.INFORMATION_SCHEMA.JOBS_BY_PROJECT`
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
 WHERE creation_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
   AND job_type = 'QUERY'
   AND EXISTS (
@@ -99,7 +106,7 @@ SELECT
   creation_time,
   ROUND(total_slot_ms / 1000, 2) AS slot_seconds,
   (SELECT SUM(s.shuffle_output_bytes_spilled_to_disk) FROM UNNEST(query_info.query_stages) s) AS total_spilled_bytes
-FROM `region-us.INFORMATION_SCHEMA.JOBS_BY_PROJECT`
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
 WHERE creation_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24 HOUR)
   AND job_type = 'QUERY'
   AND EXISTS (

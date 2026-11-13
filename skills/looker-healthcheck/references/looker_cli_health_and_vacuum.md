@@ -140,4 +140,4 @@ graph TD
      fields: [ALL_FIELDS*, -orders.legacy_tracking_hash, -orders.temp_status]
    }
    ```
-4. **Pre-Merge Content Validation**: Always run Content Validator via `looker-cli api content_validator run_content_validation` before committing field deletions to ensure no saved looks or dashboard tiles break.
+4. **Pre-Merge Content Validation**: Always run Content Validator via `looker-cli api content content_validation` before committing field deletions to ensure no saved looks or dashboard tiles break.
