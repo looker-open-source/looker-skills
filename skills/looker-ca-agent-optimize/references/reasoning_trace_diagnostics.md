@@ -1,49 +1,29 @@
 # CA Agent Reasoning-Trace & System Activity Diagnostics (`Advanced` / `Hard` Mode)
 
-During **Step 2 (`system__activity` Telemetry)** and **Step 4 (`Advanced` / `Hard` Mode — Live Trace & Side-by-Side Optimization)**, inspect historical `system__activity` records (`conversations_feedback` and `history`) and live Conversational Analytics (CA) response traces (`thoughts`, generated Looker queries, and tool invocation logs) for every failing or slow question. Classify each issue internally into the canonical root causes below and apply the corresponding fix in human-readable YAML (summarizing findings to the user in plain, jargon-free business language in Step 6).
+Load this reference **only in `Advanced` (`Hard` / `Optimize`) mode** during Step 4. Inspect historical `system__activity` records (`conversations_feedback` and `history`) and live CA chat traces (`systemMessage.text` where `textType == "THOUGHT"`, `systemMessage.data.generatedLookerQuery`, and tool logs) for each failing or slow eval question, map each issue to the 4 canonical root causes below, and apply the targeted fix in 4-part root-level YAML:
 
----
-
-## 1. Thought Loops, Multi-Query Stacking & Unnecessary `code_interpreter` Overhead
-
-### Symptoms in Reasoning Trace or `system__activity`
-- The CA Agent executes 3 to 6+ sequential Looker queries for a single user question instead of retrieving the answer in one consolidated query, or `system__activity.conversations_feedback` shows high end-to-end `latency` / `Timeout` (`answer_success = "Timeout"`).
-- **Unnecessary Python Sub-Agent Overhead (`python_and_chart_agent`):** When `"code_interpreter": true` is enabled on the agent, the trace invokes `python_and_chart_agent` even on simple KPI or Top-N tables, adding **`+15s to +20s`** of latency per turn and inflating output token consumption in `system__activity`.
-
-### Targeted Fixes
-1. **System Instructions (`semantic_and_execution_rules:` in YAML):** Add a strict single-query consolidation rule instructing the agent to retrieve all required dimensions, measures, and filters in one query.
-2. **Agent Settings (`code_interpreter: false`):** Set `"code_interpreter": false` for standard BI Q&A unless Python statistical modeling or forecasting is explicitly required.
-3. **Golden Queries (`golden_query_ids`):** Register 1-2 verified multi-field Golden Queries demonstrating the combined query pattern.
-
----
+## 1. Thought Loops, Multi-Query Stacking & `code_interpreter` Overhead
+- **Trace / Telemetry Symptoms:** Agent executes `3-6+` sequential Looker queries for one question, or `conversations_feedback` shows high `latency` / `answer_success = "Timeout"`. When `"code_interpreter": true` is enabled, `python_and_chart_agent` triggers on standard KPI/Top-N tables, adding **`+15s to +20s`** per turn and inflating token usage.
+- **Fixes:**
+  1. **`semantic_and_execution_rules:` (YAML):** Add a strict single-query consolidation rule retrieving all dimensions, measures, and period comparisons in one query.
+  2. **Agent Setting:** Set `"code_interpreter": false` unless Python statistical modeling or forecasting is explicitly required.
+  3. **Golden Queries (`golden_query_ids`):** Register `1-2` verified multi-field Golden Queries demonstrating the consolidated query pattern.
 
 ## 2. Field-Sampling Loops
-
-### Symptoms in Reasoning Trace or `system__activity`
-- The CA Agent repeatedly runs `SELECT DISTINCT` or suggestion queries on categorical dimensions to map a user's business term (e.g., `"Enterprise"`, `"Paid"`, `"US"`) to an exact database string, adding `20s-40s` of latency in `system__activity.history`.
-
-### Targeted Fixes
-1. **System Instructions (`explore_and_filtering_rules:` in YAML):** Inline verified canonical filter value mappings sampled during Step 2 and instruct the agent not to re-sample mapped fields.
-2. **Optional LookML Offer / Developer Handoff (Step 6 Gate #2):** Offer to enrich the dimension's `description:` in LookML `dev_mode` (or include it in the Developer Handoff note if the caller lacks `develop` permission).
-
----
+- **Trace / Telemetry Symptoms:** Agent repeatedly runs `SELECT DISTINCT` or suggestion queries on categorical dimensions to map business terms (`"Enterprise"`, `"Paid"`, `"US"`) to exact database strings, adding `20s-40s` in `system__activity.history`.
+- **Fixes:**
+  1. **`explore_and_filtering_rules:` (YAML):** Inline verified canonical filter value mappings sampled during Step 2 and instruct the agent never to re-sample mapped fields.
+  2. **Gate #2 LookML Offer / Handoff:** Offer to add valid categorical values to the dimension's LookML `description:` in Step 6.
 
 ## 3. Data-Hunting Loops & Literal `"not null"` Filter Retries
+- **Trace / Telemetry Symptoms:**
+  - **Narrow Guessed Date Window:** On an undated lifetime or specific entity/ID lookup, the agent applies a narrow default date filter returning `0 rows`, triggering `3-5` widening retries.
+  - **Literal `"not null"` String Filter:** Filtering a `type: string` dimension by `"not null"` queries `= 'not null'` (`0 rows`), forcing retries.
+- **Fixes:**
+  1. **`explore_and_filtering_rules:` (YAML):** Apply default date windows (`"30 days ago for 30 days"`) **only** to undated general trend/Top-N questions (exempting dataset-overview, lifetime, and entity/ID lookups), and enforce Looker native `"-NULL"` (or `"-NULL,-EMPTY"`).
 
-### Symptoms in Reasoning Trace or `system__activity`
-- **Guessed Narrow Date Windows:** On an undated lifetime or entity lookup question, the CA Agent applies a narrow default date filter that returns `0 rows`, triggering 3-5 retry queries.
-- **Literal `"not null"` Filter Mismatch:** Filtering a string dimension by `"not null"` searches for literal text `'not null'` (`0 rows`), forcing retries.
-
-### Targeted Fixes
-1. **System Instructions (`explore_and_filtering_rules:` in YAML):** Apply default date windows ONLY to undated general trend/Top-N questions (exempting dataset-overview, lifetime, and specific entity lookups), and always use Looker native `"-NULL"` (and `"-EMPTY"`) syntax.
-
----
-
-## 4. Semantic & Filter Ambiguity (Including User `Thumbs down` Feedback)
-
-### Symptoms in Reasoning Trace or `system__activity`
-- The CA Agent answers quickly in 1 query, but numbers disagree with Ground Truth (or users leave `Rating = "Thumbs down"` and `comments` in `system__activity.conversations_feedback`, or report an `issue_description` in a supplied Text/CSV/Google Sheet Eval Suite) because it picked the wrong LookML measure (e.g., unnormalized local currency instead of USD), wrong date field, or wrong status value (e.g., filtering `status = "ERROR"` when error events actually store `status = "OK"`).
-
-### Targeted Fixes
-1. **System Instructions (`semantic_and_execution_rules:` in YAML):** Explicitly bind business terms to verified `view.field` names and real status/category values verified via live `query` in Step 2 (using natural `&`, `<`, `>` symbols and never `&amp;` entities).
-2. **Optional LookML Offer / Developer Handoff (Step 6 Gate #2):** Offer to add clear `description:` and `label:` metadata on ambiguous fields in LookML `dev_mode` (or provide a copy-ready Developer Handoff summary for non-developers).
+## 4. Semantic & Filter Ambiguity (Including `Thumbs down` & Eval `issue_description`)
+- **Trace / Telemetry Symptoms:** Agent answers in 1 fast query, but numbers disagree with Ground Truth (or users leave `Rating = "Thumbs down"` / `comments` in `conversations_feedback`, or report an `issue_description` in the Text/CSV/Google Sheet Eval Suite) due to picking the wrong measure (e.g., local currency vs. USD, or `type: sum` density fraction vs. `type: average`), wrong date dimension, or wrong status code.
+- **Fixes:**
+  1. **`semantic_and_execution_rules:` (YAML):** Bind business terms explicitly to verified `view.field` names and real status/category values verified via live `query` in Step 2 (using natural `&`, `<`, `>` symbols and zero `&amp;` entities).
+  2. **Gate #2 LookML Offer / Handoff:** Offer to add clear `description:` and `label:` metadata on the ambiguous LookML fields in Step 6.
