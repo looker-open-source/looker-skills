@@ -15,7 +15,7 @@ Author **`3 to 5` seed Golden Queries** (`< 20` cap, 1 question per entry) groun
 
 Once Gate #1 is confirmed and Step 3 queries pass, **create the CA Agent automatically by default** in **one self-contained `python3 - <<'PY'` command** (unless the user explicitly requested a dry-run preview or `looker-cli` is absent on an MCP-only host):
 1. **Validate Root-Level YAML In-Memory (`0.1s`, Zero Separate Subshells):**
-   - Replace any accidental `&amp;`, `&lt;`, `&gt;` with natural `&`, `<`, `>`, assert `len(instructions) <= 4800` (first-draft target `3,200-4,200` chars), verify all 4 root-level keys (`role_and_tone:`, `explore_and_filtering_rules:`, `semantic_and_execution_rules:`, `presentation_and_analysis_rules:`) at column 0 and zero `	` tabs, and run `yaml.safe_load(instructions)` if `PyYAML` is installed.
+   - Replace any accidental `&amp;`, `&lt;`, `&gt;` with natural `&`, `<`, `>`, assert `len(instructions) <= 4800` (first-draft target `3,200-4,200` chars), verify all 4 root-level keys (`role_and_tone:`, `explore_and_filtering_rules:`, `semantic_and_execution_rules:`, `presentation_and_analysis_rules:`) at column 0 and zero `\t` tabs, and run `yaml.safe_load(instructions)` if `PyYAML` is installed.
 2. **Register Golden Queries Concurrently (`Standalone` Only):**
    - Use `concurrent.futures.ThreadPoolExecutor(max_workers=5)` inside the same Python script to call `looker-cli api conversationalanalytics create_golden_query -` (`{"questions": ["<single_question>"], "answer": "https://<host>/x/<slug>"}`; omit read-only `is_active`) in parallel and collect integer `golden_query_ids`.
 3. **Create or Bind the CA Agent & Save Snapshot:**

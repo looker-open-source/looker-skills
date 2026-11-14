@@ -6,7 +6,7 @@ Internal API 4.0 schema, 4-part YAML contract, role-based permission matrix, Sys
 
 ## 1. Four-Part System Instructions Schema (Human-Readable Root-Level YAML)
 
-Looker displays `context.instructions` directly as plain text in **Edit Agent -> Instructions** and passes it to the CA API (`system_instruction`). Never write unstructured prose, XML wrapper tags (`<agent_instructions>`), or HTML/XML entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`). Use natural symbols (`&`, `<`, `>`, `>=`, `<=`) inside a **4-part root-level YAML** structure (**drafting target: `3,200-4,200` chars / `~55-70` lines**; **hard cap: `<= 4,800` chars** / `< 1,200` tokens; zero root wrapper key, zero `	` tabs), validated once inside the single final atomic deployment script:
+Looker displays `context.instructions` directly as plain text in **Edit Agent -> Instructions** and passes it to the CA API (`system_instruction`). Never write unstructured prose, XML wrapper tags (`<agent_instructions>`), or HTML/XML entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`). Use natural symbols (`&`, `<`, `>`, `>=`, `<=`) inside a **4-part root-level YAML** structure (**drafting target: `3,200-4,200` chars / `~55-70` lines**; **hard cap: `<= 4,800` chars** / `< 1,200` tokens; zero root wrapper key, zero `\t` tabs), validated once inside the single final atomic deployment script:
 1. **`role_and_tone:`** — Persona, target audience, dataset date range (`min_date` to `max_date`), and strict Explore/Dashboard boundary prohibiting fabricated metrics.
 2. **`explore_and_filtering_rules:`** —
    - Route topics to designated Explores and document BigQuery partition/join or Liquid `_is_filtered` guardrails discovered in `.lkml` or `get_explore`.

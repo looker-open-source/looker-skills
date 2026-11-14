@@ -2,7 +2,7 @@
 
 ## 1. Standalone Agent System Instructions Template *(Lines 1-50)*
 
-Author `context.instructions` as **4-part root-level YAML** (**drafting target: `3,200-4,200` chars / `~55-70` lines**; **hard cap: `<= 4,800` chars**; natural `&`, `<`, `>`, `>=`, `<=` symbols; zero XML wrapper tags, zero `&amp;`/`&lt;`/`&gt;` entities, zero outer `agent_instructions:` wrapper key, zero `	` tabs). Do not dump raw YAML into chat unless requested (or in MCP-only fallback mode):
+Author `context.instructions` as **4-part root-level YAML** (**drafting target: `3,200-4,200` chars / `~55-70` lines**; **hard cap: `<= 4,800` chars**; natural `&`, `<`, `>`, `>=`, `<=` symbols; zero XML wrapper tags, zero `&amp;`/`&lt;`/`&gt;` entities, zero outer `agent_instructions:` wrapper key, zero `\t` tabs). Do not dump raw YAML into chat unless requested (or in MCP-only fallback mode):
 
 ```yaml
 # Agent System Instructions (Standalone Agent)
