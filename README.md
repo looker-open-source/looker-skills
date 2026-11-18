@@ -85,13 +85,13 @@ These skills provide specific instructions for creating and modifying LookML obj
 
 ### Performance, Healthcheck & Optimization
 *   **[looker-healthcheck](skills/looker-healthcheck/SKILL.md)**: Unified healthcheck & audit orchestrator supporting both rapid operational instance audits (`audit_report_*.md`) and full 3-pillar cross-layer technical healthchecks (Looker System Activity, LookML Transcriber rubric, BigQuery `INFORMATION_SCHEMA`) compiling a scored Technical Design Document (TDD). Powered by native `looker-cli health` and `looker-cli health vacuum`.
-*   **[looker-performance](skills/looker-performance/SKILL.md)**: Master developer skill for actively refactoring and optimizing query performance in Looker projects, including ETL-aligned caching, PDT strategies, and parallel SQL EXPLAIN profiling.
+*   **[looker-performance-optimizer](skills/looker-performance-optimizer/SKILL.md)**: Master developer skill for actively refactoring and optimizing query performance in Looker projects, including ETL-aligned caching, PDT strategies, and parallel SQL EXPLAIN profiling.
 *   **[looker-performance-playbook](skills/looker-healthcheck/references/playbook_looker_performance.md)**: Diagnostic playbook for 3-way Looker query lifecycle latency triage (Looker JVM overhead % vs. DB runtime vs. connection queue wait) and System Activity drilldowns.
 *   **[bq-compute-playbook](skills/looker-healthcheck/references/playbook_bigquery_compute.md)**: Diagnostic playbook for BigQuery slot contention timelines (`JOBS_TIMELINE_BY_PROJECT`), stage shuffle spills, table partitioning/clustering DDL, and Aggregate Awareness rollups.
-*   **[lookml-caching-datagroups](skills/looker-performance/references/caching_datagroups.md)**: Caching alignment strategies, ETL-triggered datagroups, and persistency tuning.
-*   **[lookml-query-diagnostics](skills/looker-performance/references/query_diagnostic.md)**: Guidelines for running diagnostic queries, analyzing SQL explain plans, and identifying bottlenecks.
-*   **[lookml-pdt-optimization](skills/looker-performance/references/pdt_optimization.md)**: PDT optimization standards, index/partition configurations, and incremental materializations.
-*   **[lookml-refactoring](skills/looker-performance/references/lookml_refactoring.md)**: Field-level optimization, join pruning, and eliminating redundant calculations.
+*   **[lookml-caching-datagroups](skills/looker-performance-optimizer/references/caching_datagroups.md)**: Caching alignment strategies, ETL-triggered datagroups, and persistency tuning.
+*   **[lookml-query-diagnostics](skills/looker-performance-optimizer/references/query_diagnostic.md)**: Guidelines for running diagnostic queries, analyzing SQL explain plans, and identifying bottlenecks.
+*   **[lookml-pdt-optimization](skills/looker-performance-optimizer/references/pdt_optimization.md)**: PDT optimization standards, index/partition configurations, and incremental materializations.
+*   **[lookml-refactoring](skills/looker-performance-optimizer/references/lookml_refactoring.md)**: Field-level optimization, join pruning, and eliminating redundant calculations.
 
 ## Developer Onboarding Skills
 

@@ -81,14 +81,17 @@ looker-cli health vacuum models --model=<model_name> --csv
 ---
 
 ### B. Explore-Level Join & Field Vacuum (`vacuum explores`)
-Scans inside explores to pinpoint specific joins, dimensions, and measures that have never been used in queries, saved looks, or dashboards:
+Scans inside a specific target explore to pinpoint joins, dimensions, and measures that have never been used in queries, saved looks, or dashboards.
+
+> [!CAUTION]
+> **Always Scope `vacuum explores` with `--model` and `--explore`**: Never run bare `looker-cli health vacuum explores` without `--model=<model_name> --explore=<explore_name>` on a multi-model instance. Scanning all explores across all models sequentially issues hundreds of System Activity queries and can hang for 10+ minutes.
 
 ```bash
-# Vacuum all explores in a model
-looker-cli health vacuum explores --model=<model_name>
-
-# Vacuum a specific explore
+# Vacuum a specific explore (RECOMMENDED)
 looker-cli health vacuum explores --model=<model_name> --explore=<explore_name>
+
+# Vacuum all explores in a single small model
+looker-cli health vacuum explores --model=<model_name>
 
 # Vacuum with custom timeframe and query threshold
 looker-cli health vacuum explores --model=<model_name> --explore=<explore_name> --timeframe=90 --min-queries=3

@@ -1,10 +1,15 @@
 ---
 name: lookml-reviewer
-description: "Reviews LookML files, branches, or pull requests for code quality, LAMS style compliance, maintainability, and Conversational Analytics semantic readiness using looker-cli. Use when asked to review, lint, critique, or audit .view.lkml and .model.lkml files against LookML best practices (primary_key rules, string ID types, naming conventions, hidden ID fields, join relationships, field descriptions). Don't use for live instance System Activity health checks (use looker-healthcheck), refactoring slow SQL/PDTs or caching triggers for runtime performance (use looker-performance), or greenfield project scaffolding (use looker-architect)."
+description: "Reviews LookML files, branches, or pull requests for code quality, LAMS style compliance, maintainability, and Conversational Analytics semantic readiness using looker-cli. Use when asked to review, lint, critique, or audit .view.lkml and .model.lkml files against LookML best practices (primary_key rules, string ID types, naming conventions, hidden ID fields, join relationships, field descriptions). Don't use for live instance System Activity health checks (use looker-healthcheck), refactoring slow SQL/PDTs or caching triggers for runtime performance (use looker-performance-optimizer), or greenfield project scaffolding (use looker-architect)."
+compatibility: Requires looker-cli.
 license: Apache-2.0
 metadata:
-  publisher: google
-  version: v1
+  author: google
+  version: "0.2.0"
+  domain: lookml-modeling
+  status: stable
+  usage-interface: looker-cli
+  publisher: google-looker
 ---
 
 # LookML Reviewer Skill

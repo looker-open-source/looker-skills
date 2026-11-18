@@ -232,6 +232,7 @@ Inspects the 12-stage lifecycle of an individual slow Query ID:
   "view": "query_metrics",
   "fields": [
     "query.id",
+    "query.slug",
     "query_metrics.async_processing",
     "query_metrics.execute_main_query",
     "query_metrics.acquire_connection",
@@ -448,7 +449,7 @@ echo "Found $view_count view files in $proj"
 echo "$files" | xargs -P 8 -I {} bash -c '
   file="{}"
   content=$(looker-cli project file cat "'"$proj"'" "$file")
-  echo "$content" | grep -n -iE "include:\s*\"*\*\.view" && echo "  └─ ⚠️ Wildcard include in $file"
+  echo "$content" | grep -n -iE "include:\s*\"[^\"]*\*\.view" && echo "  └─ ⚠️ Wildcard include in $file"
   if [[ "$file" == *.view.lkml ]]; then
     echo "$content" | grep -q "primary_key:\s*yes" || echo "  └─ ⚠️ Missing primary key in $file"
   fi
