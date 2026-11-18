@@ -90,12 +90,12 @@ When invoked, execute the following steps precisely:
 
 4. **Analyze Codebase / Target File**:
    - Load only the reference guides and line ranges in `references/` matching the user's review scope:
-     - **Core Style & LAMS Rules (Default)**: [lams-style-guide.md](references/lams-style-guide.md) (`Lines 17-110`), [lookml-dos-and-donts.md](references/lookml-dos-and-donts.md) (`Lines 20-55`), and [playbook_lookml_quality.md](references/playbook_lookml_quality.md) (`Lines 7-103`)
+     - **Core Style & LAMS Rules (Default)**: [lams-style-guide.md](references/lams-style-guide.md) (`Lines 17-110`), [lookml-dos-and-donts.md](references/lookml-dos-and-donts.md) (`Lines 20-55`), and [playbook_lookml_quality.md](references/playbook_lookml_quality.md) (`Lines 7-111`)
      - **DRY & Refinement Architecture**: [sustainable-maintainable-lookml.md](references/sustainable-maintainable-lookml.md) (`Lines 15-108`)
      - **Conversational Analytics Readiness *(Load only when reviewing for BI / GenAI agents)***: [conversational-analytics-best-practices.md](references/conversational-analytics-best-practices.md) (`Lines 25-71`)
      - **0–4 Transcriber Quantitative Rubric *(Load only when a numeric quality score is requested)***: [playbook_transcriber_scoring.md](references/playbook_transcriber_scoring.md) (`Lines 21-140`)
-   - If reviewing a single file, audit the file thoroughly (checking field definitions, primary keys, foreign keys, naming conventions, descriptions, count measure filters, and conversational analytics readiness).
-   - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking model-explore relationships, view joins, primary keys, symmetric aggregate `SUM(DISTINCT)` fanout prevention, datagroups, naming conventions, conversational analytics readiness, and optional 0–4 Transcriber scoring).
+   - If reviewing a single file, audit the file thoroughly (checking field definitions, `${TABLE}` vs hardcoded SQL table references, primary keys, foreign keys, naming conventions, descriptions, count measure filters, and conversational analytics readiness).
+   - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking explicit file includes vs wildcard `*.view` includes in `.model.lkml`, model-explore relationships, explicit join `relationship:` definitions, primary keys, symmetric aggregate `SUM(DISTINCT)` fanout prevention, datagroups, naming conventions, conversational analytics readiness, and optional 0–4 Transcriber scoring).
 
 5. **Compile Report**: Draft a highly verbose and comprehensive review report based on your analysis. The report must contain the following sections:
    - **Summary**: A high-level summary of the health of the target file or full codebase, naming the project, branch, and target file (if single-file mode) reviewed, along with key findings.
@@ -104,4 +104,4 @@ When invoked, execute the following steps precisely:
      - Describe the violation clearly. **Do NOT explicitly list or recite the full rules in the report.**
      - Suggest exactly how to fix it (providing concrete before/after code snippets).
      - **CRITICAL**: Include the exact file path and line number(s) of the violation (e.g., `views/order_items.view.lkml:L16-L19`). Use the Looker instance URL to construct a direct link to the file in the Looker IDE: `<instance_url>/projects/<project_id>/files/<file_path>`.
-6. **Print Report**: Formulate the report and print it directly in the chat or console as your primary response. Do not save it to a file or an artifact.
+6. **Print Report**: Formulate the report and print it directly in the chat or console as your primary response (do not save it to a file unless explicitly requested by the user).

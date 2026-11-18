@@ -27,6 +27,7 @@ This reference document defines the official **LookML Style Standards**, **Namin
 
 | Anti-Pattern | Diagnostic Symptom | Severity | Recommended Fix |
 | :--- | :--- | :---: | :--- |
+| **Wildcard View Includes** | `include: "*.view.lkml"` or `include: "/views/*.view.lkml"` in `.model.lkml` compiles unused views and bloats `model_init_computed`. | High | Replace wildcard view includes with explicit view/explore file includes needed by the model. |
 | **Ambiguous Measure Names** | Measures named `revenue` or `sales` instead of `total_revenue`. | High | Add mandatory aggregation prefix (`total_`, `average_`, `count_`). |
 | **Missing Descriptions** | Measures with no `description:` tag in field pickers. | Medium | Add clear business definition to every user-exposed measure. |
 | **Raw Foreign Keys Exposed** | `user_id` or `order_id` dimensions visible in explorer. | Medium | Add `hidden: yes` to all foreign key surrogate dimensions. |
@@ -101,3 +102,9 @@ measure: count_orders {
   description: "Total order count with transactional drill-down details."
 }
 ```
+
+---
+
+### Rule 4: Explicit Model Includes & Join Relationships
+* **Prohibit Wildcard View Includes in Models**: Never use `include: "*.view.lkml"` or `include: "/views/*.view.lkml"` in `.model.lkml` files, as Looker compiles every matched view even when unreferenced by the model's explores. Include only the explicit `.view.lkml` or `.explore.lkml` files required by that model.
+* **Explicit Join Cardinality & Substitution References**: Always declare `relationship:` (`many_to_one`, `one_to_one`, `one_to_many`) on every `join:` and reference columns via `${TABLE}.column_name` or `${field_name}` rather than hardcoded `schema.table.column` SQL paths.
