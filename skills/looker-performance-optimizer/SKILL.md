@@ -49,7 +49,7 @@ Tuning caching is the fastest way to reduce database warehouse costs and acceler
 
 *   **Prohibition of Arbitrary Persist Times**: Using plain `persist_for: "24 hours"` or similar static durations on explores is strictly **prohibited** for production environments. It results in stale data and redundant, expensive database queries.
 *   **Mandatory Datagroups**: All explores **MUST** inherit their caching policy from a centralized `datagroup` defined in the model file.
-*   **ETL-Triggered Caching**: Datagroups **MUST** be triggered by a `sql_trigger_value` query that monitors the actual data refresh rate of the warehouse (e.g., querying ETL metadata tables or checking `MAX(created_at)`).
+*   **ETL-Triggered Caching**: Datagroups **MUST** be triggered by a `sql_trigger` query that monitors the actual data refresh rate of the warehouse (e.g., querying ETL metadata tables or checking `MAX(created_at)`).
 *   **Cache-Busting Safeguards**: Define a sensible `max_cache_age` (e.g., 24 hours) as a fallback so that if the ETL pipeline fails to update, the cache eventually expires, ensuring users do not view extremely stale data.
 
 ---
