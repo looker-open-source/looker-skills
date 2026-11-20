@@ -1,21 +1,15 @@
 ---
-type: howto
 name: lookml-reviewer
-title: LookML Code Review Procedure
-description: >-
-  Review a LookML codebase or file to confirm its compliance with official best
-  practices and style guidelines using the Looker CLI (looker-cli). Use this skill
-  whenever the user asks to review, audit, check, or critique LookML code or a LookML project.
-tags:
-  - looker
-  - lookml
-  - code-review
-  - lams
-  - best-practices
+description: "Reviews LookML files, branches, or pull requests for code quality, LAMS style compliance, maintainability, and Conversational Analytics semantic readiness using looker-cli. Use when asked to review, lint, critique, or audit .view.lkml and .model.lkml files against LookML best practices (primary_key rules, string ID types, naming conventions, hidden ID fields, join relationships, field descriptions). Don't use for live instance System Activity health checks (use looker-healthcheck), refactoring slow SQL/PDTs or caching triggers for runtime performance (use looker-performance-optimizer), or greenfield project scaffolding (use looker-architect)."
+compatibility: Requires looker-cli.
 license: Apache-2.0
 metadata:
-  publisher: google
-  version: v1
+  author: google
+  version: "0.2.0"
+  domain: lookml-modeling
+  status: stable
+  usage-interface: looker-cli
+  publisher: google-looker
 ---
 
 # LookML Reviewer Skill
@@ -27,9 +21,9 @@ This skill performs a rigorous code audit on LookML files, checking them against
 When invoked, execute the following steps precisely:
 
 1. **Pre-flight Guardrails & Verification**:
-   Before requesting details or fetching code, verify that `looker-cli` is installed and authenticated:
+   Before requesting details or fetching code, verify that `looker-cli` is installed and authenticated (ensure `~/.local/bin` is in `PATH` and never scan `/` with `find`):
    - **Verify CLI Installation**:
-     Run: `looker-cli --help`
+     Run: `export PATH="$HOME/.local/bin:$PATH" && command -v looker-cli`
      **If the command fails or is not found**: Halt immediately and instruct the user:
      > "`looker-cli` is not installed or not in your PATH. Please refer to the installation instructions in the Looker CLI documentation: https://github.com/looker-open-source/looker-cli"
    - **Verify Authentication & Looker Configuration**:
@@ -95,9 +89,13 @@ When invoked, execute the following steps precisely:
        ```
 
 4. **Analyze Codebase / Target File**:
-   - Perform a comprehensive analysis of the retrieved LookML file(s) against Looker best practices (refer to the guides in `references/`: `conversational-analytics-best-practices.md`, `lams-style-guide.md`, `lookml-dos-and-donts.md`, and `sustainable-maintainable-lookml.md`).
-   - If reviewing a single file, audit the file thoroughly (checking field definitions, primary keys, foreign keys, naming conventions, descriptions, count measure filters, and conversational analytics readiness).
-   - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking model-explore relationships, view joins, primary keys, datagroups, naming conventions, and conversational analytics readiness).
+   - Load only the reference guides and line ranges in `references/` matching the user's review scope:
+     - **Core Style & LAMS Rules (Default)**: [lams-style-guide.md](references/lams-style-guide.md) (`Lines 17-110`), [lookml-dos-and-donts.md](references/lookml-dos-and-donts.md) (`Lines 20-55`), and [playbook_lookml_quality.md](references/playbook_lookml_quality.md) (`Lines 7-111`)
+     - **DRY & Refinement Architecture**: [sustainable-maintainable-lookml.md](references/sustainable-maintainable-lookml.md) (`Lines 15-108`)
+     - **Conversational Analytics Readiness *(Load only when reviewing for BI / GenAI agents)***: [conversational-analytics-best-practices.md](references/conversational-analytics-best-practices.md) (`Lines 25-71`)
+     - **0–4 Transcriber Quantitative Rubric *(Load only when a numeric quality score is requested)***: [playbook_transcriber_scoring.md](references/playbook_transcriber_scoring.md) (`Lines 21-140`)
+   - If reviewing a single file, audit the file thoroughly (checking field definitions, `${TABLE}` vs hardcoded SQL table references, primary keys, foreign keys, naming conventions, descriptions, count measure filters, and conversational analytics readiness).
+   - If reviewing the full project, analyze the project as a whole to provide a holistic review (checking explicit file includes vs wildcard `*.view` includes in `.model.lkml`, model-explore relationships, explicit join `relationship:` definitions, primary keys, symmetric aggregate `SUM(DISTINCT)` fanout prevention, datagroups, naming conventions, conversational analytics readiness, and optional 0–4 Transcriber scoring).
 
 5. **Compile Report**: Draft a highly verbose and comprehensive review report based on your analysis. The report must contain the following sections:
    - **Summary**: A high-level summary of the health of the target file or full codebase, naming the project, branch, and target file (if single-file mode) reviewed, along with key findings.
@@ -106,4 +104,4 @@ When invoked, execute the following steps precisely:
      - Describe the violation clearly. **Do NOT explicitly list or recite the full rules in the report.**
      - Suggest exactly how to fix it (providing concrete before/after code snippets).
      - **CRITICAL**: Include the exact file path and line number(s) of the violation (e.g., `views/order_items.view.lkml:L16-L19`). Use the Looker instance URL to construct a direct link to the file in the Looker IDE: `<instance_url>/projects/<project_id>/files/<file_path>`.
-6. **Print Report**: Formulate the report and print it directly in the chat or console as your primary response. Do not save it to a file or an artifact.
+6. **Print Report**: Formulate the report and print it directly in the chat or console as your primary response (do not save it to a file unless explicitly requested by the user).

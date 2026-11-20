@@ -144,7 +144,7 @@ To prevent the first morning user from experiencing a slow dashboard load while 
     # 2. Run each query in the background to warm the database and Looker cache
     for QID in $QUERY_IDS; do
       echo "Warming query ID: $QID"
-      looker-cli api query run_query --query_id $QID --result_format json > /dev/null &
+      looker-cli api query run_query "$QID" json > /dev/null &
     done
     wait
     echo "Cache warming complete for Dashboard $DASHBOARD_ID!"
