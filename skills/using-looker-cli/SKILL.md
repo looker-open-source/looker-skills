@@ -144,10 +144,10 @@ Switch your persistent session context between personal development workspace (`
 
 ```bash
 # Switch to personal development mode
-looker-cli session update --workspace-id dev
+looker-cli session update dev
 
 # Switch to production mode
-looker-cli session update --workspace-id production
+looker-cli session update production
 ```
 
 ### Ending a Session
@@ -327,7 +327,7 @@ Combine `--template` with piping or file redirection to construct and submit POS
 
 3. **Execute API request using payload file**:
    ```bash
-   looker-cli api project create_project --body new_project.json
+   looker-cli api project create_project new_project.json
    ```
 
 ---
