@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.5.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.4.0...looker-skills-v0.5.0) (2026-11-21)
+
+
+### Features
+
+* add complete LookML view for users ([680a21e](https://github.com/looker-open-source/looker-skills/commit/680a21e9275df352c524d56c17c7ad2061d8cbf3))
+* **skills:** add create-looker-viz generator skill and examples ([3b15374](https://github.com/looker-open-source/looker-skills/commit/3b1537479c18242057944be79a3684df4d37132f))
+* **skills:** add Looker & BigQuery 3-pillar healthcheck skills and Transcriber rubric ([766037d](https://github.com/looker-open-source/looker-skills/commit/766037d03a2440c232f072d0de0d28b5266c5179))
+* **skills:** add looker-architect master developer skill ([17a42f3](https://github.com/looker-open-source/looker-skills/commit/17a42f3bdeab9b232d4ecb02fb40dfa2fe524884))
+* **skills:** add looker-audit skill for instance performance and health checks ([e8a8ede](https://github.com/looker-open-source/looker-skills/commit/e8a8edee50890df87a654f9a92afff5404ed99ca))
+
+
+### Bug Fixes
+
+* **create-looker-viz:** address PR review feedback on templates, CLI, and SKILL.md ([db4c77d](https://github.com/looker-open-source/looker-skills/commit/db4c77d1515cc576a23fc2b29f6dca472c25fbbf))
+* **create-looker-viz:** elevate and clarify critical Looker API syntax ([e385e8f](https://github.com/looker-open-source/looker-skills/commit/e385e8f21b79e6742b12937789c5a9da37144dfc))
+* **create-looker-viz:** enforce strict behavioral constraints for planning and refactoring ([b45468f](https://github.com/looker-open-source/looker-skills/commit/b45468fd8471a7e82a1725182982c154f80c9cdc))
+* **looker-custom-viz:** incorporate Round-2 parallel & adversarial evaluation fixes ([27e4bef](https://github.com/looker-open-source/looker-skills/commit/27e4bef02699cd510d1f74bd3fdf922521944dc9))
+* **looker-healthcheck:** fix lookmlmodel and health vacuum CLI commands ([1c986d3](https://github.com/looker-open-source/looker-skills/commit/1c986d3be1c6d5f076e320bf64f4b691b033e666))
+* **looker-performance-optimizer:** use sql_trigger instead of sql_trigger_value for datagroups ([c2f6843](https://github.com/looker-open-source/looker-skills/commit/c2f6843177e13b65cb5d961a897af506119715f1))
+* **lookml-reviewer:** flag wildcard view includes in model files and explicit join relationships ([3dccb1b](https://github.com/looker-open-source/looker-skills/commit/3dccb1b1d3ef29b2fb3c647b716bb2e67c537315))
+* **skills:** resolve BigQuery INFORMATION_SCHEMA, looker-cli, system__activity, and SDT routing issues in PR [#44](https://github.com/looker-open-source/looker-skills/issues/44) ([d474c75](https://github.com/looker-open-source/looker-skills/commit/d474c750128a3c7fd186606330e939a1fcf80d2c))
+* **using-looker-cli:** use positional args for session update and api payloads ([1d9fa61](https://github.com/looker-open-source/looker-skills/commit/1d9fa613958a1873263d4fcf15988842a32689c2))
+
 ## [0.4.0](https://github.com/looker-open-source/looker-skills/compare/looker-skills-v0.3.0...looker-skills-v0.4.0) (2026-07-23)
 
 
