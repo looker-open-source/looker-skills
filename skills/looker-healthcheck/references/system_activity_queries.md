@@ -393,7 +393,7 @@ echo '{"model":"system__activity","view":"history","fields":["history.result_sou
   ```
 
 ### D. Unused LookML Models (365 Days)
-Compare all configured models (`looker-cli api lookml_model all_lookml_models | jq -r '.[].name'`, excluding `system__activity` and `marketplace_*`) against models queried in the past 365 days:
+Compare all configured models (`looker-cli api lookmlmodel all_lookml_models | jq -r '.[].name'`, excluding `system__activity` and `marketplace_*`) against models queried in the past 365 days:
 ```bash
 echo '{"model":"system__activity","view":"history","fields":["history.model","history.query_run_count"],"filters":{"history.created_date":"365 days","history.model":"-NULL,-system__activity"},"sorts":["history.query_run_count desc"],"limit":"500"}' | looker-cli api query run_inline_query json - | jq
 ```

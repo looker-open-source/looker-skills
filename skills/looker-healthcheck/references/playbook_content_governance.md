@@ -17,7 +17,7 @@ To avoid breaking downstream business reports or deleting content required for h
  │ Stage 1: Identification   │ Stage 2: Soft Deprecation │ Stage 3: Permanent Purge  │
  ├───────────────────────────┼───────────────────────────┼───────────────────────────┤
  │ • 90-day System Activity  │ • Move Dashboards to Trash│ • Hard delete after 30d   │
- │ • looker-cli vacuum scan  │ • Mark Explores hidden:yes│ • Remove LookML fields    │
+ │ • looker-cli health vacuum│ • Mark Explores hidden:yes│ • Remove LookML fields    │
  │ • Schedule Failure Scans  │ • Disable Zombie Schedules│ • Reassign owner to SvcAcct│
  └───────────────────────────┴───────────────────────────┴───────────────────────────┘
 ```
