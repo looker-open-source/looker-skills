@@ -1,16 +1,17 @@
 # Looker API 4.0 CA Endpoints, System Activity Telemetry & Approved Apply Workflow
 
-## 1. Parallel Inspection, Early Backup & System Activity Telemetry *(Step 2 — Lines 1-11)*
+## 1. Parallel Inspection, Early Backup & System Activity Telemetry *(Step 2 — Lines 1-12)*
 
 | Turn / Batch | Parallel CLI & Looker MCP Calls (`<= 8` MCP Calls/Turn) | Execution & Fallback Rules |
 | :--- | :--- | :--- |
 | **Step 2 Turn 1: Concurrent Agent Load, Backup & Telemetry** | **1. CLI (`python3 - <<'PY'` with `ThreadPoolExecutor`):** `search_agents --limit 50` and `search_agents --category "dashboard" --limit 50` (or `get_agent "<id>"` for known Standalone IDs; `get_agent` returns `404` on `"category": "dashboard"`).<br>**2. Parallel Looker MCP:** `get_models` + 2 `query` calls on `model: "system__activity"`:<br>- `explore: "conversations_feedback"` (`conversation_sa_telemetry.user_message_truncated`, `rating`, `answer_success`, `comments`, `latency`)<br>- `explore: "history"` (`query_api_client_context.name: "Conversational Analytics"`, `query.model`, `query.view`, `query.formatted_fields`, `history.status`, `history.message`, `history.average_runtime`, `history.query_run_count`) | Immediately write the full unmodified agent JSON (with `golden_queries`) to `/tmp/ca_agent_backup_<agent_id>_<timestamp>.json` (wrapped in `try/except OSError`) and print a 1-line setup summary (e.g., `"2 explores, 5 golden queries"`). Check `can.update`: if `false` (Viewer), present Gate #2 in **Read-Only Mode** (`Audit only` verdict). Check `is_lookml` (`lookml_agent_id`, `lookml_edit_uri`). On `system__activity` `403`, note the 1-line Admin tip and continue; on `0` rows, continue with Explore profiling. |
-| **Step 2 Turn 2: Schema, `.lkml` Index & Live Data Sampling** | `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, `get_project_files(project_id)` (+ `get_dashboard` if Dashboard Agent) + `get_field_value_suggestions` + `1-2` exploratory `query` checks (date range `MIN`/`MAX`, row counts, real status/category values) | If `get_project_files` returns `403`/empty (caller lacks `develop`), set `has_develop_permission = false` and call `get_explore(model, explore)` (when available) to check `always_filter` / `conditionally_filter` (`< 1 KB`). Otherwise read core `.model.lkml` / `.view.lkml` files (`views/refined/` and `views/raw/`) via `get_project_file` in Turn 3 alongside candidate Golden Query `query` verification. |
+| **Step 2 Turn 2: Schema, Mandatory Filters & `.lkml` Index** | `get_dimensions`, `get_measures`, `get_filters`, `get_parameters`, `get_explore(model, explore)`, `get_project_files(project_id)` (+ `get_dashboard` if Dashboard Agent) | Call `get_explore` for **every role** (`~235` bytes) so `always_filter` / `conditionally_filter` are known before any exploratory `query`. If `get_project_files` returns `403`/empty (caller lacks `develop`), set `has_develop_permission = false` and rely on `get_explore` filters instead of `.lkml` reads. |
+| **Step 2 Turn 3: `.lkml` Semantics & Live Data Sampling** | Core `.model.lkml` / `.view.lkml` files (`views/refined/` and `views/raw/`) via `get_project_file` (when `has_develop_permission == true`) + `get_field_value_suggestions` + `1-2` exploratory `query` checks (date range `MIN`/`MAX`, row counts, real status/category values) | Include the Turn 2 `get_explore` mandatory filters in every exploratory `query`. If a query still fails with a Liquid guard error (e.g., `ERROR NEED FILTER BY ORIGIN`), add the named filter and retry once. Run candidate Golden Query `query` verification in the same turn. |
 | **Step 3 Golden Query Verification (`Standalone` Only)** | **Batch A:** Parallel `query` (`0` errors, `> 0` rows, bare-key `filters` with `"-NULL"` on strings, integer `limit`) -> **Batch B:** Parallel `query_url` (`/x/<slug>`) | Ensure every mandatory filter in `explore_and_filtering_rules.mandatory_base_and_null_filters` is present in that Explore's Golden Query `filters` map. Omit Golden Queries on Dashboard Agents. |
 
 ---
 
-## 2. Step 6: Apply Approved Changes (Atomic Backup Verification & Agent Update — Lines 13-20)
+## 2. Step 6: Apply Approved Changes (Atomic Backup Verification & Agent Update — Lines 14-21)
 
 Execute Step 6 **only after user approval at Gate #2** (or immediately if the user's prompt explicitly requested applying the changes without waiting, and `can.update == true`):
 - **LookML-Defined Agents (`"is_lookml": true`):** `PATCH /api/4.0/agents/{id}` is rejected or overwritten on LookML agents. Skip `update_agent`. If `has_develop_permission == true`, resolve the project-relative `.lkml` path from `lookml_edit_uri` + `get_project_files` and apply the approved agent instructions/golden queries in `dev_mode` (or export via `looker-cli api conversationalanalytics agent_lookml "<id>"`). **If `has_develop_permission == false`, include the complete upgraded LookML agent instruction/golden-query block inside the Gate #2 Developer Handoff Note so it is never dropped.**
@@ -19,7 +20,7 @@ Execute Step 6 **only after user approval at Gate #2** (or immediately if the us
 
 ---
 
-## 3. `Optimize` (`Advanced` / `Hard`) Mode: Eval Suite Ingestion, `[TMP-SXS-EVAL]` Draft Clone & Two-Step Cleanup *(Step 4 — Lines 22-31)*
+## 3. `Optimize` (`Advanced` / `Hard`) Mode: Eval Suite Ingestion, `[TMP-SXS-EVAL]` Draft Clone & Two-Step Cleanup *(Step 4 — Lines 23-32)*
 
 Execute Step 4 **only in `Optimize` (`Advanced` / `Hard`) mode**:
 1. **Ingest Structured Eval Suite (`3-5` Questions Recommended) or Auto-Generate:**

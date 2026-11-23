@@ -1,6 +1,6 @@
-# CA Agent Reasoning-Trace & System Activity Diagnostics (`Advanced` / `Hard` Mode)
+# CA Agent Reasoning-Trace & System Activity Diagnostics (`Optimize` / `Advanced` / `Hard` Mode)
 
-Load this reference **only in `Advanced` (`Hard` / `Optimize`) mode** during Step 4. Inspect historical `system__activity` records (`conversations_feedback` and `history`) and live CA chat traces (`systemMessage.text` where `textType == "THOUGHT"`, `systemMessage.data.generatedLookerQuery`, and tool logs) for each failing or slow eval question, map each issue to the 4 canonical root causes below, and apply the targeted fix in 4-part root-level YAML:
+Load this reference **only in `Optimize` (`Advanced` / `Hard`) mode** during Step 4. Inspect historical `system__activity` records (`conversations_feedback` and `history`) and live CA chat traces (`systemMessage.text` where `textType == "THOUGHT"`, `systemMessage.data.generatedLookerQuery`, and tool logs) for each failing or slow eval question, map each issue to the 4 canonical root causes below, and apply the targeted fix in 4-part root-level YAML:
 
 ## 1. Thought Loops, Multi-Query Stacking & `code_interpreter` Overhead
 - **Trace / Telemetry Symptoms:** Agent executes `3-6+` sequential Looker queries for one question, or `conversations_feedback` shows high `latency` / `answer_success = "Timeout"`. When `"code_interpreter": true` is enabled, `python_and_chart_agent` triggers on standard KPI/Top-N tables, adding **`+15s to +20s`** per turn and inflating token usage.
