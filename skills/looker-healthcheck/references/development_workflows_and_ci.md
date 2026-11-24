@@ -82,7 +82,8 @@ jobs:
 
       - name: Install Looker CLI (GitHub Release Binary)
         run: |
-          TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+          TAG_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/looker-open-source/looker-cli/releases/latest)
+          TAG="${TAG_URL##*/}"
           VERSION="${TAG#v}"
           curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin looker-cli
           chmod +x /usr/local/bin/looker-cli
