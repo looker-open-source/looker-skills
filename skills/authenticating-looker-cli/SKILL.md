@@ -55,6 +55,11 @@ URL. Looker CLI will output:
 
 ### 4. Instruct the User (Interactive Step)
 
+If running over SSH or on a remote workstation (such as a Cloudtop VM),
+offer SSH local port forwarding first so the browser redirect reaches
+`looker-cli` automatically; otherwise, the user can paste the failed
+`127.0.0.1:7777` redirect URL back into the prompt.
+
 Present the login URL to the user and instruct them:
 
 > "Please open the following URL in your browser, log in to Looker, and
@@ -62,21 +67,23 @@ Present the login URL to the user and instruct them:
 >
 > URL: {auth_url}
 >
-> If you are running on a local desktop machine, the login should complete
-> automatically once authorized. If you are on a remote server/headless
-> workspace, the browser will show a page load error or try to redirect to
-> `http://127.0.0.1:7777/?code=...`. Please copy the *entire* redirected URL
-> from your browser's address bar and paste it back into the terminal prompt."
+> - If you are running locally, the login should complete automatically once
+>   authorized.
+> - If you are on a remote server or Cloudtop, either run
+>   `ssh -L 7777:127.0.0.1:7777 {username}@{remote_host}` from your local
+>   machine so `http://127.0.0.1:7777` forwards cleanly, or authorize anyway
+>   and copy the *entire* `http://127.0.0.1:7777/?code=...` URL from your
+>   browser's address bar after the redirect error and paste it here."
 
 ### 5. Handle the OAuth Response
 
--   **Scenario A (Automatic)**: If the user completes authentication and the CLI
-    is listening locally on port 7777, the login command task will finish
-    successfully.
--   **Scenario B (Headless Fallback)**: The background process will print:
-    `Paste redirected URL here: ` If the user pastes the redirected URL, use
-    `manage_task` with `send_input` to pass the pasted URL directly to the
-    background login task.
+-   **Scenario A (Automatic / SSH-forwarded tunnel)**: If the user completes
+    authentication locally or with `ssh -L 7777:127.0.0.1:7777` active, the
+    login command task will finish successfully on port 7777.
+-   **Scenario B (Headless Manual Redirect Fallback)**: The background process
+    will print: `Paste redirected URL here: ` If the user pastes the redirected
+    URL, use `manage_task` with `send_input` to pass the pasted URL directly to
+    the background login task.
 
 Once complete, `looker-cli` will automatically save the access and refresh
 tokens into your `default` profile in `~/.config/looker-cli/config.yaml`.
