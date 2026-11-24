@@ -70,10 +70,10 @@ Present the login URL to the user and instruct them:
 > - If you are running locally, the login should complete automatically once
 >   authorized.
 > - If you are on a remote server or Cloudtop, either run
->   `ssh -L 7777:127.0.0.1:7777 <user>@<remote-host>` from your local machine
->   so `http://127.0.0.1:7777` forwards cleanly, or authorize anyway and copy
->   the *entire* `http://127.0.0.1:7777/?code=...` URL from your browser's
->   address bar after the redirect error and paste it here."
+>   `ssh -L 7777:127.0.0.1:7777 {username}@{remote_host}` from your local
+>   machine so `http://127.0.0.1:7777` forwards cleanly, or authorize anyway
+>   and copy the *entire* `http://127.0.0.1:7777/?code=...` URL from your
+>   browser's address bar after the redirect error and paste it here."
 
 ### 5. Handle the OAuth Response
 
