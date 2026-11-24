@@ -18,11 +18,36 @@ authentication configured before beginning onboarding.
 
 ### 1. Run the System Pre-flight Check
 
-Execute the pre-flight check script in `system` mode. Specify the path where you
-plan to install the Looker CLI (typically `~/.local/bin` or a workspace path):
+Locate `scripts/preflight_check.sh` inside the installed
+`onboarding-preflight-check` skill directory (if you know the loaded `SKILL.md`
+path, use its sibling `scripts/preflight_check.sh` directly) and execute it in
+`system` mode. Specify the path where you plan to install the Looker CLI
+(typically `~/.local/bin` or a workspace path):
 
 ```bash
-./skills/onboarding-preflight-check/scripts/preflight_check.sh --mode system --install-dir ~/.local/bin
+PREFLIGHT_SCRIPT=""
+for candidate in \
+  "./skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "./.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "./.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "./.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "./.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "$HOME/.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "$HOME/.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "$HOME/.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "$HOME/.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
+  [ -f "$candidate" ] && PREFLIGHT_SCRIPT="$candidate" && break
+done
+if [ -z "$PREFLIGHT_SCRIPT" ]; then
+  for root in "$HOME/.agents" "$HOME/.gemini/skills" "$HOME/.gemini/config" "$HOME/.claude" "$HOME/.codex" "$HOME/.cursor"; do
+    [ -d "$root" ] || continue
+    PREFLIGHT_SCRIPT=$(find -L "$root" -path '*/onboarding-preflight-check/scripts/preflight_check.sh' -type f 2>/dev/null | head -n 1 || true)
+    [ -n "$PREFLIGHT_SCRIPT" ] && break
+  done
+fi
+[ -n "$PREFLIGHT_SCRIPT" ] || { echo "preflight_check.sh not found" >&2; exit 1; }
+bash "$PREFLIGHT_SCRIPT" --mode system --install-dir ~/.local/bin
 ```
 
 ### 2. Handle Check Failures
@@ -62,13 +87,38 @@ error output:
 
 ### 3. Run the IAM Pre-flight Check (During Connection Setup)
 
-Execute the pre-flight check script in `iam` mode to verify that the Looker Core
-service account possesses the required least-privilege roles on the target GCP
-project (`roles/bigquery.dataViewer`, `roles/bigquery.jobUser`, and
+Execute the pre-flight check script in `iam` mode (resolving its path again if
+running in a fresh shell session) to verify that the Looker Core service account
+possesses the required least-privilege roles on the target GCP project
+(`roles/bigquery.dataViewer`, `roles/bigquery.jobUser`, and
 `roles/serviceusage.serviceUsageConsumer`):
 
 ```bash
-./skills/onboarding-preflight-check/scripts/preflight_check.sh --mode iam --looker-project {looker_gcp_project_id} --bq-project {bigquery_gcp_project_id}
+PREFLIGHT_SCRIPT="${PREFLIGHT_SCRIPT:-}"
+if [ -z "$PREFLIGHT_SCRIPT" ] || [ ! -f "$PREFLIGHT_SCRIPT" ]; then
+  for candidate in \
+    "./skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "./.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "./.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "./.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "./.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "$HOME/.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "$HOME/.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "$HOME/.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "$HOME/.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
+    [ -f "$candidate" ] && PREFLIGHT_SCRIPT="$candidate" && break
+  done
+fi
+if [ -z "$PREFLIGHT_SCRIPT" ] || [ ! -f "$PREFLIGHT_SCRIPT" ]; then
+  for root in "$HOME/.agents" "$HOME/.gemini/skills" "$HOME/.gemini/config" "$HOME/.claude" "$HOME/.codex" "$HOME/.cursor"; do
+    [ -d "$root" ] || continue
+    PREFLIGHT_SCRIPT=$(find -L "$root" -path '*/onboarding-preflight-check/scripts/preflight_check.sh' -type f 2>/dev/null | head -n 1 || true)
+    [ -n "$PREFLIGHT_SCRIPT" ] && break
+  done
+fi
+[ -n "$PREFLIGHT_SCRIPT" ] || { echo "preflight_check.sh not found" >&2; exit 1; }
+bash "$PREFLIGHT_SCRIPT" --mode iam --looker-project {looker_gcp_project_id} --bq-project {bigquery_gcp_project_id}
 ```
 
 > [!IMPORTANT] **Why `roles/serviceusage.serviceUsageConsumer` is required**:

@@ -48,11 +48,34 @@ Usage Consumer`):
 > contains `serviceusage.services.use`), Looker cannot authenticate or dispatch
 > query jobs to BigQuery, resulting in a `400 Bad Request` error.
 
-1.  Run the IAM pre-flight check script, passing the Looker GCP project ID
-    (where the Looker Core instance resides) and the BigQuery GCP project ID:
+1.  Locate and run `preflight_check.sh` from the `onboarding-preflight-check`
+    skill directory in `iam` mode, passing the Looker GCP project ID (where the
+    Looker Core instance resides) and the BigQuery GCP project ID:
 
     ```bash
-    ./skills/onboarding-preflight-check/scripts/preflight_check.sh \
+    PREFLIGHT_SCRIPT=""
+    for candidate in \
+      "./skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "./.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "./.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "./.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "./.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "$HOME/.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "$HOME/.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "$HOME/.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "$HOME/.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+      "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
+      [ -f "$candidate" ] && PREFLIGHT_SCRIPT="$candidate" && break
+    done
+    if [ -z "$PREFLIGHT_SCRIPT" ]; then
+      for root in "$HOME/.agents" "$HOME/.gemini/skills" "$HOME/.gemini/config" "$HOME/.claude" "$HOME/.codex" "$HOME/.cursor"; do
+        [ -d "$root" ] || continue
+        PREFLIGHT_SCRIPT=$(find -L "$root" -path '*/onboarding-preflight-check/scripts/preflight_check.sh' -type f 2>/dev/null | head -n 1 || true)
+        [ -n "$PREFLIGHT_SCRIPT" ] && break
+      done
+    fi
+    [ -n "$PREFLIGHT_SCRIPT" ] || { echo "preflight_check.sh not found" >&2; exit 1; }
+    bash "$PREFLIGHT_SCRIPT" \
       --mode iam \
       --looker-project {looker_gcp_project_id} \
       --bq-project {bigquery_gcp_project_id}
