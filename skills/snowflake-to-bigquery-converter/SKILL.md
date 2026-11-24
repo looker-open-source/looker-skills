@@ -32,7 +32,7 @@ When invoked, execute the following steps precisely:
 1. **Pre-flight Guardrails & Verification**:
    Before requesting details or fetching code, verify that `looker-cli` is installed and authenticated:
    - **Verify CLI Installation**:
-     Run: `looker-cli --help`
+     Run: `export PATH="$HOME/.local/bin:$PATH" && command -v looker-cli`
      **If the command fails or is not found**: Halt immediately and instruct the user:
      > "`looker-cli` is not installed or not in your PATH. Please refer to the installation instructions in the Looker CLI documentation: https://github.com/looker-open-source/looker-cli"
    - **Verify Authentication & Looker Configuration**:
