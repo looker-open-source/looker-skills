@@ -32,11 +32,14 @@ for candidate in \
   "./.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
   "./.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
   "./.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "./.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "./.cursor/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
   "$HOME/.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
   "$HOME/.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
   "$HOME/.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
   "$HOME/.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
-  "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
+  "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+  "$HOME/.cursor/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
   [ -f "$candidate" ] && PREFLIGHT_SCRIPT="$candidate" && break
 done
 if [ -z "$PREFLIGHT_SCRIPT" ]; then
@@ -102,11 +105,14 @@ if [ -z "$PREFLIGHT_SCRIPT" ] || [ ! -f "$PREFLIGHT_SCRIPT" ]; then
     "./.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
     "./.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
     "./.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "./.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "./.cursor/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
     "$HOME/.agents/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
     "$HOME/.gemini/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
     "$HOME/.gemini/config/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
     "$HOME/.claude/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
-    "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
+    "$HOME/.codex/skills/onboarding-preflight-check/scripts/preflight_check.sh" \
+    "$HOME/.cursor/skills/onboarding-preflight-check/scripts/preflight_check.sh"; do
     [ -f "$candidate" ] && PREFLIGHT_SCRIPT="$candidate" && break
   done
 fi
