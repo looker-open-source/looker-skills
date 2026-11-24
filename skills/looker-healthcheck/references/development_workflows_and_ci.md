@@ -82,7 +82,9 @@ jobs:
 
       - name: Install Looker CLI (GitHub Release Binary)
         run: |
-          curl -sSL "https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli_1.2.1_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin looker-cli
+          TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+          VERSION="${TAG#v}"
+          curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin looker-cli
           chmod +x /usr/local/bin/looker-cli
 
       - name: Validate LookML Project
