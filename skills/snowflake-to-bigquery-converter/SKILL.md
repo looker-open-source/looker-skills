@@ -33,6 +33,7 @@ When invoked, execute the following steps precisely:
    Before requesting details or fetching code, verify that `looker-cli` is installed and authenticated:
    - **Verify CLI Installation**:
      Run: `export PATH="$HOME/.local/bin:$PATH" && command -v looker-cli`
+     If `looker-cli` is only found because `$HOME/.local/bin` was added above, prepend `export PATH="$HOME/.local/bin:$PATH"` to subsequent `looker-cli` commands when executing in separate subshells.
      **If the command fails or is not found**: Halt immediately and instruct the user:
      > "`looker-cli` is not installed or not in your PATH. Please refer to the installation instructions in the Looker CLI documentation: https://github.com/looker-open-source/looker-cli"
    - **Verify Authentication & Looker Configuration**:
