@@ -60,7 +60,8 @@ of hardcoding a `/releases/latest/download/` filename.
     *For macOS (arm64 Apple Silicon):*
 
     ```bash
-    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    TAG_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/looker-open-source/looker-cli/releases/latest)
+    TAG="${TAG_URL##*/}"
     VERSION="${TAG#v}"
     mkdir -p ~/.local/bin
     curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_darwin_arm64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
@@ -70,7 +71,8 @@ of hardcoding a `/releases/latest/download/` filename.
     *For macOS (amd64 Intel):*
 
     ```bash
-    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    TAG_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/looker-open-source/looker-cli/releases/latest)
+    TAG="${TAG_URL##*/}"
     VERSION="${TAG#v}"
     mkdir -p ~/.local/bin
     curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_darwin_amd64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
@@ -80,7 +82,8 @@ of hardcoding a `/releases/latest/download/` filename.
     *For Linux (amd64):*
 
     ```bash
-    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    TAG_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/looker-open-source/looker-cli/releases/latest)
+    TAG="${TAG_URL##*/}"
     VERSION="${TAG#v}"
     mkdir -p ~/.local/bin
     curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_linux_amd64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
@@ -90,7 +93,8 @@ of hardcoding a `/releases/latest/download/` filename.
     *For Linux (arm64):*
 
     ```bash
-    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    TAG_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/looker-open-source/looker-cli/releases/latest)
+    TAG="${TAG_URL##*/}"
     VERSION="${TAG#v}"
     mkdir -p ~/.local/bin
     curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_linux_arm64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
