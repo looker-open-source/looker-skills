@@ -47,7 +47,8 @@ request to determine the necessary LookML elements.
         prompt:
         *   **New Views**: Are we introducing new tables or derived tables?
             (Note: If creating a derived table or PDT, you MUST consult the
-            `lookml-pdt-guidelines` skill).
+            derived table guidance in the `lookml-view` skill,
+            `references/derived_table.md`).
         *   **New Dimensions**: Do we need to expose new columns or define new
             logic from existing columns?
         *   **New Measures**: Are we adding new aggregations (e.g., `count`,
