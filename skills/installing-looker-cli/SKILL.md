@@ -27,67 +27,95 @@ Releases page of the `looker-cli` repository
 
 ### 1. Check for Existing Installation
 
-Before downloading, check if the CLI is already installed and accessible:
+Before downloading, check if the CLI is already installed and accessible on your
+`PATH` (including `~/.local/bin`, which non-interactive subshells often omit):
 
 ```bash
-looker-cli --help
+export PATH="$HOME/.local/bin:$PATH"
+command -v looker-cli && looker-cli --help
 ```
 
 If this command executes successfully and prints the help menu, the CLI is
 ready. **Skip the installation steps below** and proceed directly to Step 3
-(Authentication).
+(Authentication). If it only succeeded because `~/.local/bin` was added above,
+include `export PATH="$HOME/.local/bin:$PATH"` in subsequent commands or your
+shell profile (`~/.bashrc` / `~/.zshrc`).
 
 --------------------------------------------------------------------------------
 
 ### 2. Perform OS-Specific Installation
 
-If `looker-cli` is not found, determine the operating system of the environment
-and execute the corresponding installation steps.
+If `looker-cli` is not found, determine the operating system and CPU
+architecture (`uname -s`, `uname -m`) of the environment and download the
+corresponding release archive from GitHub Releases. Release assets include the
+version number without a leading `v` (for example,
+`looker-cli_1.3.0_linux_amd64.tar.gz`), so resolve the latest tag first instead
+of hardcoding a `/releases/latest/download/` filename.
 
 #### Option A: macOS & Linux
 
-1.  **Retrieve latest release tag**: Query the GitHub API or check the releases
-    page (`https://github.com/looker-open-source/looker-cli/releases`) to
-    identify the latest version tag (e.g., `v1.0.0`).
-2.  **Download and install**: Run the following sequence to download, rename,
-    and move the binary to your local bin path:
+1.  **Resolve latest release tag and install**: Download the matching `.tar.gz`
+    archive and extract `looker-cli` into `~/.local/bin/`:
 
     *For macOS (arm64 Apple Silicon):*
 
     ```bash
-    curl -Lo looker-cli https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-darwin-arm64
-    chmod +x looker-cli
-    mkdir -p ~/.local/bin && mv looker-cli ~/.local/bin/
+    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    VERSION="${TAG#v}"
+    mkdir -p ~/.local/bin
+    curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_darwin_arm64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
+    chmod +x ~/.local/bin/looker-cli
     ```
 
     *For macOS (amd64 Intel):*
 
     ```bash
-    curl -Lo looker-cli https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-darwin-amd64
-    chmod +x looker-cli
-    mkdir -p ~/.local/bin && mv looker-cli ~/.local/bin/
+    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    VERSION="${TAG#v}"
+    mkdir -p ~/.local/bin
+    curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_darwin_amd64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
+    chmod +x ~/.local/bin/looker-cli
     ```
 
     *For Linux (amd64):*
 
     ```bash
-    curl -Lo looker-cli https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-linux-amd64
-    chmod +x looker-cli
-    mkdir -p ~/.local/bin && mv looker-cli ~/.local/bin/
+    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    VERSION="${TAG#v}"
+    mkdir -p ~/.local/bin
+    curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_linux_amd64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
+    chmod +x ~/.local/bin/looker-cli
     ```
 
-    *Note: If `~/.local/bin` is not in your `PATH` or you have root permissions,
-    you can choose to move it to `/usr/local/bin/` instead.*
+    *For Linux (arm64):*
+
+    ```bash
+    TAG=$(curl -fsSL https://api.github.com/repos/looker-open-source/looker-cli/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+    VERSION="${TAG#v}"
+    mkdir -p ~/.local/bin
+    curl -fsSL "https://github.com/looker-open-source/looker-cli/releases/download/${TAG}/looker-cli_${VERSION}_linux_arm64.tar.gz" | tar -xz -C ~/.local/bin looker-cli
+    chmod +x ~/.local/bin/looker-cli
+    ```
+
+    *Note: If `~/.local/bin` is not in your default `PATH`, add it to your shell
+    profile or use `/usr/local/bin/` when you have write permissions there.*
 
 #### Option B: Windows
 
-1.  **Download**: Download the latest Windows binary (e.g. using PowerShell):
+1.  **Download and extract**: Resolve the latest release archive (use
+    `windows_arm64.zip` on ARM64 Windows) and extract `looker-cli.exe`:
 
     ```powershell
-    Invoke-WebRequest -Uri "https://github.com/looker-open-source/looker-cli/releases/latest/download/looker-cli-windows-amd64.exe" -OutFile "looker-cli.exe"
+    $tag = (Invoke-RestMethod "https://api.github.com/repos/looker-open-source/looker-cli/releases/latest").tag_name
+    $ver = $tag.TrimStart("v")
+    New-Item -ItemType Directory -Force -Path "$HOME\.local\bin" | Out-Null
+    Invoke-WebRequest -Uri "https://github.com/looker-open-source/looker-cli/releases/download/$tag/looker-cli_${ver}_windows_amd64.zip" -OutFile "$env:TEMP\looker-cli.zip"
+    Expand-Archive -Path "$env:TEMP\looker-cli.zip" -DestinationPath "$env:TEMP\looker-cli" -Force
+    Move-Item -Force "$env:TEMP\looker-cli\looker-cli.exe" "$HOME\.local\bin\looker-cli.exe"
+    Remove-Item -Recurse -Force "$env:TEMP\looker-cli", "$env:TEMP\looker-cli.zip"
     ```
-2.  **Add to Path**: Move `looker-cli.exe` to a directory in your system
-    `%PATH%` (or add its directory to the Environment Variables).
+2.  **Add to Path**: Ensure `$HOME\.local\bin` (containing `looker-cli.exe`)
+    is in your system `%PATH%` (or Environment Variables).
 
 --------------------------------------------------------------------------------
 
@@ -96,8 +124,9 @@ and execute the corresponding installation steps.
 Run the help command again to verify the installation succeeded:
 
 ```bash
+export PATH="$HOME/.local/bin:$PATH"
 looker-cli --help
 ```
 
 Confirm that the output shows the Looker CLI help menu correctly. If it fails,
-check that the destination directory is indeed in your shell's `PATH`.
+check that `~/.local/bin` is included in your shell's `PATH`.
