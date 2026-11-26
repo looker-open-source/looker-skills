@@ -3,14 +3,14 @@
 Load this reference **only in `Optimize` (`Advanced` / `Hard`) mode** during Step 4. Inspect historical `system__activity` records (`conversations_feedback` and `history`) and live CA chat traces (`systemMessage.text` where `textType == "THOUGHT"`, `systemMessage.data.generatedLookerQuery`, and tool logs) for each failing or slow eval question, map each issue to the 4 canonical root causes below, and apply the targeted fix in 4-part root-level YAML:
 
 ## 1. Thought Loops, Multi-Query Stacking & `code_interpreter` Overhead
-- **Trace / Telemetry Symptoms:** Agent executes `3-6+` sequential Looker queries for one question, or `conversations_feedback` shows high `latency` / `answer_success = "Timeout"`. When `"code_interpreter": true` is enabled, `python_and_chart_agent` triggers on standard KPI/Top-N tables, adding **`+15s to +20s`** per turn and inflating token usage.
+- **Trace / Telemetry Symptoms:** Agent executes `3-6+` sequential Looker queries for one question, or `conversations_feedback` shows high `latency` / `answer_success = "Timeout"`. Enabling `"code_interpreter": true` on standard KPI/Top-N tables adds latency and inflates token usage.
 - **Fixes:**
   1. **`semantic_and_execution_rules:` (YAML):** Add a strict single-query consolidation rule retrieving all dimensions, measures, and period comparisons in one query.
-  2. **Agent Setting:** Set `"code_interpreter": false` unless Python statistical modeling or forecasting is explicitly required.
+  2. **Agent Setting:** Set `"code_interpreter": false` unless Python analysis is explicitly needed.
   3. **Golden Queries (`golden_query_ids`):** Register `1-2` verified multi-field Golden Queries demonstrating the consolidated query pattern.
 
 ## 2. Field-Sampling Loops
-- **Trace / Telemetry Symptoms:** Agent repeatedly runs `SELECT DISTINCT` or suggestion queries on categorical dimensions to map business terms (`"Enterprise"`, `"Paid"`, `"US"`) to exact database strings, adding `20s-40s` in `system__activity.history`.
+- **Trace / Telemetry Symptoms:** Agent repeatedly runs `SELECT DISTINCT` or suggestion queries on categorical dimensions to map business terms (`"Enterprise"`, `"Paid"`, `"US"`) to exact database strings, adding significant query latency in `system__activity.history`.
 - **Fixes:**
   1. **`explore_and_filtering_rules:` (YAML):** Inline verified canonical filter value mappings sampled during Step 2 and instruct the agent never to re-sample mapped fields.
   2. **Gate #2 LookML Offer / Handoff:** Offer to add valid categorical values to the dimension's LookML `description:` in Step 6.

@@ -1,7 +1,7 @@
 # LookML Modeling Standards for Conversational Analytics (CA)
 
 Shared LookML semantic-layer reference for `looker-ca-agent-create` and `looker-ca-agent-optimize`:
-- **Lines `1-18` (Sections 1-2):** Load during Step 2 **only** when `has_develop_permission == true` (to inspect `.lkml` refinements, joins, and metadata gaps) or when formatting a non-developer handoff note.
+- **Lines `1-18` (Sections 1-2):** Load during Step 2 **only** when `can_read_lookml == true` (to inspect `.lkml` refinements, joins, and metadata gaps) or when formatting a non-developer handoff note.
 - **Lines `20-28` (Section 3):** Load **only after** the user replies **Yes** at Gate #2 to apply `dev_mode` LookML edits.
 
 ## 1. Metadata Richness (`description:` and `label:`)

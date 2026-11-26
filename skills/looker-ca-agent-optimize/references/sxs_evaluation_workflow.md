@@ -8,8 +8,8 @@ At **Step 1 (Gate #1)**, if the target agent or mode is missing, pause with zero
 
 ### Cheapest-First Drafting Hierarchy (Synthesize in Priority Order)
 1. **Prune/Simplify & Structure 4-Part Root-Level YAML Instructions (`context.instructions`):** Convert plain-text, bloated, or XML/`&amp;`-escaped prompts into **4-part root-level YAML** (`3,200-4,200` chars target, `<= 4,800` cap, natural `&`/`<`/`>` symbols, zero XML tags or `&amp;` entities). Resolve `Thumbs down` / `Timeout` / `issue_description` pain points, inline verified categorical filter values, enforce Looker native `"-NULL"` and `"30 days ago for 30 days"`, disambiguate measures using `.lkml` SQL formulas, and add single-query consolidation rules.
-2. **Optimize Metadata & Latency Settings (`code_interpreter`, `sources`):** Disable unnecessary `"code_interpreter": true` (`-15s to -20s` per turn on standard BI Q&A) and prune unused noisy Explores.
-3. **Repair or Curate Golden Queries (`Standalone` Only):** Fix broken/0-row Golden Queries (`update_golden_query`) and draft `1-3` `query`-verified Golden Queries (`create_golden_query`, `< 20` cap, `<= 50%` overlap with eval questions; omit on Dashboard Agents).
+2. **Optimize Metadata & Latency Settings (`code_interpreter`, `sources`):** Disable unnecessary `"code_interpreter": true` (code interpreter adds latency; keep it off unless Python analysis is needed) and prune unused noisy Explores.
+3. **Repair or Curate Golden Queries:** Fix broken/0-row Golden Queries (`update_golden_query`) and draft `1-3` `query`-verified Golden Queries (`create_golden_query`, `< 20` cap, `<= 50%` overlap with eval questions).
 4. **Track LookML Metadata Gaps for Gate #2:** Record exposed fields missing `description:`, clear `label:`, or `primary_key: yes` without editing `.lkml` files during Steps 2-4.
 5. **No-Gaps Early Exit (`Audit` Mode):** If `Audit` (`Fast`/`Soft`) finds zero gaps, exit with: *"No best-practice gaps found. Run `Optimize` (`Advanced`) to analyze live CA agent behavior."*
 

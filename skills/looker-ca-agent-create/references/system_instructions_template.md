@@ -1,6 +1,6 @@
-# Four-Part System Instructions Templates (Human-Readable Root-Level YAML)
+# Four-Part System Instructions Template (Human-Readable Root-Level YAML)
 
-## 1. Standalone Agent System Instructions Template *(Lines 1-50)*
+## Standalone Agent System Instructions Template *(Lines 1-50)*
 
 Author `context.instructions` as **4-part root-level YAML** (**drafting target: `3,200-4,200` chars / `~55-70` lines**; **hard cap: `<= 4,800` chars**; natural `&`, `<`, `>`, `>=`, `<=` symbols; zero XML wrapper tags, zero `&amp;`/`&lt;`/`&gt;` entities, zero outer `agent_instructions:` wrapper key, zero `\t` tabs). Do not dump raw YAML into chat unless requested (or in MCP-only fallback mode):
 
@@ -47,45 +47,4 @@ presentation_and_analysis_rules:
     - "For time-series trends without a specified granularity, group by `[view.date_week]` for ranges <= 90 days and `[view.date_month]` for ranges > 90 days."
   formatting:
     - "Format currency in USD ($#,##0.00) and percentages to one decimal place (0.0%)."
-```
-
-## 2. Dashboard Agent System Instructions Template *(Lines 52-91)*
-
-Author `context.instructions` as **4-part root-level YAML** (**drafting target: `3,200-4,200` chars**; **hard cap: `<= 4,800` chars**; natural `&`, `<`, `>` symbols; zero XML tags or `&amp;` entities) for a **Dashboard Agent** (`"category": "dashboard"`, `"name": "<instance_origin>-<dashboard_id>"`, `"sources"` from tile Explores, `"golden_query_ids"` omitted):
-
-```yaml
-# Agent System Instructions (Dashboard Agent)
-role_and_tone:
-  persona: "Executive Analytics Assistant for the '[Dashboard Title]' dashboard (ID: [dashboard_id])."
-  scope: >-
-    Ground answers first in the KPIs, tiles & default filter context of '[Dashboard Title]'.
-    When users ask follow-up or drill-down questions, query the underlying Explore
-    ([model.explore]) using the exact measure definitions from the dashboard tiles.
-  tone: "Direct, concise & aligned with dashboard terminology."
-
-explore_and_filtering_rules:
-  dashboard_filter_inheritance:
-    - "Respect the dashboard's default filters unless overridden by the user:"
-    - "[view.date_filter]: '[default_dashboard_date_range]'"
-    - "[view.segment_filter]: '[default_segment_value]'"
-    - "For string null exclusions, always apply Looker filter syntax '-NULL' (never 'not null')."
-  canonical_filter_mappings:
-    "[view.channel_field]":
-      paid_search: "Paid Search"
-      organic: "Organic Search"
-      partner: "Partner Referral"
-
-semantic_and_execution_rules:
-  tile_to_metric_mapping:
-    - "Headline KPI '[Tile 1 Title]': Always query `[view.measure_1]`."
-    - "Trend Tile '[Tile 2 Title]': Query `[view.measure_2]` grouped by `[view.date_dimension]`."
-    - "Conversion Rate '[Tile 3 Title]': Use the pre-modeled LookML measure `[view.conversion_rate]` (never recalculate manually)."
-  execution_guardrails:
-    - "Execute drill-downs in a single consolidated query by adding the requested breakdown dimension (`[view.region]`, `[view.product_category]`, or `[view.account_owner]`) to the tile's base query."
-
-presentation_and_analysis_rules:
-  response_structure:
-    - "Start with the headline metric value & the active dashboard filter context."
-    - "Cite the matching Dashboard Tile name when answering a question covered by an existing tile."
-    - "Limit breakdown tables to Top 10 rows sorted descending by the primary KPI."
 ```
